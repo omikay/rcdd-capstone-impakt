@@ -15,8 +15,9 @@
     "postinstall": "husky install && husky add .husky/pre-commit \"yarn validate-staged\" && husky add .husky/pre-push \"yarn test\""
   },
   "dependencies": {
-    "dotenv": "^14.2.0",
+    "dotenv": "^14.3.2",
     "express": "^4.17.2",
+    "mongoose": "^7.3.1",
     "yarn-upgrade-all": "^0.6.1"
   },
   "devDependencies": {
