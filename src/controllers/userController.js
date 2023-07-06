@@ -1,4 +1,59 @@
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 const User = require('../models/Users');
+const sendEmail = require('../middleware/email');
+
+// User signup
+const signup = async (req, res) => {
+  try {
+    const { name, email, password, passwordConfirmation } = req.body;
+
+    let user = await User.findOne({ email });
+
+    if (user) {
+      return res.status(400).json({ error: 'User email already exists.' });
+    }
+
+    if (password !== passwordConfirmation) {
+      return res.status(400).json({ error: 'Passwords do not match.' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    user = new User({
+      name,
+      email,
+      password: hashedPassword,
+    });
+
+    await user.save();
+
+    await sendEmail(
+      user.email,
+      'Welcome to Impakt!',
+      `Dear ${user.name}, your Impakt account has been created successfully.`
+    );
+
+    const token = jwt.sign(
+      {
+        name: user.name,
+        email: user.email,
+        providerId: `google-${user.id}`,
+        exp: Math.floor(Date.now() / 1000) + 1209600, // 14 days expiration
+        iat: Math.floor(Date.now() / 1000), // Issued at date
+        avatar: user.avatar,
+      },
+      process.env.JWT_SECRET
+    );
+
+    res.cookie('jwt', token, { httpOnly: true });
+
+    res.redirect('/dashboard');
+    return res.status(201).json({ token });
+  } catch (error) {
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+};
 
 // Update user profile
 const updateUserProfile = async (req, res, next) => {
@@ -18,7 +73,7 @@ const updateUserProfile = async (req, res, next) => {
   }
 };
 
-// GET /users/:id/profile
+// user profile
 const getUserProfile = async (req, res) => {
   const { id } = req.params;
 
@@ -41,4 +96,4 @@ const getUserProfile = async (req, res) => {
   }
 };
 
-module.exports = { updateUserProfile, getUserProfile };
+module.exports = { updateUserProfile, signup, getUserProfile };
