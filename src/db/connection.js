@@ -2,20 +2,18 @@ const mongoose = require('mongoose');
 
 const url = process.env.MONGO_URL;
 
-const connectDB = async () => {
-    try {
-      await mongoose.connect(url, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        useCreateIndex: true,
-        useFindAndModify: false,
-      });
-  
-      console.log('MongoDB connection established');
-    } catch (error) {
-      console.error(`Error: ${error.message}`);
-      process.exit(1);
-    }
-  };
-  
-  module.exports = connectDB;
+const connectToMongo = () => {
+  mongoose.connect(url, { useNewUrlParser: true });
+
+  const db = mongoose.connection; // Declare the 'db' variable
+
+  db.once('open', () => {
+    console.log('Database connected: ', url);
+  });
+
+  db.on('error', (err) => {
+    console.error('Database connection error: ', err);
+  });
+};
+
+module.exports = connectToMongo;
