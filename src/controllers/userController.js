@@ -73,4 +73,27 @@ const updateUserProfile = async (req, res, next) => {
   }
 };
 
-module.exports = { updateUserProfile, signup };
+// user profile
+const getUserProfile = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // Find the user in the database
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Extract the relevant profile data
+    const { name, email, ProfilePic, age } = user;
+
+    // Return the user's profile
+    return res.json({ name, email, ProfilePic, age });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Server error' });
+  }
+};
+
+module.exports = { updateUserProfile, signup, getUserProfile };
