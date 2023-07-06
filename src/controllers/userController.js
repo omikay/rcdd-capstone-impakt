@@ -1,41 +1,20 @@
-const User = require('../models/Users');
-const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const sendEmail = require("../utils/email");
+const bcrypt = require('bcryptjs');
+const User = require('../models/Users');
+const sendEmail = require('../middleware/email');
 
-exports.getSignup = (req, res, next) => {
-  // Display signup page
-  res.render('signup');
-};
+exports.signup = async (req, res) => {
+  try {
+    const { name, email, password, passwordConfirmation } = req.body;
 
-exports.postSignup = async (req, res, next) => {
-  const { name, email, password, passwordConfirmation, idToken } = req.body;
+    let user = await User.findOne({ email });
 
-  let user = await User.findOne({ email });
+    if (user) {
+      return res.status(400).json({ error: 'User email already exists.' });
+    }
 
-  if (user) {
-    return res.status(400).send('User with this email already exists.');
-  }
-
-  if (idToken) {
-    // If an ID token is provided, this is a signup through Google.
-    const ticket = await client.verifyIdToken({
-      idToken,
-      audience: process.env.GOOGLE_CLIENT_ID,
-    });
-
-    const { name, email, picture } = ticket.getPayload();
-
-    user = new User({
-      name,
-      email,
-      profilePic: picture,
-      googleAccountId: ticket.getUserId(),
-    });
-  } else {
-    // If no ID token is provided, this is a signup with email and password.
     if (password !== passwordConfirmation) {
-      return res.status(400).send('Passwords do not match.');
+      return res.status(400).json({ error: 'Passwords do not match.' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -45,20 +24,32 @@ exports.postSignup = async (req, res, next) => {
       email,
       password: hashedPassword,
     });
+
+    await user.save();
+
+    await sendEmail(user.email, 'Welcome to Impakt!', `Dear ${user.name}, your Impakt account has been created successfully.`);
+
+    // const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '24h' });
+    // const token = jwt.sign(
+    //   {
+    //     name: user.name,
+    //     email: user.email,
+    //     providerId: `google-${user.id}`,
+    //     exp: Math.floor(Date.now() / 1000) + 1209600, // 14 days expiration
+    //     iat: Math.floor(Date.now() / 1000), // Issued at date
+    //     avatar: user.avatar,
+    //   },
+    //   process.env.JWT_SECRET
+    // );
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+    res.cookie('jwt', token, { httpOnly: true });
+
+    // Send token in the response
+    // res.status(201).json({ token });
+
+    res.redirect('/dashboard');    
+  } catch (error) {
+    console.error('Error during signup:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
-
-  await user.save();
-
-  // After the user is created, send a confirmation email
-  await sendEmail(
-    user.email, 
-    subject = 'Welcome to Impakt!', 
-    text = 'You have successfully signed up for an Impakt account with your Google account.'
-  );
-
-  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
-  res.cookie('jwt', token, { httpOnly: true });
-
-  res.redirect('/dashboard');
 };
-
