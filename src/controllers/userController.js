@@ -18,7 +18,6 @@ const updateUserProfile = async (req, res, next) => {
   }
 };
 
-
 // GET /users/:id/profile
 const getUserProfile = async (req, res) => {
   const { id } = req.params;
@@ -32,16 +31,14 @@ const getUserProfile = async (req, res) => {
     }
 
     // Extract the relevant profile data
-    const { name, email, profile_pic, age } = user;
+    const { name, email, ProfilePic, age } = user;
 
     // Return the user's profile
-    return res.json({ name, email, profile_pic, age });
+    return res.json({ name, email, ProfilePic, age });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: 'Server error' });
   }
 };
 
-
-
-module.exports = { updateUserProfile,  getUserProfile };
+module.exports = { updateUserProfile, getUserProfile };
