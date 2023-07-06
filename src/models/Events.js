@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+
 const { Schema } = mongoose;
 
 const eventSchema = new Schema({
@@ -8,7 +9,7 @@ const eventSchema = new Schema({
   banner: String,
   location: {
     type: { type: String, enum: ['Point'], default: 'Point' },
-    coordinates: { type: [Number], index: '2dsphere' }
+    coordinates: { type: [Number], index: '2dsphere' },
   },
   start_datetime: { type: Date, required: true },
   end_datetime: { type: Date, required: true },
@@ -16,7 +17,7 @@ const eventSchema = new Schema({
   upper_age_lim: Number,
   tag_ids: [{ type: Schema.Types.ObjectId, ref: 'Tags' }],
   capacity: Number,
-  participants_id: [{ type: Schema.Types.ObjectId, ref: 'Users' }]
+  participants_id: [{ type: Schema.Types.ObjectId, ref: 'Users' }],
 });
 
 module.exports = mongoose.model('Events', eventSchema);
