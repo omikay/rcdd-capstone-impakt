@@ -1,14 +1,24 @@
 const express = require('express');
-
-const router = express.Router();
+const gAuth = require('../middleware/gAuth');
 const userController = require('../controllers/userController');
 
+const router = express.Router();
+
+// Route for user signup
+router.post('/api/signup', userController.signup);
+
+// Route for Google OAuth
+router.get('/api/auth/google', gAuth.authenticate('google', { scope: ['profile', 'email'] }));
+
+// // THIS HAS TO BE UPDATED (REDIRECTION ROUTES) // //
+router.get('/api/auth/google/callback', 
+    gAuth.authenticate('google', { failureRedirect: '/api/login', successRedirect: '/dashboard' })
+);
+
 // Update user profile route
-router.put('/user:id/update', userController.updateUserProfile);
+router.put('dashboard/users/:id/update', userController.updateUserProfile);
 
 // GET user profile route
-router.get('/users/:id/profile', userController.getUserProfile);
-
-
+router.get('/dashboard/users/:id/profile', userController.getUserProfile);
 
 module.exports = router;
