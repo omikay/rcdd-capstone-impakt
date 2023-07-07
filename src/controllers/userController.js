@@ -1,102 +1,24 @@
-const User = require('../models/Users');
-const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const sendEmail = require("../utils/email");
+const bcrypt = require('bcrypt');
+const User = require('../models/Users');
+const Events = require('../models/Events');
+const sendEmail = require('../middleware/email');
 
-exports.getLogin = (req, res, next) => {
-  // Display login page
-  res.render('login');
-};
+// User signup
+// This is when user wants to signup using email and password. 
+// Signing up through Google will be handled by the gAuth.js middleware.
+const signup = async (req, res) => {
+  try {
+    const { name, email, password, passwordConfirmation } = req.body;
 
-exports.postLogin = async (req, res, next) => {
-  // Handle login logic
-  const { email, password } = req.body;
-  const user = await User.findOne({ email });
+    let user = await User.findOne({ email });
 
-  if (!user) {
-    return res.status(400).send('Invalid email or password.');
-  }
+    if (user) {
+      return res.status(400).json({ error: 'User email already exists.' });
+    }
 
-  const validPassword = await bcrypt.compare(password, user.password);
-  if (!validPassword) {
-    return res.status(400).send('Invalid email or password.');
-  }
-
-  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
-  res.cookie('jwt', token, { httpOnly: true });
-
-  res.redirect('/dashboard');
-};
-
-exports.postGoogleAuth = async (req, res, next) => {
-  const { idToken } = req.body;
-
-  const ticket = await client.verifyIdToken({
-    idToken,
-    audience: process.env.GOOGLE_CLIENT_ID,
-  });
-
-  const { name, email, picture } = ticket.getPayload();
-
-  let user = await User.findOne({ email });
-
-  if (!user) {
-    user = new User({
-      name,
-      email,
-      profilePic: picture,
-      googleAccountId: ticket.getUserId(),
-    });
-
-    await user.save();
-    
-    // After the user is created, send a confirmation email
-    await sendEmail(
-      user.email, 
-      subject = 'Welcome to Impakt!', 
-      text = 'You have successfully signed up for an Impakt account with your Google account.'
-    );
-  }
-
-  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
-  res.cookie('jwt', token, { httpOnly: true });
-
-  res.redirect('/dashboard');
-};
-
-exports.getSignup = (req, res, next) => {
-  // Display signup page
-  res.render('signup');
-};
-
-exports.postSignup = async (req, res, next) => {
-  const { name, email, password, passwordConfirmation, idToken } = req.body;
-
-  let user = await User.findOne({ email });
-
-  if (user) {
-    return res.status(400).send('User with this email already exists.');
-  }
-
-  if (idToken) {
-    // If an ID token is provided, this is a signup through Google.
-    const ticket = await client.verifyIdToken({
-      idToken,
-      audience: process.env.GOOGLE_CLIENT_ID,
-    });
-
-    const { name, email, picture } = ticket.getPayload();
-
-    user = new User({
-      name,
-      email,
-      profilePic: picture,
-      googleAccountId: ticket.getUserId(),
-    });
-  } else {
-    // If no ID token is provided, this is a signup with email and password.
     if (password !== passwordConfirmation) {
-      return res.status(400).send('Passwords do not match.');
+      return res.status(400).json({ error: 'Passwords do not match.' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -106,20 +28,117 @@ exports.postSignup = async (req, res, next) => {
       email,
       password: hashedPassword,
     });
+
+    await user.save();
+
+    await sendEmail(
+      user.email,
+      'Welcome to Impakt!',
+      `Dear ${user.name}, your Impakt account has been created successfully.`
+    );
+
+    const token = jwt.sign(
+      {
+        name: user.name,
+        email: user.email,
+        exp: Math.floor(Date.now() / 1000) + 1209600, // 14 days expiration
+        iat: Math.floor(Date.now() / 1000), // Issued at date
+      },
+      process.env.JWT_SECRET
+    );
+
+    res.cookie('jwt', token, { httpOnly: true });
+
+    res.redirect('/dashboard');
+    return res.status(201).json({ token });
+  } catch (error) {
+    return res.status(500).json({ error: 'Internal server error' });
   }
-
-  await user.save();
-
-  // After the user is created, send a confirmation email
-  await sendEmail(
-    user.email, 
-    subject = 'Welcome to Impakt!', 
-    text = 'You have successfully signed up for an Impakt account with your Google account.'
-  );
-
-  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
-  res.cookie('jwt', token, { httpOnly: true });
-
-  res.redirect('/dashboard');
 };
 
+// User login
+// This is when user wants to login using email and password. 
+// Signing in through Google will be handled by the gAuth.js middleware.
+const login = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+      const existingUser = await User.findOne({ email });
+      if (!existingUser) {
+          return res.status(404).json({ error: 'User doesn\'t exist.' });
+      }
+
+      const isPasswordCorrect = await bcrypt.compare(password, existingUser.password);
+      if (!isPasswordCorrect) {
+          return res.status(400).json({ error: 'Invalid credentials.' });
+      }
+
+      const token = jwt.sign(
+        {
+          name: user.name,
+          email: user.email,
+          exp: Math.floor(Date.now() / 1000) + 1209600, // 14 days expiration
+          iat: Math.floor(Date.now() / 1000), // Issued at date
+        },
+        process.env.JWT_SECRET
+      );
+      
+      res.redirect('/dashboard');
+
+      return res.status(201).json({ token });
+  } catch (error) {
+      return res.status(500).json({ error: 'Something went wrong.' });
+  }
+};
+
+// Update user profile
+const updateUserProfile = async (req, res, next) => {
+  const userId = req.user.id;
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    user.set(req.body); // Update user with the provided data
+    const updatedUser = await user.save(); // Save the updated user to the database
+
+    return res.status(200).json(updatedUser);
+  } catch (error) {
+    return next(error);
+  }
+};
+
+// user profile
+const getUserProfile = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // Find the user in the database
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Extract the relevant profile data
+    // To @abdulsalamhamandoush22: @omikay made some changes here
+    // const { name, email, ProfilePic, age } = user;
+    const profileData = {
+      name: user.name,
+      email: user.email,
+      profilePic: user.profilePic,
+      dateOfBirth: user.dateOfBirth,
+      // This has to be changed: we cannot show interest IDs
+      ///////////
+      interests: user.interestIds
+  };
+
+    // Return the user's profile
+    return res.status(200).json(profileData);
+  } catch (error) {
+    return res.status(500).json({ error: 'Server error' });
+  }
+};
+
+module.exports = { updateUserProfile, signup, login, getUserProfile };
