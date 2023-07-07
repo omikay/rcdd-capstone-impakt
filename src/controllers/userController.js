@@ -1,11 +1,10 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const User = require('../models/Users');
-const Events = require('../models/Events');
 const sendEmail = require('../middleware/email');
 
 // User signup
-// This is when user wants to signup using email and password. 
+// This is when user wants to signup using email and password.
 // Signing up through Google will be handled by the gAuth.js middleware.
 const signup = async (req, res) => {
   try {
@@ -57,37 +56,42 @@ const signup = async (req, res) => {
 };
 
 // User login
-// This is when user wants to login using email and password. 
+// This is when user wants to login using email and password.
 // Signing in through Google will be handled by the gAuth.js middleware.
 const login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-      const existingUser = await User.findOne({ email });
-      if (!existingUser) {
-          return res.status(404).json({ error: 'User doesn\'t exist.' });
-      }
+    const existingUser = await User.findOne({ email });
+    if (!existingUser) {
+      return res.status(404).json({ error: "User doesn't exist." });
+    }
 
-      const isPasswordCorrect = await bcrypt.compare(password, existingUser.password);
-      if (!isPasswordCorrect) {
-          return res.status(400).json({ error: 'Invalid credentials.' });
-      }
+    const isPasswordCorrect = await bcrypt.compare(
+      password,
+      existingUser.password
+    );
+    if (!isPasswordCorrect) {
+      return res.status(400).json({ error: 'Invalid credentials.' });
+    }
 
-      const token = jwt.sign(
-        {
-          name: user.name,
-          email: user.email,
-          exp: Math.floor(Date.now() / 1000) + 1209600, // 14 days expiration
-          iat: Math.floor(Date.now() / 1000), // Issued at date
-        },
-        process.env.JWT_SECRET
-      );
-      
-      res.redirect('/dashboard');
+    const user = await User.findOne({ email });
 
-      return res.status(201).json({ token });
+    const token = jwt.sign(
+      {
+        name: user.name,
+        email: user.email,
+        exp: Math.floor(Date.now() / 1000) + 1209600, // 14 days expiration
+        iat: Math.floor(Date.now() / 1000), // Issued at date
+      },
+      process.env.JWT_SECRET
+    );
+
+    res.redirect('/dashboard');
+
+    return res.status(201).json({ token });
   } catch (error) {
-      return res.status(500).json({ error: 'Something went wrong.' });
+    return res.status(500).json({ error: 'Something went wrong.' });
   }
 };
 
@@ -130,9 +134,9 @@ const getUserProfile = async (req, res) => {
       profilePic: user.profilePic,
       dateOfBirth: user.dateOfBirth,
       // This has to be changed: we cannot show interest IDs
-      ///////////
-      interests: user.interestIds
-  };
+      // NOTE
+      interests: user.interestIds,
+    };
 
     // Return the user's profile
     return res.status(200).json(profileData);
