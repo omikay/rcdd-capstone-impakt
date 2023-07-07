@@ -6,8 +6,8 @@ const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport({
   service: 'Gmail',
   auth: {
-    user: process.env.MAILER_SERVICE_USER,
-    pass: process.env.MAILER_SERVICE_PASS,
+    user: process.env.EMAIL_USER,
+    pass: process.env.APP_PASS,
   },
 });
 
@@ -16,7 +16,7 @@ const sendEmail = async (to, subject, text) => {
   try {
     // Define the email options
     const mailOptions = {
-      from: process.env.MAILER_SERVICE_USER,
+      from: process.env.EMAIL_USER,
       to,
       subject,
       text,
