@@ -12,9 +12,9 @@
     "ecmaVersion": "latest"
   },
   "rules": {
-    "prettier/prettier": "error",
+    "prettier/prettier": "off",
+    "no-console": "off",
     "no-unused-vars": "warn",
-    "no-console": "warn",
     "func-names": "off",
     "no-process-exit": "off",
     "class-methods-use-this": "off"
