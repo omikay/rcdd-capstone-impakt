@@ -87,6 +87,8 @@ const login = async (req, res) => {
       process.env.JWT_SECRET
     );
 
+    res.cookie('jwt', token, { httpOnly: true });
+
     res.redirect('/dashboard');
 
     return res.status(201).json({ token });
@@ -145,4 +147,10 @@ const getUserProfile = async (req, res) => {
   }
 };
 
-module.exports = { updateUserProfile, signup, login, getUserProfile };
+// User logout
+const logout = (req, res) => {
+  res.clearCookie('jwt');
+  return res.status(200).json({ message: 'Logged out successfully.' }).redirect('/api/login');
+};
+
+module.exports = { updateUserProfile, signup, login, getUserProfile, logout };
