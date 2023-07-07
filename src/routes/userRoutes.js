@@ -8,11 +8,18 @@ const router = express.Router();
 router.post('/api/signup', userController.signup);
 
 // Route for Google OAuth
-router.get('/api/auth/google', gAuth.authenticate('google', { scope: ['profile', 'email'] }));
+router.get(
+  '/api/auth/google',
+  gAuth.authenticate('google', { scope: ['profile', 'email'] })
+);
 
 // // THIS HAS TO BE UPDATED (REDIRECTION ROUTES) // //
-router.get('/api/auth/google/callback', 
-    gAuth.authenticate('google', { failureRedirect: '/api/login', successRedirect: '/dashboard' })
+router.get(
+  '/api/auth/google/callback',
+  gAuth.authenticate('google', {
+    failureRedirect: '/api/login',
+    successRedirect: '/dashboard',
+  })
 );
 
 // User login
