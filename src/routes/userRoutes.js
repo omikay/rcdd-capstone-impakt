@@ -31,4 +31,7 @@ router.put('/dashboard/users/:id/update', userController.updateUserProfile);
 // GET user profile route
 router.get('/dashboard/users/:id/profile', userController.getUserProfile);
 
+// User logout route
+router.get('/api/logout', userController.logout);
+
 module.exports = router;
