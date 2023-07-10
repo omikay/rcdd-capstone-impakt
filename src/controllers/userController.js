@@ -128,24 +128,53 @@ const getUserProfile = async (req, res) => {
     }
 
     // Extract the relevant profile data
-    // To @abdulsalamhamandoush22: @omikay made some changes here
-    // const { name, email, ProfilePic, age } = user;
-    const profileData = {
+    const userProfileData = {
       name: user.name,
-      email: user.email,
-      profilePic: user.profilePic,
+      profilePicture: user.profilePicture,
+      location: user.location,
       dateOfBirth: user.dateOfBirth,
-      // This has to be changed: we cannot show interest IDs
-      // NOTE
-      interests: user.interestIds,
+      email: user.email,
+      phoneNumber: user.phoneNumber,
+      interests: user.interests,
+      googleAccount: user.googleId ? 'Connected' : 'Not connected',
     };
 
     // Return the user's profile
-    return res.status(200).json(profileData);
+    // return res.status(200).json(userProfileData);
+    // Render the user profile page with the retrieved data
+    return res.render('profile', { user: userProfileData });
   } catch (error) {
     return res.status(500).json({ error: 'Server error' });
   }
 };
+
+// Connect google account
+// For users who did not signup with google
+const connectGoogleAccount = async (req, res) => {
+  const { googleId } = req.body;
+
+  try {
+    // Find the user by their email
+    const user = await User.findOne({ email: req.user.email });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    // Update the user with the Google ID
+    user.googleId = googleId;
+    await user.save();
+
+    // Redirect to user profile section after connecting Google account
+    res.redirect('/user/:id/profile');
+
+    return res.status(200).json({ message: 'Google account successfully connected.' });
+  } catch (error) {
+    console.error('Error connecting Google account:', error);
+    return res.status(500).json({ message: 'An error occurred during Google account connection.' });
+  }
+};
+
 
 // User logout
 const logout = (req, res) => {
@@ -153,4 +182,4 @@ const logout = (req, res) => {
   return res.status(200).json({ message: 'Logged out successfully.' }).redirect('/api/login');
 };
 
-module.exports = { updateUserProfile, signup, login, getUserProfile, logout };
+module.exports = { signup, login, logout, getUserProfile, updateUserProfile, connectGoogleAccount };
