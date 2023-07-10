@@ -1,8 +1,8 @@
 const passport = require('passport');
+const jwt = require('jsonwebtoken');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const User = require('../models/Users');
-const sendEmail = require('../utils/email');
-const jwt = require('jsonwebtoken');
+const sendEmail = require('./email');
 
 passport.serializeUser((user, done) => {
   done(null, user.id);
@@ -40,8 +40,7 @@ passport.use(
             process.env.JWT_SECRET
           );
       
-          res.cookie('jwt', token, { httpOnly: true });
-          return done(null, existingUser);
+          return done(null, { user: existingUser, token });
         }
 
         const newUser = await new User({
@@ -67,9 +66,7 @@ passport.use(
           process.env.JWT_SECRET
         );
     
-        res.cookie('jwt', token, { httpOnly: true });
-
-        return done(null, newUser);
+        return done(null, { user: newUser, token });
       } catch (error) {
         console.error('Error with Google OAuth:', error);
         return done(error, null);
