@@ -38,10 +38,10 @@ passport.use(
           profilePic: profile.photos[0].value,
         }).save();
 
-        done(null, newUser);
+        return done(null, newUser);
       } catch (error) {
         console.error('Error with Google OAuth:', error);
-        done(error, null);
+        return done(error, null);
       }
     }
   )
