@@ -7,9 +7,13 @@ passport.serializeUser((user, done) => {
 });
 
 passport.deserializeUser((id, done) => {
-  User.findById(id).then((user) => {
-    done(null, user);
-  });
+  User.findById(id)
+    .then((user) => {
+      done(null, user);
+    })
+    .catch((error) => {
+      done(error, null);
+    });
 });
 
 passport.use(
@@ -34,7 +38,7 @@ passport.use(
           profilePic: profile.photos[0].value,
         }).save();
 
-        done(null, user);
+        done(null, newUser);
       } catch (error) {
         console.error('Error with Google OAuth:', error);
         done(error, null);
