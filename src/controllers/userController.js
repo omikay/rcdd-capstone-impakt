@@ -48,9 +48,9 @@ const signup = async (req, res) => {
 
     res.cookie('jwt', token, { httpOnly: true });
 
-    res.redirect('/user/:id/profile');
     return res.status(201).json({ token });
   } catch (error) {
+    console.error('Error signing up user:', error);
     return res.status(500).json({ error: 'Internal server error' });
   }
 };
@@ -62,20 +62,19 @@ const login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const existingUser = await User.findOne({ email });
-    if (!existingUser) {
+    const user = await User.findOne({ email });
+
+    if (!user) {
       return res.status(404).json({ error: "User doesn't exist." });
     }
 
     const isPasswordCorrect = await bcrypt.compare(
       password,
-      existingUser.password
+      user.password
     );
     if (!isPasswordCorrect) {
       return res.status(400).json({ error: 'Invalid credentials.' });
     }
-
-    const user = await User.findOne({ email });
 
     const token = jwt.sign(
       {
@@ -91,8 +90,9 @@ const login = async (req, res) => {
 
     res.redirect('/user/:id/profile');
 
-    return res.status(201).json({ token });
+    return res.status(200).json({ token });
   } catch (error) {
+    console.error('Error logging in user:', error);
     return res.status(500).json({ error: 'Something went wrong.' });
   }
 };
@@ -133,12 +133,10 @@ const updateUserProfile = async (req, res) => {
     // Save the updated user profile to the database
     await user.save();
 
-    // Redirect to user profile section after updating
-    res.redirect('/user/:id/profile');
     return res.status(200).json({ message: 'Profile updated successfully.' });
   } catch (error) {
     console.error('Error updating user profile:', error);
-    res.status(500).json({ message: 'An error occurred during profile update.' });
+    return res.status(500).json({ message: 'An error occurred during profile update.' });
   }
 };
 
@@ -190,9 +188,6 @@ const connectGoogleAccount = async (req, res) => {
     user.googleId = googleId;
     await user.save();
 
-    // Redirect to user profile section after connecting Google account
-    res.redirect('/user/:id/profile');
-
     return res.status(200).json({ message: 'Google account successfully connected.' });
   } catch (error) {
     console.error('Error connecting Google account:', error);
@@ -204,7 +199,7 @@ const connectGoogleAccount = async (req, res) => {
 // User logout
 const logout = (req, res) => {
   res.clearCookie('jwt');
-  return res.status(200).json({ message: 'Logged out successfully.' }).redirect('/');
+  return res.status(200).json({ message: 'Logged out successfully.' });
 };
 
 module.exports = { signup, login, logout, getUserProfile, updateUserProfile, connectGoogleAccount };
