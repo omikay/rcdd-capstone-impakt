@@ -199,7 +199,7 @@ const connectGoogleAccount = async (req, res) => {
 // User logout
 const logout = (req, res) => {
   res.clearCookie('jwt');
-  return res.status(200).json({ message: 'Logged out successfully.' }).redirect('/');
+  return res.status(200).json({ message: 'Logged out successfully.' });
 };
 
 module.exports = { signup, login, logout, getUserProfile, updateUserProfile, connectGoogleAccount };
