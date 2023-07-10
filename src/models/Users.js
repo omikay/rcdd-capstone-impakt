@@ -3,14 +3,22 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const userSchema = new Schema({
-  name: { type: String, required: true },
-  email: { type: String, required: true },
-  googleAccountID: String,
-  tel: Number,
-  age: { type: Number, required: true },
-  profile_pic: String,
-  interest_ids: [{ type: Schema.Types.ObjectId, ref: 'Tags' }],
-  password: { type: String, required: true },
+  googleId: String, // id returned by Google OAuth, null if not connected
+  name: String,
+  email: String,
+  password: String, // hashed password, null if signed up with Google OAuth
+  dob: Date, // date of birth
+  phone: String,
+  location: {
+    provinceState: String,
+    country: String,
+  },
+  profilePicture: String, // the URL of the image
+  interests: [{ type: Schema.Types.ObjectId, ref: 'Tags' }],
+  events: [{ type: Schema.Types.ObjectId, ref: 'Events' }],
+  userType: String, // 'admin' or 'regular'
+  createdEvents: [{ type: Schema.Types.ObjectId, ref: 'Events' }],
+  blogPosts: [{ type: Schema.Types.ObjectId, ref: 'BlogPosts' }],
 });
 
 module.exports = mongoose.model('Users', userSchema);
