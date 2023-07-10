@@ -5,7 +5,7 @@ const sendEmail = require('../utils/email');
 
 // User signup
 // This is when user wants to signup using email and password.
-// Signing up through Google will be handled by the gAuth.js middleware.
+// Signing up through Google will be handled by the googleOAuth.js.
 const signup = async (req, res) => {
   try {
     const { name, email, password, passwordConfirmation } = req.body;
@@ -48,7 +48,7 @@ const signup = async (req, res) => {
 
     res.cookie('jwt', token, { httpOnly: true });
 
-    res.redirect('/dashboard');
+    res.redirect('/user/:id/profile');
     return res.status(201).json({ token });
   } catch (error) {
     return res.status(500).json({ error: 'Internal server error' });
@@ -57,7 +57,7 @@ const signup = async (req, res) => {
 
 // User login
 // This is when user wants to login using email and password.
-// Signing in through Google will be handled by the gAuth.js middleware.
+// Signing in through Google will be handled by the googleOAuth.js.
 const login = async (req, res) => {
   const { email, password } = req.body;
 
@@ -89,7 +89,7 @@ const login = async (req, res) => {
 
     res.cookie('jwt', token, { httpOnly: true });
 
-    res.redirect('/dashboard');
+    res.redirect('/user/:id/profile');
 
     return res.status(201).json({ token });
   } catch (error) {
@@ -98,24 +98,51 @@ const login = async (req, res) => {
 };
 
 // Update user profile
-const updateUserProfile = async (req, res, next) => {
-  const userId = req.user.id;
+const updateUserProfile = async (req, res) => {
+  const { name, location, phone, interests, password, profilePicture } = req.body;
+
   try {
-    const user = await User.findById(userId);
+    // Retrieve the user from the database based on the authenticated user's ID
+    const user = await User.findById(req.user.id);
+
+    // Check if the user exists
     if (!user) {
-      throw new Error('User not found');
+      return res.status(404).json({ message: 'User not found.' });
     }
 
-    user.set(req.body); // Update user with the provided data
-    const updatedUser = await user.save(); // Save the updated user to the database
+    // Update the user profile fields
+    user.name = name;
+    user.location = location;
+    user.phone = phone;
+    user.interests = interests;
+    user.profilePicture = profilePicture;
 
-    return res.status(200).json(updatedUser);
+    // Check if a new password is provided
+    if (password) {
+      // Check if the new password matches the previous password
+      const isPasswordMatch = await bcrypt.compare(password, user.password);
+      if (isPasswordMatch) {
+        return res.status(400).json({ message: 'New password cannot be the same as the previous password.' });
+      }
+
+      // Hash the new password
+      const hashedPassword = await bcrypt.hash(password, 10);
+      user.password = hashedPassword;
+    }
+
+    // Save the updated user profile to the database
+    await user.save();
+
+    // Redirect to user profile section after updating
+    res.redirect('/user/:id/profile');
+    return res.status(200).json({ message: 'Profile updated successfully.' });
   } catch (error) {
-    return next(error);
+    console.error('Error updating user profile:', error);
+    res.status(500).json({ message: 'An error occurred during profile update.' });
   }
 };
 
-// user profile
+// Get user profile
 const getUserProfile = async (req, res) => {
   const { id } = req.params;
 
@@ -140,9 +167,7 @@ const getUserProfile = async (req, res) => {
     };
 
     // Return the user's profile
-    // return res.status(200).json(userProfileData);
-    // Render the user profile page with the retrieved data
-    return res.render('profile', { user: userProfileData });
+    return res.status(200).json(userProfileData);
   } catch (error) {
     return res.status(500).json({ error: 'Server error' });
   }
@@ -179,7 +204,7 @@ const connectGoogleAccount = async (req, res) => {
 // User logout
 const logout = (req, res) => {
   res.clearCookie('jwt');
-  return res.status(200).json({ message: 'Logged out successfully.' }).redirect('/api/login');
+  return res.status(200).json({ message: 'Logged out successfully.' }).redirect('/');
 };
 
 module.exports = { signup, login, logout, getUserProfile, updateUserProfile, connectGoogleAccount };

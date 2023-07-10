@@ -1,6 +1,8 @@
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const User = require('../models/Users');
+const sendEmail = require('../utils/email');
+const jwt = require('jsonwebtoken');
 
 passport.serializeUser((user, done) => {
   done(null, user.id);
@@ -28,6 +30,17 @@ passport.use(
         const existingUser = await User.findOne({ googleId: profile.id });
 
         if (existingUser) {
+          const token = jwt.sign(
+            {
+              name: existingUser.name,
+              email: existingUser.email,
+              exp: Math.floor(Date.now() / 1000) + 1209600, // 14 days expiration
+              iat: Math.floor(Date.now() / 1000), // Issued at date
+            },
+            process.env.JWT_SECRET
+          );
+      
+          res.cookie('jwt', token, { httpOnly: true });
           return done(null, existingUser);
         }
 
@@ -37,6 +50,24 @@ passport.use(
           googleAccountId: profile.id,
           profilePic: profile.photos[0].value,
         }).save();
+
+        await sendEmail(
+          newUser.email,
+          'Welcome to Impakt!',
+          `Dear ${newUser.name}, your Impakt account has been created successfully.`
+        );
+    
+        const token = jwt.sign(
+          {
+            name: newUser.name,
+            email: newUser.email,
+            exp: Math.floor(Date.now() / 1000) + 1209600, // 14 days expiration
+            iat: Math.floor(Date.now() / 1000), // Issued at date
+          },
+          process.env.JWT_SECRET
+        );
+    
+        res.cookie('jwt', token, { httpOnly: true });
 
         return done(null, newUser);
       } catch (error) {
