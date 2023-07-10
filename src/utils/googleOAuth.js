@@ -21,21 +21,23 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
-        let user = await User.findOne({ googleAccountId: profile.id });
+        const existingUser = await User.findOne({ googleId: profile.id });
 
-        if (!user) {
-          user = new User({
-            name: profile.displayName,
-            email: profile.emails[0].value,
-            googleAccountId: profile.id,
-            profilePic: profile.photos[0].value,
-          });
-          await user.save();
+        if (existingUser) {
+          return done(null, existingUser);
         }
 
+        const newUser = await new User({
+          name: profile.displayName,
+          email: profile.emails[0].value,
+          googleAccountId: profile.id,
+          profilePic: profile.photos[0].value,
+        }).save();
+
         done(null, user);
-      } catch (err) {
-        done(err, null);
+      } catch (error) {
+        console.error('Error with Google OAuth:', error);
+        done(error, null);
       }
     }
   )

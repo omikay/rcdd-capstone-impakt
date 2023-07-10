@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const User = require('../models/Users');
-const sendEmail = require('../middleware/email');
+const sendEmail = require('../utils/email');
 
 // User signup
 // This is when user wants to signup using email and password.
