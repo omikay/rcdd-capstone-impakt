@@ -11,8 +11,9 @@ const connectToMongo = () => {
     console.log('Database connected: ', url);
   });
 
-  db.on('error', (err) => {
-    console.error('Database connection error: ', err);
+  db.on('error', (error) => {
+    console.error('Database connection error: ', error);
+    process.exit(1); // Exit process with failure
   });
 };
 
