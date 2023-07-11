@@ -18,18 +18,17 @@ router.get('/api/logout', logout);
 router.get('/api/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 // User profile
-router.get('/user/:name/profile', isAuthorized, getUserProfile);
+router.get('/user/profile', isAuthorized, getUserProfile);
 
 // Update user profile
-router.patch('/user/:name/profile', isAuthorized, updateUserProfile);
+router.patch('/user/updateProfile', isAuthorized, updateUserProfile);
 
 // Google OAuth callback
 router.get('/api/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
-  const { name } = req.user; // Assuming the user object has a 'name' property
-  res.redirect(`/user/${name}/profile`);
+  res.redirect(`/user/profile`);
 });
 
 // Connect Google account
-router.patch('/api/auth/connect-google', isAuthorized, connectGoogleAccount);
+router.patch('/api/auth/connectGoogle', isAuthorized, connectGoogleAccount);
 
 module.exports = router;
