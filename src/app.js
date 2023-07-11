@@ -9,7 +9,7 @@ const eventRoutes = require('./routes/eventRoutes');
 const connectToMongo = require('./config/db');
 
 const app = express();
-const port = process.env.NODE_LOCAL_PORT;
+const port = process.env.NODE_LOCAL_PORT || 5000;
 
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: false }));

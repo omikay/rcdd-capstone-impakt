@@ -26,6 +26,7 @@
     "nodemailer": "^6.9.3",
     "passport": "0.6.0",
     "passport-google-oauth20": "^2.0.0",
+    "supertest": "^6.3.3",
     "yarn-upgrade-all": "^0.6.1"
   },
   "devDependencies": {

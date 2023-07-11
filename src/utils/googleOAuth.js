@@ -39,7 +39,7 @@ passport.use(
             },
             process.env.JWT_SECRET
           );
-      
+
           return done(null, { user: existingUser, token });
         }
 
@@ -55,7 +55,7 @@ passport.use(
           'Welcome to Impakt!',
           `Dear ${newUser.name}, your Impakt account has been created successfully.`
         );
-    
+
         const token = jwt.sign(
           {
             name: newUser.name,
@@ -65,7 +65,7 @@ passport.use(
           },
           process.env.JWT_SECRET
         );
-    
+
         return done(null, { user: newUser, token });
       } catch (error) {
         console.error('Error with Google OAuth:', error);
