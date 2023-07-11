@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "bcrypt": "^5.1.0",
+    "cookie-parser": "1.4.6",
     "dotenv": "^14.3.2",
     "express": "^4.17.2",
     "jsonwebtoken": "^9.0.1",
@@ -29,7 +30,6 @@
   },
   "devDependencies": {
     "cookie-signature": "^1.1.0",
-    "cookie-parser": "1.4.6",
     "encrypt-cookie": "^1.1.5",
     "eslint": "^8.7.0",
     "eslint-config-airbnb": "^19.0.4",
