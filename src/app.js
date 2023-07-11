@@ -5,7 +5,7 @@ require('dotenv').config();
 const userRoutes = require('./routes/userRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 
-const connectToMongo = require('./db/connection');
+const connectToMongo = require('./config/db');
 
 const app = express();
 const port = process.env.NODE_LOCAL_PORT;

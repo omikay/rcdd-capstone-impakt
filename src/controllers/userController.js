@@ -1,11 +1,11 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const User = require('../models/Users');
-const sendEmail = require('../middleware/email');
+const sendEmail = require('../utils/email');
 
 // User signup
 // This is when user wants to signup using email and password.
-// Signing up through Google will be handled by the gAuth.js middleware.
+// Signing up through Google will be handled by the googleOAuth.js.
 const signup = async (req, res) => {
   try {
     const { name, email, password, passwordConfirmation } = req.body;
@@ -48,34 +48,33 @@ const signup = async (req, res) => {
 
     res.cookie('jwt', token, { httpOnly: true });
 
-    res.redirect('/dashboard');
     return res.status(201).json({ token });
   } catch (error) {
+    console.error('Error signing up user:', error);
     return res.status(500).json({ error: 'Internal server error' });
   }
 };
 
 // User login
 // This is when user wants to login using email and password.
-// Signing in through Google will be handled by the gAuth.js middleware.
+// Signing in through Google will be handled by the googleOAuth.js.
 const login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const existingUser = await User.findOne({ email });
-    if (!existingUser) {
+    const user = await User.findOne({ email });
+
+    if (!user) {
       return res.status(404).json({ error: "User doesn't exist." });
     }
 
     const isPasswordCorrect = await bcrypt.compare(
       password,
-      existingUser.password
+      user.password
     );
     if (!isPasswordCorrect) {
       return res.status(400).json({ error: 'Invalid credentials.' });
     }
-
-    const user = await User.findOne({ email });
 
     const token = jwt.sign(
       {
@@ -89,33 +88,59 @@ const login = async (req, res) => {
 
     res.cookie('jwt', token, { httpOnly: true });
 
-    res.redirect('/dashboard');
+    res.redirect('/user/:id/profile');
 
-    return res.status(201).json({ token });
+    return res.status(200).json({ token });
   } catch (error) {
+    console.error('Error logging in user:', error);
     return res.status(500).json({ error: 'Something went wrong.' });
   }
 };
 
 // Update user profile
-const updateUserProfile = async (req, res, next) => {
-  const userId = req.user.id;
+const updateUserProfile = async (req, res) => {
+  const { name, location, phone, interests, password, profilePicture } = req.body;
+
   try {
-    const user = await User.findById(userId);
+    // Retrieve the user from the database based on the authenticated user's ID
+    const user = await User.findById(req.user.id);
+
+    // Check if the user exists
     if (!user) {
-      throw new Error('User not found');
+      return res.status(404).json({ message: 'User not found.' });
     }
 
-    user.set(req.body); // Update user with the provided data
-    const updatedUser = await user.save(); // Save the updated user to the database
+    // Update the user profile fields
+    user.name = name;
+    user.location = location;
+    user.phone = phone;
+    user.interests = interests;
+    user.profilePicture = profilePicture;
 
-    return res.status(200).json(updatedUser);
+    // Check if a new password is provided
+    if (password) {
+      // Check if the new password matches the previous password
+      const isPasswordMatch = await bcrypt.compare(password, user.password);
+      if (isPasswordMatch) {
+        return res.status(400).json({ message: 'New password cannot be the same as the previous password.' });
+      }
+
+      // Hash the new password
+      const hashedPassword = await bcrypt.hash(password, 10);
+      user.password = hashedPassword;
+    }
+
+    // Save the updated user profile to the database
+    await user.save();
+
+    return res.status(200).json({ message: 'Profile updated successfully.' });
   } catch (error) {
-    return next(error);
+    console.error('Error updating user profile:', error);
+    return res.status(500).json({ message: 'An error occurred during profile update.' });
   }
 };
 
-// user profile
+// Get user profile
 const getUserProfile = async (req, res) => {
   const { id } = req.params;
 
@@ -128,29 +153,53 @@ const getUserProfile = async (req, res) => {
     }
 
     // Extract the relevant profile data
-    // To @abdulsalamhamandoush22: @omikay made some changes here
-    // const { name, email, ProfilePic, age } = user;
-    const profileData = {
+    const userProfileData = {
       name: user.name,
-      email: user.email,
-      profilePic: user.profilePic,
+      profilePicture: user.profilePicture,
+      location: user.location,
       dateOfBirth: user.dateOfBirth,
-      // This has to be changed: we cannot show interest IDs
-      // NOTE
-      interests: user.interestIds,
+      email: user.email,
+      phoneNumber: user.phoneNumber,
+      interests: user.interests,
+      googleAccount: user.googleId ? 'Connected' : 'Not connected',
     };
 
     // Return the user's profile
-    return res.status(200).json(profileData);
+    return res.status(200).json(userProfileData);
   } catch (error) {
     return res.status(500).json({ error: 'Server error' });
   }
 };
 
+// Connect google account
+// For users who did not signup with google
+const connectGoogleAccount = async (req, res) => {
+  const { googleId } = req.body;
+
+  try {
+    // Find the user by their email
+    const user = await User.findOne({ email: req.user.email });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
+    // Update the user with the Google ID
+    user.googleId = googleId;
+    await user.save();
+
+    return res.status(200).json({ message: 'Google account successfully connected.' });
+  } catch (error) {
+    console.error('Error connecting Google account:', error);
+    return res.status(500).json({ message: 'An error occurred during Google account connection.' });
+  }
+};
+
+
 // User logout
 const logout = (req, res) => {
   res.clearCookie('jwt');
-  return res.status(200).json({ message: 'Logged out successfully.' }).redirect('/api/login');
+  return res.status(200).json({ message: 'Logged out successfully.' });
 };
 
-module.exports = { updateUserProfile, signup, login, getUserProfile, logout };
+module.exports = { signup, login, logout, getUserProfile, updateUserProfile, connectGoogleAccount };
