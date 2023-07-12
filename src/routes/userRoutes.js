@@ -1,6 +1,13 @@
 const express = require('express');
 const passport = require('../utils/googleOAuth');
-const { signup, login, logout, getUserProfile, updateUserProfile, connectGoogleAccount } = require('../controllers/userController');
+const {
+  signup,
+  login,
+  logout,
+  getUserProfile,
+  updateUserProfile,
+  connectGoogleAccount,
+} = require('../controllers/userController');
 const isAuthorized = require('../middlewares/auth');
 
 const router = express.Router();
@@ -15,7 +22,10 @@ router.post('/api/login', login);
 router.get('/api/logout', logout);
 
 // Google OAuth login
-router.get('/api/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+router.get(
+  '/api/auth/google',
+  passport.authenticate('google', { scope: ['profile', 'email'] })
+);
 
 // User profile
 router.get('/user/profile', isAuthorized, getUserProfile);
@@ -24,9 +34,13 @@ router.get('/user/profile', isAuthorized, getUserProfile);
 router.patch('/user/updateProfile', isAuthorized, updateUserProfile);
 
 // Google OAuth callback
-router.get('/api/auth/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
-  res.redirect(`/user/profile`);
-});
+router.get(
+  '/api/auth/google/callback',
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  (req, res) => {
+    res.redirect(`/user/profile`);
+  }
+);
 
 // Connect Google account
 router.patch('/api/auth/connectGoogle', isAuthorized, connectGoogleAccount);

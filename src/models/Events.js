@@ -12,7 +12,7 @@ const eventSchema = new Schema({
   endDate: Date,
   ageLimit: {
     lower: Number,
-    upper: Number
+    upper: Number,
   },
   tags: [{ type: Schema.Types.ObjectId, ref: 'Tags' }],
   capacity: Number,
