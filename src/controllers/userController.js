@@ -68,10 +68,7 @@ const login = async (req, res) => {
       return res.status(404).json({ error: "User doesn't exist." });
     }
 
-    const isPasswordCorrect = await bcrypt.compare(
-      password,
-      user.password
-    );
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
     if (!isPasswordCorrect) {
       return res.status(400).json({ error: 'Invalid credentials.' });
     }
@@ -99,7 +96,8 @@ const login = async (req, res) => {
 
 // Update user profile
 const updateUserProfile = async (req, res) => {
-  const { name, location, phone, interests, password, profilePicture } = req.body;
+  const { name, location, phone, interests, password, profilePicture } =
+    req.body;
 
   try {
     // Retrieve the user from the database based on the authenticated user's ID
@@ -122,7 +120,9 @@ const updateUserProfile = async (req, res) => {
       // Check if the new password matches the previous password
       const isPasswordMatch = await bcrypt.compare(password, user.password);
       if (isPasswordMatch) {
-        return res.status(400).json({ message: 'New password cannot be the same as the previous password.' });
+        return res.status(400).json({
+          message: 'New password cannot be the same as the previous password.',
+        });
       }
 
       // Hash the new password
@@ -136,7 +136,9 @@ const updateUserProfile = async (req, res) => {
     return res.status(200).json({ message: 'Profile updated successfully.' });
   } catch (error) {
     console.error('Error updating user profile:', error);
-    return res.status(500).json({ message: 'An error occurred during profile update.' });
+    return res
+      .status(500)
+      .json({ message: 'An error occurred during profile update.' });
   }
 };
 
@@ -188,13 +190,16 @@ const connectGoogleAccount = async (req, res) => {
     user.googleId = googleId;
     await user.save();
 
-    return res.status(200).json({ message: 'Google account successfully connected.' });
+    return res
+      .status(200)
+      .json({ message: 'Google account successfully connected.' });
   } catch (error) {
     console.error('Error connecting Google account:', error);
-    return res.status(500).json({ message: 'An error occurred during Google account connection.' });
+    return res
+      .status(500)
+      .json({ message: 'An error occurred during Google account connection.' });
   }
 };
-
 
 // User logout
 const logout = (req, res) => {
@@ -202,4 +207,11 @@ const logout = (req, res) => {
   return res.status(200).json({ message: 'Logged out successfully.' });
 };
 
-module.exports = { signup, login, logout, getUserProfile, updateUserProfile, connectGoogleAccount };
+module.exports = {
+  signup,
+  login,
+  logout,
+  getUserProfile,
+  updateUserProfile,
+  connectGoogleAccount,
+};
