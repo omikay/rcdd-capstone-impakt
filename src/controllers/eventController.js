@@ -41,7 +41,7 @@ const createEvent = async (req, res, next) => {
       .json({ message: 'Event created successfully.', event });
   } catch (error) {
     console.error('Error creating event:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+    return next(error);
   }
 };
 
@@ -51,7 +51,7 @@ const getAllEvents = async (req, res, next) => {
     return res.json(events);
   } catch (error) {
     console.error('Error getting events:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+    return next(error);
   }
 };
 
@@ -67,7 +67,7 @@ const getEvent = async (req, res, next) => {
     return res.json(event);
   } catch (error) {
     console.error('Error getting event:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+    return next(error);
   }
 };
 
@@ -114,7 +114,7 @@ const updateEvent = async (req, res, next) => {
     return res.json({ message: 'Event updated successfully.', event });
   } catch (error) {
     console.error('Error updating event:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+    return next(error);
   }
 };
 
@@ -136,7 +136,7 @@ const deleteEvent = async (req, res, next) => {
     return res.json({ message: 'Event deleted successfully.' });
   } catch (error) {
     console.error('Error deleting event:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+    return next(error);
   }
 };
 
