@@ -19,7 +19,6 @@ const userSchema = new Schema({
   userType: String, // 'admin' or 'regular'
   createdEvents: [{ type: Schema.Types.ObjectId, ref: 'Events' }],
   blogPosts: [{ type: Schema.Types.ObjectId, ref: 'BlogPosts' }],
-  donations: [{ type: Schema.Types.ObjectId, ref: 'Donations' }],
 });
 
 module.exports = mongoose.model('Users', userSchema);

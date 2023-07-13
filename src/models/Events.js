@@ -17,7 +17,6 @@ const eventSchema = new Schema({
   tags: [{ type: Schema.Types.ObjectId, ref: 'Tags' }],
   capacity: Number,
   participants: [{ type: Schema.Types.ObjectId, ref: 'Users' }],
-  donations: [{ type: Schema.Types.ObjectId, ref: 'Donations' }],
 });
 
 module.exports = mongoose.model('Events', eventSchema);
