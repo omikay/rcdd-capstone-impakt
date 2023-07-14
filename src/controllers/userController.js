@@ -59,7 +59,7 @@ const signup = async (req, res) => {
 
     return res.status(201).json({ token });
   } catch (error) {
-    console.error('Error signing up user:', error);
+    // console.error('Error signing up user:', error);
     return res.status(500).json({ error: 'Internal server error' });
   }
 };
@@ -98,7 +98,7 @@ const login = async (req, res) => {
 
     return res.status(200).json({ token });
   } catch (error) {
-    console.error('Error logging in user:', error);
+    // console.error('Error logging in user:', error);
     return res.status(500).json({ error: 'Something went wrong.' });
   }
 };
@@ -144,7 +144,7 @@ const updateUserProfile = async (req, res) => {
 
     return res.status(200).json({ message: 'Profile updated successfully.' });
   } catch (error) {
-    console.error('Error updating user profile:', error);
+    // console.error('Error updating user profile:', error);
     return res
       .status(500)
       .json({ message: 'An error occurred during profile update.' });
@@ -203,7 +203,7 @@ const connectGoogleAccount = async (req, res) => {
       .status(200)
       .json({ message: 'Google account successfully connected.' });
   } catch (error) {
-    console.error('Error connecting Google account:', error);
+    // console.error('Error connecting Google account:', error);
     return res
       .status(500)
       .json({ message: 'An error occurred during Google account connection.' });
