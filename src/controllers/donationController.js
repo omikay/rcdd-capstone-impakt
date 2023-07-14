@@ -50,10 +50,12 @@ const makeDonation = async (req, res) => {
       `Thank you for your generous donation of $${amount} to the event "${event.title}".`
     );
 
-    return res.status(201).json({ message: 'Donation created successfully.', donationId: donation._id });
+    return res.status(201).json({ message: 'Donation made successfully.' });
   } catch (error) {
     console.error('Error creating donation:', error);
-    return res.status(500).json({ error: 'An error occurred while creating the donation.' });
+    return res
+      .status(500)
+      .json({ error: 'An error occurred while creating the donation.' });
   }
 };
 
@@ -72,7 +74,9 @@ const getEventDonations = async (req, res) => {
     return res.status(200).json(event.donations);
   } catch (error) {
     console.error('Error retrieving event donations:', error);
-    return res.status(500).json({ error: 'An error occurred while retrieving event donations.' });
+    return res
+      .status(500)
+      .json({ error: 'An error occurred while retrieving event donations.' });
   }
 };
 
@@ -91,7 +95,9 @@ const getUserDonations = async (req, res) => {
     return res.status(200).json(user.donations);
   } catch (error) {
     console.error('Error retrieving user donations:', error);
-    return res.status(500).json({ error: 'An error occurred while retrieving user donations.' });
+    return res
+      .status(500)
+      .json({ error: 'An error occurred while retrieving user donations.' });
   }
 };
 
