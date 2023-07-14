@@ -1,5 +1,9 @@
 const express = require('express');
-const { createDonation, getDonationsByUser, getDonationsByEvent } = require('../controllers/donationController');
+const {
+  createDonation,
+  getDonationsByUser,
+  getDonationsByEvent,
+} = require('../controllers/donationController');
 const isAuthorized = require('../middlewares/auth');
 
 const router = express.Router();
