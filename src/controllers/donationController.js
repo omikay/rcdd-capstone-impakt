@@ -36,11 +36,11 @@ const makeDonation = async (req, res) => {
     await donation.save();
 
     // Add the donation to the user's donations array
-    user.donations.push(donation);
+    user.donations.push(donation._id);
     await user.save();
 
     // Add the donation to the event's donations array
-    event.donations.push(donation);
+    event.donations.push(donation._id);
     await event.save();
 
     // Send a notification email to the donor
