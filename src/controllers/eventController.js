@@ -2,8 +2,7 @@ const Event = require('../models/Events');
 const User = require('../models/Users');
 const sendEmail = require('../utils/email');
 
-
-
+// Create an event
 const createEvent = async (req, res) => {
   try {
     const {
