@@ -38,20 +38,20 @@ const createEvent = async (req, res) => {
     const message = `Event created successfully: ${event.title}`;
     await sendEmail(event.hostId.email, 'Event Created', message);
 
-    res.status(201).json({ message: 'Event created successfully.', event });
+    return res.status(201).json({ message: 'Event created successfully.', event });
   } catch (error) {
     console.error('Error creating event:', error);
-    res.status(500).json({ error: 'An error occurred while creating the event.' });
+    return res.status(500).json({ error: 'An error occurred while creating the event.' });
   }
 };
 
 const getAllEvents = async (req, res) => {
   try {
     const events = await Event.find().populate('tags', 'tag_name');
-    res.json(events);
+    return res.json(events);
   } catch (error) {
     console.error('Error getting events:', error);
-    res.status(500).json({ error: 'An error occurred while getting the events.' });
+    return res.status(500).json({ error: 'An error occurred while getting the events.' });
   }
 };
 
@@ -64,10 +64,10 @@ const getEvent = async (req, res) => {
       return res.status(404).json({ error: 'Event not found' });
     }
 
-    res.json(event);
+    return res.json(event);
   } catch (error) {
     console.error('Error getting event:', error);
-    res.status(500).json({ error: 'An error occurred while getting the event.' });
+    return res.status(500).json({ error: 'An error occurred while getting the event.' });
   }
 };
 
@@ -111,10 +111,10 @@ const updateEvent = async (req, res) => {
     const message = `Event updated: ${event.title}`;
     await sendEmail(event.hostId.email, 'Event Updated', message);
 
-    res.json({ message: 'Event updated successfully.', event });
+    return res.json({ message: 'Event updated successfully.', event });
   } catch (error) {
     console.error('Error updating event:', error);
-    res.status(500).json({ error: 'An error occurred while updating the event.' });
+    return res.status(500).json({ error: 'An error occurred while updating the event.' });
   }
 };
 
@@ -130,10 +130,10 @@ const deleteEvent = async (req, res) => {
     const message = `Event deleted: ${event.title}`;
     await sendEmail(event.hostId.email, 'Event Deleted', message);
 
-    res.json({ message: 'Event deleted successfully.' });
+    return res.json({ message: 'Event deleted successfully.' });
   } catch (error) {
     console.error('Error deleting event:', error);
-    res.status(500).json({ error: 'An error occurred while deleting the event.' });
+    return res.status(500).json({ error: 'An error occurred while deleting the event.' });
   }
 };
 
@@ -170,10 +170,10 @@ const joinEvent = async (req, res) => {
       `Dear ${user.name}, you have successfully joined the event ${event.title}.`
     );
 
-    res.status(200).json({ message: 'User joined the event successfully.' });
+    return res.status(200).json({ message: 'User joined the event successfully.' });
   } catch (error) {
     console.error('Error joining event:', error);
-    res.status(500).json({ error: 'An error occurred while joining the event.' });
+    return res.status(500).json({ error: 'An error occurred while joining the event.' });
   }
 };
 
