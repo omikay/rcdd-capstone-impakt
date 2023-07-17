@@ -52,7 +52,7 @@ const makeDonation = async (req, res) => {
 
     return res.status(201).json({ message: 'Donation made successfully.' });
   } catch (error) {
-    console.error('Error creating donation:', error);
+    // console.error('Error creating donation:', error);
     return res
       .status(500)
       .json({ error: 'An error occurred while creating the donation.' });
@@ -73,7 +73,7 @@ const getEventDonations = async (req, res) => {
 
     return res.status(200).json(event.donations);
   } catch (error) {
-    console.error('Error retrieving event donations:', error);
+    // console.error('Error retrieving event donations:', error);
     return res
       .status(500)
       .json({ error: 'An error occurred while retrieving event donations.' });
@@ -82,11 +82,12 @@ const getEventDonations = async (req, res) => {
 
 // Get all donations for a specific user
 const getUserDonations = async (req, res) => {
-  const { userId } = req.params;
-
   try {
     // Find the user in the database and populate the donations
-    const user = await User.findById(userId).populate('donations');
+    const user = await User.findById(req.user.id).populate('donations');
+    // console.log(User);
+    console.log(req.user.id);
+    console.log(user);
 
     if (!user) {
       return res.status(404).json({ error: 'User not found.' });
@@ -94,7 +95,7 @@ const getUserDonations = async (req, res) => {
 
     return res.status(200).json(user.donations);
   } catch (error) {
-    console.error('Error retrieving user donations:', error);
+    // console.error('Error retrieving user donations:', error);
     return res
       .status(500)
       .json({ error: 'An error occurred while retrieving user donations.' });

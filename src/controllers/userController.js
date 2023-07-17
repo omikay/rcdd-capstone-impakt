@@ -30,13 +30,13 @@ const signup = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-
+    // console.log(user);
     user = new User({
       name,
       email,
       password: hashedPassword,
     });
-
+    // console.log(user, req);
     await user.save();
 
     await sendEmail(
@@ -59,7 +59,7 @@ const signup = async (req, res) => {
 
     return res.status(201).json({ token });
   } catch (error) {
-    console.error('Error signing up user:', error);
+    // console.error('Error signing up user:', error);
     return res.status(500).json({ error: 'Internal server error' });
   }
 };
@@ -76,12 +76,15 @@ const login = async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: "User doesn't exist." });
     }
-
-    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    const hashedReqPass = await bcrypt.hash(password);
+    const isPasswordCorrect = await bcrypt.compare(
+      hashedReqPass,
+      user.password
+    );
     if (!isPasswordCorrect) {
       return res.status(400).json({ error: 'Invalid credentials.' });
     }
-
+    console.log(user);
     const token = jwt.sign(
       {
         name: user.name,
@@ -94,11 +97,9 @@ const login = async (req, res) => {
 
     res.cookie('jwt', token, { httpOnly: true });
 
-    res.redirect('/user/:id/profile');
-
     return res.status(200).json({ token });
   } catch (error) {
-    console.error('Error logging in user:', error);
+    // console.error('Error logging in user:', error);
     return res.status(500).json({ error: 'Something went wrong.' });
   }
 };
@@ -144,7 +145,7 @@ const updateUserProfile = async (req, res) => {
 
     return res.status(200).json({ message: 'Profile updated successfully.' });
   } catch (error) {
-    console.error('Error updating user profile:', error);
+    // console.error('Error updating user profile:', error);
     return res
       .status(500)
       .json({ message: 'An error occurred during profile update.' });
@@ -203,7 +204,7 @@ const connectGoogleAccount = async (req, res) => {
       .status(200)
       .json({ message: 'Google account successfully connected.' });
   } catch (error) {
-    console.error('Error connecting Google account:', error);
+    // console.error('Error connecting Google account:', error);
     return res
       .status(500)
       .json({ message: 'An error occurred during Google account connection.' });
