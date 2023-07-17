@@ -33,4 +33,4 @@ afterAll(async () => {
   await server.close();
 });
 
-#module.exports = app;
+module.exports = app;
