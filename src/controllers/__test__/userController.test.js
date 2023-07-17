@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const app = require('../../app');
+const server = require('../../app');
 const User = require('../../models/Users');
 
 const sendEmail = require('../../utils/email');
@@ -39,13 +39,13 @@ const mockAuth = (req, res, next) => {
   next();
 };
 
-app.post('/user/profile', mockAuth, async (req, res) => {
-  await updateUserProfile(req, res);
-});
+// server.patch('/user/updateProfile', mockAuth, async (req, res) => {
+//   await updateUserProfile(req, res);
+// });
 
-app.get('/user/profile/:id', async (req, res) => {
-  await getUserProfile(req, res);
-});
+// server.get('/user/profile/', mockAuth, async (req, res) => {
+//   await getUserProfile(req, res);
+// });
 
 // Mock the bcrypt methods
 bcrypt.compare.mockImplementation((password, hashedPassword) =>
@@ -60,6 +60,11 @@ jwt.sign.mockImplementation(() => mockToken);
 
 // Mock the sendEmail function
 sendEmail.mockResolvedValue();
+
+afterAll(async () => {
+  // Cleanup code to close the server
+  await server.close();
+});
 
 // Test the signup function
 describe('signup', () => {
