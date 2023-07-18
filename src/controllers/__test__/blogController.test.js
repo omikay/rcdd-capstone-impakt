@@ -231,7 +231,7 @@ describe('updateBlog', () => {
   
     const req = {
       params: {
-        id: existingBlogPost._id,
+        id: existingBlogPost.id,
       },
       body: updatedBlogData,
       user: {
@@ -288,7 +288,7 @@ describe('updateBlog', () => {
   
     const req = {
       params: {
-        id: existingBlogPost._id,
+        id: existingBlogPost.id,
       },
       body: {
         title: 'Updated Title',
@@ -323,7 +323,7 @@ it('should return 401 if the user is not an admin', async () => {
 
   const req = {
     params: {
-      id: existingBlogPost._id,
+      id: existingBlogPost.id,
     },
     body: {
       title: 'Updated Title',
@@ -359,7 +359,7 @@ it('should handle internal server errors', async () => {
 
   const req = {
     params: {
-      id: existingBlogPost._id,
+      id: existingBlogPost.id,
     },
     body: {
       title: 'Updated Title',
