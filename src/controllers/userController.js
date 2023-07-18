@@ -30,13 +30,13 @@ const signup = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-
+    // console.log(user);
     user = new User({
       name,
       email,
       password: hashedPassword,
     });
-
+    // console.log(user, req);
     await user.save();
 
     await sendEmail(
@@ -76,12 +76,15 @@ const login = async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: "User doesn't exist." });
     }
-
-    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    const hashedReqPass = await bcrypt.hash(password);
+    const isPasswordCorrect = await bcrypt.compare(
+      hashedReqPass,
+      user.password
+    );
     if (!isPasswordCorrect) {
       return res.status(400).json({ error: 'Invalid credentials.' });
     }
-
+    console.log(user);
     const token = jwt.sign(
       {
         name: user.name,
@@ -93,8 +96,6 @@ const login = async (req, res) => {
     );
 
     res.cookie('jwt', token, { httpOnly: true });
-
-    res.redirect('/user/:id/profile');
 
     return res.status(200).json({ token });
   } catch (error) {
@@ -212,8 +213,15 @@ const connectGoogleAccount = async (req, res) => {
 
 // User logout
 const logout = (req, res) => {
-  res.clearCookie('jwt');
-  return res.status(200).json({ message: 'Logged out successfully.' });
+  try {
+    res.clearCookie('jwt');
+    return res.status(200).json({ message: 'Logged out successfully.' });
+  } catch (error) {
+    console.error('Error logging out user:', error);
+    return res
+      .status(500)
+      .json({ error: 'An error occurred while logging out.' });
+  }
 };
 
 module.exports = {
