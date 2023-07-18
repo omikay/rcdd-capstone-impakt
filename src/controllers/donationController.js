@@ -50,20 +50,20 @@ const makeDonation = async (req, res) => {
       `Thank you for your generous donation of $${amount} to the event "${event.title}".`
     );
 
-    return res.status(201).json({ message: 'Donation created successfully.', donationId: donation._id });
+    return res.status(201).json({ message: 'Donation made successfully.' });
   } catch (error) {
-    console.error('Error creating donation:', error);
-    return res.status(500).json({ error: 'An error occurred while creating the donation.' });
+    // console.error('Error creating donation:', error);
+    return res
+      .status(500)
+      .json({ error: 'An error occurred while creating the donation.' });
   }
 };
 
 // Get all donations for a specific event
 const getEventDonations = async (req, res) => {
-  const { eventId } = req.params;
-
   try {
     // Find the event in the database and populate the donations
-    const event = await Event.findById(eventId).populate('donations');
+    const event = await Event.findById(req.params.id);
 
     if (!event) {
       return res.status(404).json({ error: 'Event not found.' });
@@ -71,27 +71,29 @@ const getEventDonations = async (req, res) => {
 
     return res.status(200).json(event.donations);
   } catch (error) {
-    console.error('Error retrieving event donations:', error);
-    return res.status(500).json({ error: 'An error occurred while retrieving event donations.' });
+    // console.error('Error retrieving event donations:', error);
+    return res
+      .status(500)
+      .json({ error: 'An error occurred while retrieving event donations.' });
   }
 };
 
 // Get all donations for a specific user
 const getUserDonations = async (req, res) => {
-  const { userId } = req.params;
-
   try {
     // Find the user in the database and populate the donations
-    const user = await User.findById(userId).populate('donations');
-
+    const user = await User.findById(req.params.id);
+    console.log(user);
     if (!user) {
       return res.status(404).json({ error: 'User not found.' });
     }
 
     return res.status(200).json(user.donations);
   } catch (error) {
-    console.error('Error retrieving user donations:', error);
-    return res.status(500).json({ error: 'An error occurred while retrieving user donations.' });
+    // console.error('Error retrieving user donations:', error);
+    return res
+      .status(500)
+      .json({ error: 'An error occurred while retrieving user donations.' });
   }
 };
 

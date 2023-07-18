@@ -6,10 +6,11 @@ require('dotenv').config();
 
 const userRoutes = require('./routes/userRoutes');
 const eventRoutes = require('./routes/eventRoutes');
+const donationRoutes = require('./routes/donationRoutes');
 const connectToMongo = require('./config/db');
 
 const app = express();
-const port = 5001;
+const port = 8080;
 
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: false }));
@@ -18,15 +19,16 @@ app.use(cookieParser());
 
 app.use('/', userRoutes);
 app.use('/', eventRoutes);
+app.use('/', donationRoutes);
 
-app.use((err, req, res, next) => {
-  console.error(err.stack);
+app.use((err, req, res) => {
+  // console.error(err.stack);
   res.status(500).json({ error: 'Internal server error' });
 });
 
-app.listen(port, () => {
-  console.log(`Server listening on port ${port}`);
+const server = app.listen(port, () => {
+  // console.log(`Server listening on port ${port}`);
   connectToMongo();
 });
 
-module.exports = app;
+module.exports = server;
