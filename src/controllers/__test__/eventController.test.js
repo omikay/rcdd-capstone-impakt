@@ -42,7 +42,7 @@ const mockAuth = (req, res, next) => {
 };
 
 // Endpoint to test updating an event
-app.put('/events/:eventId', mockAuth, async (req, res) => {
+app.put('/events/:eventId/update', mockAuth, async (req, res) => {
   await updateEvent(req, res);
 });
 
