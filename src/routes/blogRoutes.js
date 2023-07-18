@@ -9,8 +9,6 @@ const {
   getBlogById,
   getAllBlogs,
 } = require('../controllers/blogController');
-const isAuthorized = require('../middlewares/auth');
-
 // Create a new blog post
 router.post('/blogPost', isAuthorized, createBlog);
 
