@@ -62,7 +62,7 @@ const updateBlog = async (req, res) => {
     );
     return res.status(200).json(updatedBlogPost); // Add .toObject() to return the plain JavaScript object
   } catch (error) {
-    console.error(error); // Log the error for debugging purposes
+    // console.error(error); // Log the error for debugging purposes
     return res.status(500).json({ error: 'Internal server error' });
   }
 }
@@ -91,7 +91,7 @@ const deleteBlog = async (req, res) => {
       message: 'Blog post deleted successfully.',
     });
   } catch (error) {
-    console.error(error); // Log the error for debugging purposes
+    // console.error(error); // Log the error for debugging purposes
     return res.status(500).json({ error: 'Server error' });
   }
 };
@@ -112,7 +112,7 @@ const getBlogById = async (req, res) => {
     // Return the blog post
     return res.status(200).json(blogPost);
   } catch (error) {
-    console.error(error); // Log the error for debugging purposes
+    // console.error(error); // Log the error for debugging purposes
     return res.status(500).json({ error: 'Server error' });
   }
 };
