@@ -84,7 +84,7 @@ const login = async (req, res) => {
     if (!isPasswordCorrect) {
       return res.status(400).json({ error: 'Invalid credentials.' });
     }
-    console.log(user);
+    // console.log(user);
     const token = jwt.sign(
       {
         name: user.name,
@@ -217,7 +217,7 @@ const logout = (req, res) => {
     res.clearCookie('jwt');
     return res.status(200).json({ message: 'Logged out successfully.' });
   } catch (error) {
-    console.error('Error logging out user:', error);
+    // console.error('Error logging out user:', error);
     return res
       .status(500)
       .json({ error: 'An error occurred while logging out.' });

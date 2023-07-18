@@ -61,11 +61,9 @@ const makeDonation = async (req, res) => {
 
 // Get all donations for a specific event
 const getEventDonations = async (req, res) => {
-  const { eventId } = req.params;
-
   try {
     // Find the event in the database and populate the donations
-    const event = await Event.findById(eventId).populate('donations');
+    const event = await Event.findById(req.params.id);
 
     if (!event) {
       return res.status(404).json({ error: 'Event not found.' });
@@ -84,11 +82,8 @@ const getEventDonations = async (req, res) => {
 const getUserDonations = async (req, res) => {
   try {
     // Find the user in the database and populate the donations
-    const user = await User.findById(req.user.id).populate('donations');
-    // console.log(User);
-    console.log(req.user.id);
+    const user = await User.findById(req.params.id);
     console.log(user);
-
     if (!user) {
       return res.status(404).json({ error: 'User not found.' });
     }

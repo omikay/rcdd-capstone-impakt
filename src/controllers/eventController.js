@@ -42,7 +42,7 @@ const createEvent = async (req, res) => {
       .status(201)
       .json({ message: 'Event created successfully.', event });
   } catch (error) {
-    console.error('Error creating event:', error);
+    // console.error('Error creating event:', error);
     return res
       .status(500)
       .json({ error: 'An error occurred while creating the event.' });
@@ -54,7 +54,7 @@ const getAllEvents = async (req, res) => {
     const events = await Event.find().populate('tags', 'tag_name');
     return res.json(events);
   } catch (error) {
-    console.error('Error getting events:', error);
+    // console.error('Error getting events:', error);
     return res
       .status(500)
       .json({ error: 'An error occurred while getting the events.' });
@@ -72,7 +72,7 @@ const getEvent = async (req, res) => {
 
     return res.json(event);
   } catch (error) {
-    console.error('Error getting event:', error);
+    // console.error('Error getting event:', error);
     return res
       .status(500)
       .json({ error: 'An error occurred while getting the event.' });
@@ -121,7 +121,7 @@ const updateEvent = async (req, res) => {
 
     return res.json({ message: 'Event updated successfully.', event });
   } catch (error) {
-    console.error('Error updating event:', error);
+    // console.error('Error updating event:', error);
     return res
       .status(500)
       .json({ error: 'An error occurred while updating the event.' });
@@ -145,7 +145,7 @@ const deleteEvent = async (req, res) => {
 
     return res.json({ message: 'Event deleted successfully.' });
   } catch (error) {
-    console.error('Error deleting event:', error);
+    // console.error('Error deleting event:', error);
     return res
       .status(500)
       .json({ error: 'An error occurred while deleting the event.' });
@@ -191,7 +191,7 @@ const joinEvent = async (req, res) => {
       .status(200)
       .json({ message: 'User joined the event successfully.' });
   } catch (error) {
-    console.error('Error joining event:', error);
+    // console.error('Error joining event:', error);
     return res
       .status(500)
       .json({ error: 'An error occurred while joining the event.' });

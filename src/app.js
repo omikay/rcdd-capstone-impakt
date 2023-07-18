@@ -10,7 +10,7 @@ const donationRoutes = require('./routes/donationRoutes');
 const connectToMongo = require('./config/db');
 
 const app = express();
-const port = 5007;
+const port = 8080;
 
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: false }));
