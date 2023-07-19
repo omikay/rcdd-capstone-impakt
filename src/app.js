@@ -21,13 +21,13 @@ app.use('/', userRoutes);
 app.use('/', eventRoutes);
 app.use('/', donationRoutes);
 
-app.use((err, req, res) => {
-  console.error(err.stack);
+app.use((res) => {
+  // console.error(err.stack);
   res.status(500).json({ error: 'Internal server error' });
 });
 
 const server = app.listen(port, () => {
-  console.log(`Server listening on port ${port}`);
+  // console.log(`Server listening on port ${port}`);
   connectToMongo();
 });
 

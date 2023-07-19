@@ -1,5 +1,5 @@
+// eventController.test.js
 const request = require('supertest');
-const app = require('../../app');
 const Event = require('../../models/Events');
 const User = require('../../models/Users');
 const sendEmail = require('../../utils/email');
@@ -23,7 +23,7 @@ const mockEvent = {
   maxAge: 60,
   tags: ['tag1', 'tag2'],
   participants: ['user123'],
-  save: jest.fn(),
+  save: jest.fn().mockResolvedValueOnce(this),
 };
 
 // Create a mock user object
@@ -35,30 +35,13 @@ const mockUser = {
   save: jest.fn(),
 };
 
-// Create a mock middleware to authenticate the user
-const mockAuth = (req, res, next) => {
-  req.user = { id: 'user123' };
-  next();
-};
-
-// Endpoint to test updating an event
-app.put('/events/:eventId/update', mockAuth, async (req, res) => {
-  await updateEvent(req, res);
-});
-
-// Endpoint to test joining an event
-app.post('/events/:eventId/join', mockAuth, async (req, res) => {
-  await joinEvent(req, res);
-});
-
 describe('updateEvent', () => {
   let req;
   let res;
 
   beforeEach(() => {
     req = {
-      user: { id: 'user123' },
-      params: { id: 'event123' },
+      params: { eventId: 'event123' },
       body: {
         title: 'Updated Event',
         description: 'This is an updated event.',
@@ -104,7 +87,10 @@ describe('updateEvent', () => {
       },
       { new: true }
     );
+
+    // Check if the event.save method is called
     expect(mockEvent.save).toHaveBeenCalled();
+
     expect(res.json).toHaveBeenCalledWith({
       message: 'Event updated successfully.',
       event: mockEvent,
@@ -119,8 +105,9 @@ describe('updateEvent', () => {
     expect(Event.findByIdAndUpdate).toHaveBeenCalledWith(
       'event123',
       expect.any(Object),
-      expect.any(Object)
+      { new: true }
     );
+
     expect(res.status).toHaveBeenCalledWith(404);
     expect(res.json).toHaveBeenCalledWith({ error: 'Event not found' });
   });
@@ -132,8 +119,8 @@ describe('joinEvent', () => {
 
   beforeEach(() => {
     req = {
+      params: { eventId: 'event123' },
       user: { id: 'user123' },
-      params: { id: 'event123' },
     };
 
     res = {
@@ -153,13 +140,18 @@ describe('joinEvent', () => {
     await joinEvent(req, res);
 
     expect(Event.findById).toHaveBeenCalledWith('event123');
+
+    // Check if the user is successfully added to the event participants
     expect(mockEvent.participants).toContain('user123');
     expect(mockEvent.save).toHaveBeenCalled();
 
     expect(User.findById).toHaveBeenCalledWith('user123');
+
+    // Check if the event is successfully added to the user's events list
     expect(mockUser.events).toContain('event123');
     expect(mockUser.save).toHaveBeenCalled();
 
+    // Check if the sendEmail function is called
     expect(sendEmail).toHaveBeenCalled();
 
     expect(res.status).toHaveBeenCalledWith(200);
