@@ -2,7 +2,7 @@ const Donation = require('../../models/Donations');
 const User = require('../../models/Users');
 const Event = require('../../models/Events');
 const sendEmail = require('../../utils/email');
-const app = require('../../app');
+const server = require('../../app');
 const {
   makeDonation,
   getUserDonations,
@@ -17,7 +17,7 @@ jest.mock('../../utils/email');
 
 afterAll(async () => {
   // Cleanup code to close the server
-  await app.close();
+  await server.close();
 });
 
 afterEach(() => {

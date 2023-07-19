@@ -4,6 +4,7 @@ const {
   createEvent,
   getAllEvents,
   getEvent,
+  searchEvents,
   updateEvent,
   deleteEvent,
   joinEvent,
@@ -21,10 +22,13 @@ router.patch('/events/:eventId/update', isAuthorized, updateEvent);
 router.post('/events/:eventId/join', isAuthorized, joinEvent);
 
 // Get all events
-router.get('/events', isAuthorized, getAllEvents);
+router.get('/events', getAllEvents);
+
+// Search events
+router.get('/events/search', searchEvents);
 
 // Get a specific event
-router.get('events/:eventId', isAuthorized, getEvent);
+router.get('events/:eventId', getEvent);
 
 // Delete an event
 router.delete('events/:eventId', isAuthorized, deleteEvent);

@@ -83,7 +83,7 @@ const getUserDonations = async (req, res) => {
   try {
     // Find the user in the database and populate the donations
     const user = await User.findById(req.params.id);
-    console.log(user);
+
     if (!user) {
       return res.status(404).json({ error: 'User not found.' });
     }
