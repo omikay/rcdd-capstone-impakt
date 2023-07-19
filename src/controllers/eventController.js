@@ -51,13 +51,54 @@ const createEvent = async (req, res) => {
 
 const getAllEvents = async (req, res) => {
   try {
-    const events = await Event.find().populate('tags', 'tag_name');
+    const events = await Event.find().populate('tags', 'tagName');
+
     return res.json(events);
   } catch (error) {
     // console.error('Error getting events:', error);
     return res
       .status(500)
       .json({ error: 'An error occurred while getting the events.' });
+  }
+};
+
+const searchEvents = async (req, res) => {
+  try {
+    const { search, location, startDate, endDate, tags } = req.query;
+
+    const filter = {};
+
+    if (search) {
+      // Use a regular expression to perform a case-insensitive search on the event title or description
+      filter.$or = [
+        { title: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } },
+      ];
+    }
+
+    if (location) {
+      filter.location = { $regex: location, $options: 'i' };
+    }
+
+    if (startDate) {
+      filter.startDate = { $gte: new Date(startDate) };
+    }
+
+    if (endDate) {
+      filter.endDate = { $lte: new Date(endDate) };
+    }
+
+    if (tags) {
+      filter.tags = { $in: tags };
+    }
+
+    const events = await Event.find(filter).populate('tags', 'tag_name');
+
+    return res.json(events);
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ error: 'An error occurred while searching the events.' });
   }
 };
 
@@ -201,6 +242,7 @@ const joinEvent = async (req, res) => {
 module.exports = {
   createEvent,
   getAllEvents,
+  searchEvents,
   getEvent,
   updateEvent,
   deleteEvent,
