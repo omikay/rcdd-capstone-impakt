@@ -121,7 +121,7 @@ const updateEvent = async (req, res) => {
 
     return res.json({ message: 'Event updated successfully.', event });
   } catch (error) {
-    // console.error('Error updating event:', error);
+    console.error('Error updating event:', error);
     return res
       .status(500)
       .json({ error: 'An error occurred while updating the event.' });
