@@ -3,13 +3,13 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const eventSchema = new Schema({
-  creator: { type: Schema.Types.ObjectId, ref: 'Users' },
-  title: String,
-  description: String,
+  creator: { type: Schema.Types.ObjectId, ref: 'Users', required: true },
+  title: { type: String, required: true },
+  description: { type: String, required: true },
   bannerImage: String, // the URL of the image
-  location: String, // google map location
-  startDate: Date,
-  endDate: Date,
+  location: { type: String, required: true }, // google map location
+  startDate: { type: Date, required: true },
+  endDate: { type: Date, required: true },
   ageLimit: {
     lower: Number,
     upper: Number,
