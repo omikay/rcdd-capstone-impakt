@@ -6,7 +6,6 @@ const sendEmail = require('../utils/email');
 const createEvent = async (req, res) => {
   try {
     const {
-      creator,
       title,
       description,
       startDate,
@@ -19,6 +18,8 @@ const createEvent = async (req, res) => {
       tags,
       donations,
     } = req.body;
+
+    const creator = req.user.id;
 
     const event = new Event({
       creator,
@@ -37,8 +38,10 @@ const createEvent = async (req, res) => {
 
     await event.save();
 
+    const hostId = User.findById(req.user.id);
+
     const message = `Event created successfully: ${event.title}`;
-    await sendEmail(event.hostId.email, 'Event Created', message);
+    await sendEmail(hostId.email, 'Event Created', message);
 
     return res
       .status(201)
@@ -106,7 +109,7 @@ const searchEvents = async (req, res) => {
 
 const getEvent = async (req, res) => {
   try {
-    const { eventId } = req.params;
+    const eventId = req.params;
     const event = await Event.findById(eventId);
 
     if (!event) {
@@ -148,6 +151,8 @@ const updateEvent = async (req, res) => {
       });
     }
 
+    const eventHost = await User.findById(event.creator);
+
     // Update the event fields
     event.title = title;
     event.description = description;
@@ -160,7 +165,17 @@ const updateEvent = async (req, res) => {
     await event.save();
 
     const message = `Event updated successfully: ${event.title}`;
-    await sendEmail(event.creator.email, 'Event Updated', message);
+    await sendEmail(eventHost.email, 'Event Updated', message);
+
+    // eslint-disable-next-line no-restricted-syntax
+    for (const participantId of event.participants) {
+      const participant = User.findById(participantId);
+      sendEmail(
+        participant.email,
+        'Event Updated',
+        `Dear ${participant.name}, please be advised some details have been updated about the event "${event.title}" by the event host.`
+      );
+    }
 
     return res.json({ message: 'Event updated successfully.', event });
   } catch (error) {
@@ -173,15 +188,27 @@ const updateEvent = async (req, res) => {
 
 const deleteEvent = async (req, res) => {
   try {
-    const { eventId } = req.params;
+    const eventId = req.params;
+    const hostId = req.user.id;
     const event = await Event.findByIdAndDelete(eventId);
 
     if (!event) {
       return res.status(404).json({ error: 'Event not found' });
     }
 
+    const eventHost = User.findById(hostId);
     const message = `Event deleted successfully: ${event.title}`;
-    await sendEmail(event.hostId.email, 'Event Deleted', message);
+    await sendEmail(eventHost.email, 'Event Deleted', message);
+
+    // eslint-disable-next-line no-restricted-syntax
+    for (const participantId of event.participants) {
+      const participant = User.findById(participantId);
+      sendEmail(
+        participant.email,
+        'Event Deleted',
+        `Dear ${participant.name}, please be advised the event "${event.title}" has been deleted by the event host.`
+      );
+    }
 
     return res.json({ message: 'Event deleted successfully.' });
   } catch (error) {
