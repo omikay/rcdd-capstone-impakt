@@ -6,31 +6,33 @@ const sendEmail = require('../utils/email');
 const createEvent = async (req, res) => {
   try {
     const {
-      hostId,
+      creator,
       title,
       description,
       startDate,
       endDate,
       capacity,
       location,
-      banner,
-      minAge,
-      maxAge,
-      tagIds,
+      bannerImage,
+      ageLimit,
+      participants,
+      tags,
+      donations,
     } = req.body;
 
     const event = new Event({
-      hostId,
+      creator,
       title,
       description,
       startDate,
       endDate,
       capacity,
       location,
-      banner,
-      minAge,
-      maxAge,
-      tags: tagIds,
+      bannerImage,
+      ageLimit,
+      participants,
+      tags,
+      donations,
     });
 
     await event.save();
@@ -51,7 +53,7 @@ const createEvent = async (req, res) => {
 
 const getAllEvents = async (req, res) => {
   try {
-    const events = await Event.find().populate('tags', 'tagName');
+    const events = await Event.find();
 
     return res.json(events);
   } catch (error) {
@@ -92,7 +94,7 @@ const searchEvents = async (req, res) => {
       filter.tags = { $in: tags };
     }
 
-    const events = await Event.find(filter).populate('tags', 'tag_name');
+    const events = await Event.find(filter);
 
     return res.json(events);
   } catch (error) {
@@ -105,7 +107,7 @@ const searchEvents = async (req, res) => {
 const getEvent = async (req, res) => {
   try {
     const { eventId } = req.params;
-    const event = await Event.findById(eventId).populate('tags', 'tag_name');
+    const event = await Event.findById(eventId);
 
     if (!event) {
       return res.status(404).json({ error: 'Event not found' });
@@ -122,7 +124,7 @@ const getEvent = async (req, res) => {
 
 const updateEvent = async (req, res) => {
   try {
-    const { eventId } = req.params;
+    const eventId = req.params;
     const {
       title,
       description,
@@ -130,35 +132,35 @@ const updateEvent = async (req, res) => {
       endDate,
       capacity,
       location,
-      banner,
-      minAge,
-      maxAge,
-      tagIds,
+      bannerImage,
     } = req.body;
 
-    const event = await Event.findByIdAndUpdate(
-      eventId,
-      {
-        title,
-        description,
-        startDate,
-        endDate,
-        capacity,
-        location,
-        banner,
-        minAge,
-        maxAge,
-        tags: tagIds,
-      },
-      { new: true }
-    ).populate('tags', 'tag_name');
+    const event = await Event.findById(eventId);
 
     if (!event) {
       return res.status(404).json({ error: 'Event not found' });
     }
 
-    const message = `Event updated: ${event.title}`;
-    await sendEmail(event.hostId.email, 'Event Updated', message);
+    if (event.participants.length > capacity) {
+      return res.status(406).json({
+        error:
+          'Event already has more registered volunteers than the requested capacity.',
+      });
+    }
+
+    // Update the event fields
+    event.title = title;
+    event.description = description;
+    event.startDate = startDate;
+    event.endDate = endDate;
+    event.capacity = capacity;
+    event.location = location;
+    event.bannerImage = bannerImage;
+
+    await event.save();
+
+    const message = `Event updated successfully: ${event.title}`;
+    await sendEmail(event.creator.email, 'Event Updated', message);
 
     return res.json({ message: 'Event updated successfully.', event });
   } catch (error) {
@@ -172,16 +174,13 @@ const updateEvent = async (req, res) => {
 const deleteEvent = async (req, res) => {
   try {
     const { eventId } = req.params;
-    const event = await Event.findByIdAndDelete(eventId).populate(
-      'tags',
-      'tag_name'
-    );
+    const event = await Event.findByIdAndDelete(eventId);
 
     if (!event) {
       return res.status(404).json({ error: 'Event not found' });
     }
 
-    const message = `Event deleted: ${event.title}`;
+    const message = `Event deleted successfully: ${event.title}`;
     await sendEmail(event.hostId.email, 'Event Deleted', message);
 
     return res.json({ message: 'Event deleted successfully.' });
