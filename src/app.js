@@ -27,7 +27,6 @@ app.use((res) => {
 });
 
 const server = app.listen(port, () => {
-  // console.log(`Server listening on port ${port}`);
   connectToMongo();
 });
 
