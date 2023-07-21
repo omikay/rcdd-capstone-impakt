@@ -10,7 +10,7 @@ const donationRoutes = require('./routes/donationRoutes');
 const connectToMongo = require('./config/db');
 
 const app = express();
-const port = 8080;
+const port = 8000;
 
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: false }));
@@ -21,13 +21,14 @@ app.use('/', userRoutes);
 app.use('/', eventRoutes);
 app.use('/', donationRoutes);
 
-app.use((res) => {
-  // console.error(err.stack);
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
   res.status(500).json({ error: 'Internal server error' });
 });
 
 const server = app.listen(port, () => {
-  // console.log(`Server listening on port ${port}`);
+  console.log(`Server listening on port ${port}`);
   connectToMongo();
 });
 

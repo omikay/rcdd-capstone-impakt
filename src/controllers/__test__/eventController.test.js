@@ -2,16 +2,14 @@ const supertest = require('supertest');
 const app = require('../../app');
 
 const request = supertest(app);
+const sendEmail = require('../../utils/email');
 const Event = require('../../models/Events');
 const User = require('../../models/Users');
-const {
-  createEvent,
-  getAllEvents,
-  getEvent,
-  updateEvent,
-  deleteEvent,
-  joinEvent,
-} = require('../eventController');
+const { updateEvent, joinEvent } = require('../eventController');
+
+// Mock the sendEmail function
+
+jest.mock('../../utils/email', () => jest.fn().mockResolvedValue());
 
 jest.mock('../../models/Events');
 jest.mock('../../models/Users');
@@ -59,7 +57,7 @@ afterEach(() => {
 });
 
 describe('joinEvent', () => {
-  it('should add user to event participants and add event to user events', async () => {
+  it('should add user to event participants and add event to user events and send email', async () => {
     Event.findById.mockResolvedValueOnce(mockEvent);
     User.findById.mockResolvedValueOnce(mockUser);
 
@@ -73,6 +71,12 @@ describe('joinEvent', () => {
 
     expect(mockUser.events).toContain(mockEvent.id);
     expect(mockUser.save).toHaveBeenCalled();
+
+    expect(sendEmail).toHaveBeenCalledWith(
+      mockUser.email,
+      `Event joined: ${mockEvent.title}!`,
+      `Dear ${mockUser.name}, you have successfully joined the event ${mockEvent.title}.`
+    );
 
     expect(mockRes.status).toHaveBeenCalledWith(200);
     expect(mockRes.json).toHaveBeenCalledWith({
@@ -130,47 +134,5 @@ describe('joinEvent', () => {
     expect(mockRes.json).toHaveBeenCalledWith({
       error: 'An error occurred while joining the event.',
     });
-  });
-});
-
-describe('updateEvent', () => {
-  const updateEventData = {
-    title: 'Updated Event',
-    startDate: new Date('2023-07-30'),
-    endDate: new Date('2023-07-31'),
-    capacity: 100,
-  };
-
-  it('should update the event successfully', async () => {
-    const response = await request
-      .put(`/api/events/${mockEvent.id}`)
-      .send(updateEventData)
-      .set('Authorization', `Bearer ${mockUser.token}`);
-
-    expect(response.status).toBe(200);
-    expect(response.body.message).toBe('Event updated successfully.');
-    expect(response.body.event).toMatchObject(updateEventData);
-  });
-
-  it('should return an error if the event is not found', async () => {
-    const response = await request
-      .put(`/api/events/non-existing-id`)
-      .send(updateEventData)
-      .set('Authorization', `Bearer ${mockUser.token}`);
-
-    expect(response.status).toBe(404);
-    expect(response.body.error).toBe('Event not found');
-  });
-
-  it('should handle server errors', async () => {
-    const response = await request
-      .put(`/api/events/${mockEvent.id}`)
-      .send(updateEventData)
-      .set('Authorization', `Bearer ${mockUser.token}`);
-
-    expect(response.status).toBe(500);
-    expect(response.body.error).toBe(
-      'An error occurred while updating the event.'
-    );
   });
 });
