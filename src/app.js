@@ -21,7 +21,7 @@ app.use('/', userRoutes);
 app.use('/', eventRoutes);
 app.use('/', donationRoutes);
 
-// Error handling middleware
+// Error handling middlewarejb
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ error: 'Internal server error' });

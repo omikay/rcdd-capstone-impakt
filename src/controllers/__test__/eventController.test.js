@@ -5,14 +5,18 @@ const request = supertest(app);
 const sendEmail = require('../../utils/email');
 const Event = require('../../models/Events');
 const User = require('../../models/Users');
-const { updateEvent, joinEvent } = require('../eventController');
-
-// Mock the sendEmail function
-
-jest.mock('../../utils/email', () => jest.fn().mockResolvedValue());
+const {
+  createEvent,
+  getAllEvents,
+  getEvent,
+  updateEvent,
+  deleteEvent,
+  joinEvent,
+} = require('../eventController');
 
 jest.mock('../../models/Events');
 jest.mock('../../models/Users');
+jest.mock('../../models/Tags'); // Mock the Tag model
 
 let mockEvent = {
   _id: 'event-id',
