@@ -39,17 +39,35 @@ const signup = async (req, res) => {
     // console.log(user, req);
     await user.save();
 
+    const confirmationToken = uuid.v4();
+    const expirationDate = new Date();
+    expirationDate.setHours(expirationDate.getHours() + 24);
+
+    user.confirmationTokenExpirationDate = expirationDate;
+    await user.save();
+
     await sendEmail(
       user.email,
-      'Welcome to Impakt!',
-      `Dear ${user.name}, your Impakt account has been created successfully.`
+      'Confirm your Impakt account',
+      `Hi ${user.name},
+
+Please click on the following link to confirm your Impakt account:
+
+http://localhost:8080/confirm/${confirmationToken}
+
+This link will expire in 24 hours.
+
+If you did not create an Impakt account, please ignore this email.
+
+Thanks,
+The Impakt Team`
     );
 
     const token = jwt.sign(
       {
         name: user.name,
         email: user.email,
-        exp: Math.floor(Date.now() / 1000) + 1209600, // 14 days expiration
+        exp: expirationDate.getTime(), // Expiration date
         iat: Math.floor(Date.now() / 1000), // Issued at date
       },
       process.env.JWT_SECRET
