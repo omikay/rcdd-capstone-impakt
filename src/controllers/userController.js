@@ -53,7 +53,7 @@ const signup = async (req, res) => {
 
 Please click on the following link to confirm your Impakt account:
 
-https://www.impakt.com/confirm/${confirmationToken}
+http://localhost:8080/confirm/${confirmationToken}
 
 This link will expire in 24 hours.
 
