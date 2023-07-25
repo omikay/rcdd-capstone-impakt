@@ -13,15 +13,15 @@ const {
 router.post('/blogPost', isAuthorized, createBlog);
 
 // Update a blog post
-router.patch('/blogPosts/:blogPostId/update',isAuthorized, updateBlog);
+router.patch('/blogPosts/:blogPostId/update', isAuthorized, updateBlog);
 
 // Delete a blog post
-router.delete('/blogPosts/:blogPostId',isAuthorized, deleteBlog);
+router.delete('/blogPosts/:blogPostId', isAuthorized, deleteBlog);
 
 // Get a blog post by ID
-router.get('/blogPosts/:blogPostId',isAuthorized, getBlogById);
+router.get('/blogPosts/:blogPostId', isAuthorized, getBlogById);
 
 // Get all blog posts
-router.get('/blogPosts',isAuthorized, getAllBlogs);
+router.get('/blogPosts', isAuthorized, getAllBlogs);
 
 module.exports = router;

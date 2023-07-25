@@ -1,8 +1,10 @@
 const express = require('express');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
+const path = require('path');
+const dotenv = require('dotenv'); // Import dotenv module
 
-require('dotenv').config();
+dotenv.config(); // Load environment variables from .env file
 
 const userRoutes = require('./routes/userRoutes');
 const eventRoutes = require('./routes/eventRoutes');
@@ -12,18 +14,29 @@ const connectToMongo = require('./config/db');
 const app = express();
 const port = 8080;
 
+// View engine setup
+app.set('views', path.join(__dirname, 'views')); // Set the views directory
+app.set('view engine', 'ejs'); // Use EJS as the view engine
+
+// Middleware
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', userRoutes);
-app.use('/', eventRoutes);
-app.use('/', donationRoutes);
+// Routes
+app.use('/users', userRoutes);
+app.use('/events', eventRoutes);
+app.use('/donations', donationRoutes);
 
-app.use((err, req, res) => {
-  // console.error(err.stack);
+app.use((err, req, res, next) => {
+  console.error(err.stack);
   res.status(500).json({ error: 'Internal server error' });
+});
+
+app.use((req, res) => {
+  res.status(404).json({ error: 'Not Found' });
 });
 
 const server = app.listen(port, () => {

@@ -65,7 +65,7 @@ const updateBlog = async (req, res) => {
     // console.error(error); // Log the error for debugging purposes
     return res.status(500).json({ error: 'Internal server error' });
   }
-}
+};
 
 // Delete Blog Post
 const deleteBlog = async (req, res) => {
@@ -83,7 +83,7 @@ const deleteBlog = async (req, res) => {
     }
     if (user.userType !== 'admin') {
       return res.status(401).json({ error: 'Unauthorized' });
-    }   
+    }
     // Delete the blog post
     await BlogPost.findByIdAndDelete(blogPostId);
     // Return the response object
@@ -122,7 +122,7 @@ const getAllBlogs = async (req, res) => {
     const allBlogs = await BlogPost.find();
     const user = await User.findById(req.user.id);
     if (!user) {
-    return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: 'User not found' });
     }
     return res.status(200).json(allBlogs);
   } catch (error) {

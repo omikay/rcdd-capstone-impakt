@@ -211,6 +211,77 @@ const connectGoogleAccount = async (req, res) => {
   }
 };
 
+// Forgot Password - Handle "Forgot Password" form submission
+const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    // Find the user by their email
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    // Generate a password reset token
+    const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, {
+      expiresIn: '1h', // Token will expire in 1 hour
+    });
+
+    // Create a password reset URL that includes the generated token
+    const resetPasswordURL = `http://localhost:3000/reset-password/${token}`;
+
+    // Send the password reset email to the user
+    await sendEmail(
+      user.email,
+      'Password Reset Request',
+      `To reset your password, click the link below:\n${resetPasswordURL}`
+    );
+
+    return res.status(200).json({ message: 'Password reset email sent.' });
+  } catch (error) {
+    return res.status(500).json({ error: 'Server error.' });
+  }
+};
+
+// Password Reset - Handle "Password Reset" form submission
+const resetPassword = async (req, res) => {
+  const { token } = req.params;
+  const { password, confirmPassword } = req.body;
+
+  try {
+    // Verify the token
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Find the user by their email
+    const user = await User.findOne({ email: decodedToken.email });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    if (password !== confirmPassword) {
+      return res.status(400).json({ error: 'Passwords do not match.' });
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(password, 10);
+    user.password = hashedPassword;
+
+    // Save the updated user with the new password to the database
+    await user.save();
+
+    return res.status(200).json({ message: 'Password reset successful.' });
+  } catch (error) {
+    if (error.name === 'TokenExpiredError') {
+      return res
+        .status(400)
+        .json({ error: 'Password reset link has expired.' });
+    }
+    return res.status(500).json({ error: 'Server error.' });
+  }
+};
+
 // User logout
 const logout = (req, res) => {
   try {
@@ -231,4 +302,6 @@ module.exports = {
   getUserProfile,
   updateUserProfile,
   connectGoogleAccount,
+  forgotPassword,
+  resetPassword,
 };
