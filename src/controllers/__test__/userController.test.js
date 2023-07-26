@@ -33,20 +33,6 @@ const mockUser = {
 
 const mockToken = 'abc';
 
-// Create a mock middleware to authenticate the user
-// const mockAuth = (req, res, next) => {
-//   req.user = { id: mockUser.id };
-//   next();
-// };
-
-// server.patch('/user/updateProfile', mockAuth, async (req, res) => {
-//   await updateUserProfile(req, res);
-// });
-
-// server.get('/user/profile/', mockAuth, async (req, res) => {
-//   await getUserProfile(req, res);
-// });
-
 // Mock the bcrypt methods
 bcrypt.compare.mockImplementation((password, hashedPassword) =>
   Promise.resolve(password === hashedPassword)
