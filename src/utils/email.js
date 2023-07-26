@@ -12,6 +12,7 @@ const transporter = nodemailer.createTransport({
 
 // Function to send an email
 const sendEmail = async (to, subject, text) => {
+  // eslint-disable-next-line no-useless-catch
   try {
     // Define the email options
     const mailOptions = {
@@ -23,9 +24,9 @@ const sendEmail = async (to, subject, text) => {
 
     // Send the email
     await transporter.sendMail(mailOptions);
-    console.log('Email sent successfully');
+    // console.log('Email sent successfully');
   } catch (error) {
-    console.error('Error sending email:', error);
+    // console.error('Error sending email:', error);
     throw error;
   }
 };

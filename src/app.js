@@ -12,7 +12,7 @@ const donationRoutes = require('./routes/donationRoutes');
 const connectToMongo = require('./config/db');
 
 const app = express();
-const port = 8080;
+const port = 3000;
 
 // View engine setup
 app.set('views', path.join(__dirname, 'views')); // Set the views directory
