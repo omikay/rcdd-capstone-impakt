@@ -14,15 +14,18 @@ const createEvent = async (req, res) => {
       location,
       bannerImage,
       ageLimit,
-      participants,
       tags,
-      donations,
     } = req.body;
 
-    const creator = req.user.id;
+    // Find the the authenticated user for event creation
+    const creator = await User.findById(req.user.id);
+
+    if (!creator) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
 
     const event = new Event({
-      creator,
+      creator: creator.id,
       title,
       description,
       startDate,
@@ -31,23 +34,23 @@ const createEvent = async (req, res) => {
       location,
       bannerImage,
       ageLimit,
-      participants,
       tags,
-      donations,
     });
 
     await event.save();
 
-    const hostId = User.findById(req.user.id);
+    const host = await User.findById(req.user.id);
+
+    // Add the event to the user's createdEvents array
+    host.createdEvents.push(event.id);
+
+    await host.save();
 
     const message = `Event created successfully: ${event.title}`;
-    await sendEmail(hostId.email, 'Event Created', message);
+    await sendEmail(host.email, 'Event Created', message);
 
-    return res
-      .status(201)
-      .json({ message: 'Event created successfully.', event });
+    return res.status(201).json({ message: 'Event created successfully.' });
   } catch (error) {
-    // console.error('Error creating event:', error);
     return res
       .status(500)
       .json({ error: 'An error occurred while creating the event.' });
@@ -58,9 +61,12 @@ const getAllEvents = async (req, res) => {
   try {
     const events = await Event.find();
 
-    return res.json(events);
+    // if (!events) {
+    //   return res.status(404).json({ error: 'No events found.'});
+    // }
+
+    return res.status(201).json(events);
   } catch (error) {
-    // console.error('Error getting events:', error);
     return res
       .status(500)
       .json({ error: 'An error occurred while getting the events.' });
@@ -99,6 +105,12 @@ const searchEvents = async (req, res) => {
 
     const events = await Event.find(filter);
 
+    if (!events) {
+      res
+        .status(403)
+        .json({ message: 'No events found for the requested query.' });
+    }
+
     return res.json(events);
   } catch (error) {
     return res
@@ -109,25 +121,25 @@ const searchEvents = async (req, res) => {
 
 const getEvent = async (req, res) => {
   try {
-    const eventId = req.params;
+    const eventId = req.params.id;
     const event = await Event.findById(eventId);
 
     if (!event) {
-      return res.status(404).json({ error: 'Event not found' });
+      return res.status(404).json({ error: 'Event not found.' });
     }
 
-    return res.json(event);
+    return res.status(201).json(event);
   } catch (error) {
-    // console.error('Error getting event:', error);
     return res
       .status(500)
-      .json({ error: 'An error occurred while getting the event.' });
+      .json({ error: 'An error occurred while retrieving the event.' });
   }
 };
 
 const updateEvent = async (req, res) => {
   try {
-    const eventId = req.params;
+    const eventId = req.params.id;
+
     const {
       title,
       description,
@@ -140,8 +152,16 @@ const updateEvent = async (req, res) => {
 
     const event = await Event.findById(eventId);
 
+    // Retrieve the user from the database based on the authenticated user's ID
+    const user = await User.findById(req.user.id);
+
+    // Check if the user exists
+    if (!user) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+
     if (!event) {
-      return res.status(404).json({ error: 'Event not found' });
+      return res.status(404).json({ error: 'Event not found.' });
     }
 
     if (event.participants.length > capacity) {
@@ -177,7 +197,7 @@ const updateEvent = async (req, res) => {
       );
     }
 
-    return res.json({ message: 'Event updated successfully.', event });
+    return res.status(201).json({ message: 'Event updated successfully.' });
   } catch (error) {
     // console.error('Error updating event:', error);
     return res
@@ -188,15 +208,23 @@ const updateEvent = async (req, res) => {
 
 const deleteEvent = async (req, res) => {
   try {
-    const eventId = req.params;
+    const eventId = req.params.id;
     const hostId = req.user.id;
-    const event = await Event.findByIdAndDelete(eventId);
 
-    if (!event) {
-      return res.status(404).json({ error: 'Event not found' });
+    const eventHost = await User.findById(hostId);
+
+    if (!eventHost) {
+      return res.status(404).json({ error: 'Host not found.' });
     }
 
-    const eventHost = User.findById(hostId);
+    const event = await Event.findById(eventId);
+
+    if (!event) {
+      return res.status(404).json({ error: 'Event not found.' });
+    }
+
+    await event.remove();
+
     const message = `Event deleted successfully: ${event.title}`;
     await sendEmail(eventHost.email, 'Event Deleted', message);
 
@@ -210,7 +238,7 @@ const deleteEvent = async (req, res) => {
       );
     }
 
-    return res.json({ message: 'Event deleted successfully.' });
+    return res.status(201).json({ message: 'Event deleted successfully.' });
   } catch (error) {
     // console.error('Error deleting event:', error);
     return res
@@ -221,16 +249,23 @@ const deleteEvent = async (req, res) => {
 
 // User joins an event
 const joinEvent = async (req, res) => {
-  const { eventId } = req.params;
+  const eventId = req.params.id;
+  console.log(eventId);
   const userId = req.user.id;
-
+  console.log(userId);
   try {
-    const event = await Event.findById(eventId);
+    const user = await User.findById(userId);
+    console.log(user);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
 
+    const event = await Event.findById(eventId);
+    console.log(event);
     if (!event) {
       return res.status(404).json({ error: 'Event not found.' });
     }
-
+    console.log(event.participants);
     if (event.participants.includes(userId)) {
       return res
         .status(400)
@@ -240,12 +275,14 @@ const joinEvent = async (req, res) => {
     if (event.participants.length >= event.capacity) {
       return res.status(400).json({ error: 'Event has reached its capacity.' });
     }
-
+    console.log(event);
+    console.log(user);
     event.participants.push(userId);
+    user.joinedEvents.push(eventId);
+    console.log(event);
+    console.log(user);
     await event.save();
 
-    const user = await User.findById(userId);
-    user.events.push(eventId);
     await user.save();
 
     await sendEmail(
@@ -255,10 +292,9 @@ const joinEvent = async (req, res) => {
     );
 
     return res
-      .status(200)
+      .status(201)
       .json({ message: 'User joined the event successfully.' });
   } catch (error) {
-    // console.error('Error joining event:', error);
     return res
       .status(500)
       .json({ error: 'An error occurred while joining the event.' });
