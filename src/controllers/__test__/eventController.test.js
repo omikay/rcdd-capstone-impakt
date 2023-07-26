@@ -14,6 +14,7 @@ const {
   joinEvent,
 } = require('../eventController');
 
+jest.mock('../../utils/email');
 jest.mock('../../models/Events');
 jest.mock('../../models/Users');
 jest.mock('../../models/Tags'); // Mock the Tag model
