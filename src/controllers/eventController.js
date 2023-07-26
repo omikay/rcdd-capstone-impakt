@@ -250,22 +250,21 @@ const deleteEvent = async (req, res) => {
 // User joins an event
 const joinEvent = async (req, res) => {
   const eventId = req.params.id;
-  console.log(eventId);
   const userId = req.user.id;
-  console.log(userId);
+
   try {
     const user = await User.findById(userId);
-    console.log(user);
+
     if (!user) {
       return res.status(404).json({ error: 'User not found.' });
     }
 
     const event = await Event.findById(eventId);
-    console.log(event);
+
     if (!event) {
       return res.status(404).json({ error: 'Event not found.' });
     }
-    console.log(event.participants);
+
     if (event.participants.includes(userId)) {
       return res
         .status(400)
@@ -275,14 +274,11 @@ const joinEvent = async (req, res) => {
     if (event.participants.length >= event.capacity) {
       return res.status(400).json({ error: 'Event has reached its capacity.' });
     }
-    console.log(event);
-    console.log(user);
+
     event.participants.push(userId);
     user.joinedEvents.push(eventId);
-    console.log(event);
-    console.log(user);
-    await event.save();
 
+    await event.save();
     await user.save();
 
     await sendEmail(
