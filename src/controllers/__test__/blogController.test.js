@@ -24,55 +24,57 @@ describe('createBlog', () => {
     jest.clearAllMocks();
   });
 
- it('should create a blog post and return it', async () => {
-  const req = {
-    user: {
+  it('should create a blog post and return it', async () => {
+    const req = {
+      user: {
+        userType: 'admin',
+        id: 'userId',
+      },
+      body: {
+        title: 'Test Blog Post',
+        bannerImage: 'test_banner.png',
+        category: 'category123',
+        shortDescription: 'Test Short Description',
+        bodyText: 'Test Body Text',
+      },
+    };
+
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+    const userMock = {
+      _id: 'userId',
       userType: 'admin',
-      id: 'userId',
-    },
-    body: {
-      title: 'Test Blog Post',
-      bannerImage: 'test_banner.png',
-      category: 'category123',
-      shortDescription: 'Test Short Description',
-      bodyText: 'Test Body Text',
-    },
-  };
+    };
 
-  const res = {
-    status: jest.fn().mockReturnThis(),
-    json: jest.fn(),
-  };
-  const userMock = {
-    _id: 'userId',
-    userType: 'admin',
-  };
+    const categoryMock = {
+      _id: 'category123',
+    };
 
-  const categoryMock = {
-    _id: 'category123',
-  };
+    const savedBlogPostMock = {
+      _id: 'blogPostId',
+      title: req.body.title,
+      bannerImage: req.body.bannerImage,
+      category: req.body.category,
+      shortDescription: req.body.shortDescription,
+      bodyText: req.body.bodyText,
+    };
 
-  const savedBlogPostMock = {
-    _id: 'blogPostId',
-    title: req.body.title,
-    bannerImage: req.body.bannerImage,
-    category: req.body.category,
-    shortDescription: req.body.shortDescription,
-    bodyText: req.body.bodyText,
-  };
+    jest.spyOn(User, 'findById').mockResolvedValueOnce(userMock);
+    jest.spyOn(Category, 'findById').mockResolvedValueOnce(categoryMock);
+    jest
+      .spyOn(BlogPost.prototype, 'save')
+      .mockResolvedValueOnce(savedBlogPostMock);
 
-  jest.spyOn(User, 'findById').mockResolvedValueOnce(userMock);
-  jest.spyOn(Category, 'findById').mockResolvedValueOnce(categoryMock);
-  jest.spyOn(BlogPost.prototype, 'save').mockResolvedValueOnce(savedBlogPostMock);
+    await createBlog(req, res);
 
-  await createBlog(req, res);
-
-  expect(res.status).toBeCalledWith(201);
-  expect(res.json).toBeCalledWith(savedBlogPostMock);
-  expect(User.findById).toBeCalledWith('userId');
-  expect(Category.findById).toBeCalledWith('category123');
-  expect(BlogPost.prototype.save).toBeCalled();
-});
+    expect(res.status).toBeCalledWith(201);
+    expect(res.json).toBeCalledWith(savedBlogPostMock);
+    expect(User.findById).toBeCalledWith('userId');
+    expect(Category.findById).toBeCalledWith('category123');
+    expect(BlogPost.prototype.save).toBeCalled();
+  });
 
   it('should return 404 if the user is not found', async () => {
     const req = {
@@ -88,23 +90,23 @@ describe('createBlog', () => {
         bodyText: 'Test Body Text',
       },
     };
-  
+
     const res = {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-  
+
     jest.spyOn(User, 'findById').mockResolvedValueOnce(null);
-  
+
     await createBlog(req, res);
-  
+
     expect(res.status).toBeCalledWith(404);
     expect(res.json).toBeCalledWith({ error: 'User not found' });
     expect(User.findById).toBeCalledWith('userId');
     expect(Category.findById).not.toBeCalled();
     expect(BlogPost.prototype.save).not.toBeCalled();
   });
-  
+
   it('should return 401 if the user is not an admin', async () => {
     const req = {
       user: {
@@ -119,18 +121,18 @@ describe('createBlog', () => {
         bodyText: 'Test Body Text',
       },
     };
-  
+
     const res = {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    
+
     const userMock = {
       _id: 'userid',
       userType: 'regular',
     };
     jest.spyOn(User, 'findById').mockResolvedValueOnce(userMock);
-  
+
     await createBlog(req, res);
     expect(res.status).toBeCalledWith(401);
     expect(res.json).toBeCalledWith({ error: 'Unauthorized' });
@@ -138,7 +140,6 @@ describe('createBlog', () => {
     expect(Category.findById).not.toBeCalled();
     expect(BlogPost.prototype.save).not.toBeCalled();
   });
-  
 
   it('should return 404 if the category is not found', async () => {
     const req = {
@@ -163,7 +164,7 @@ describe('createBlog', () => {
       _id: 'userId',
       userType: 'admin',
     };
-    
+
     jest.spyOn(User, 'findById').mockResolvedValueOnce(userMock);
     jest.spyOn(Category, 'findById').mockResolvedValueOnce(null);
 
@@ -199,7 +200,7 @@ describe('createBlog', () => {
       _id: 'userId',
       userType: 'admin',
     };
-    
+
     const categoryMock = {
       _id: 'category123',
     };
@@ -232,7 +233,7 @@ describe('updateBlog', () => {
     const existingBlogPost = {
       _id: 'existingBlogPostId',
     };
-  
+
     const req = {
       params: {
         id: existingBlogPost.id,
@@ -243,22 +244,24 @@ describe('updateBlog', () => {
         id: 'userId',
       },
     };
-  
+
     const res = {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-  
+
     jest.spyOn(BlogPost, 'findById').mockResolvedValueOnce(existingBlogPost);
     jest.spyOn(User, 'findById').mockResolvedValueOnce({ userType: 'admin' });
-    jest.spyOn(BlogPost, 'findByIdAndUpdate').mockResolvedValueOnce(updatedBlogData);
-  
+    jest
+      .spyOn(BlogPost, 'findByIdAndUpdate')
+      .mockResolvedValueOnce(updatedBlogData);
+
     await updateBlog(req, res);
-  
+
     expect(res.status).toBeCalledWith(200);
     expect(res.json).toBeCalledWith(updatedBlogData);
-  })
-  
+  });
+
   it('should return 404 if the blog post does not exist', async () => {
     const updatedBlogData = {
       title: 'Updated Title',
@@ -289,7 +292,7 @@ describe('updateBlog', () => {
     const existingBlogPost = {
       _id: 'existingBlogPostId',
     };
-  
+
     const req = {
       params: {
         id: existingBlogPost.id,
@@ -306,94 +309,95 @@ describe('updateBlog', () => {
         id: 'userId',
       },
     };
-  
+
     const res = {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-  
+
     jest.spyOn(BlogPost, 'findById').mockResolvedValueOnce(existingBlogPost);
     jest.spyOn(User, 'findById').mockResolvedValueOnce(null);
-  
+
     await updateBlog(req, res);
-  
+
     expect(res.status).toBeCalledWith(404);
-    expect(res.json).toBeCalledWith({ error: 'User not found' }); 
-})
-it('should return 401 if the user is not an admin', async () => {
-  const existingBlogPost = {
-    _id: 'existingBlogPostId',
-  };
+    expect(res.json).toBeCalledWith({ error: 'User not found' });
+  });
+  it('should return 401 if the user is not an admin', async () => {
+    const existingBlogPost = {
+      _id: 'existingBlogPostId',
+    };
 
-  const req = {
-    params: {
-      id: existingBlogPost.id,
-    },
-    body: {
-      title: 'Updated Title',
-      bannerImage: 'updated_banner.png',
-      category: 'Updated Category',
-      shortDescription: 'Updated short description',
-      bodyText: 'Updated body text',
-    },
-    user: {
-      userType: 'regular',
-      id: 'userId',
-    },
-  };
+    const req = {
+      params: {
+        id: existingBlogPost.id,
+      },
+      body: {
+        title: 'Updated Title',
+        bannerImage: 'updated_banner.png',
+        category: 'Updated Category',
+        shortDescription: 'Updated short description',
+        bodyText: 'Updated body text',
+      },
+      user: {
+        userType: 'regular',
+        id: 'userId',
+      },
+    };
 
-  const res = {
-    status: jest.fn().mockReturnThis(),
-    json: jest.fn(),
-  };
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
 
-  jest.spyOn(BlogPost, 'findById').mockResolvedValueOnce(existingBlogPost);
-  jest.spyOn(User, 'findById').mockResolvedValueOnce({ userType: 'regular' });
+    jest.spyOn(BlogPost, 'findById').mockResolvedValueOnce(existingBlogPost);
+    jest.spyOn(User, 'findById').mockResolvedValueOnce({ userType: 'regular' });
 
-  await updateBlog(req, res);
+    await updateBlog(req, res);
 
-  expect(res.status).toBeCalledWith(401);
-  expect(res.json).toBeCalledWith({ error: 'Unauthorized' });
+    expect(res.status).toBeCalledWith(401);
+    expect(res.json).toBeCalledWith({ error: 'Unauthorized' });
+  });
+
+  it('should handle internal server errors', async () => {
+    const existingBlogPost = {
+      _id: 'existingBlogPostId',
+    };
+
+    const req = {
+      params: {
+        id: existingBlogPost.id,
+      },
+      body: {
+        title: 'Updated Title',
+        bannerImage: 'updated_banner.png',
+        category: 'Updated Category',
+        shortDescription: 'Updated short description',
+        bodyText: 'Updated body text',
+      },
+      user: {
+        userType: 'admin',
+        id: 'userId',
+      },
+    };
+
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    jest.spyOn(BlogPost, 'findById').mockResolvedValueOnce(existingBlogPost);
+    jest.spyOn(User, 'findById').mockResolvedValueOnce({ userType: 'admin' });
+    jest
+      .spyOn(BlogPost, 'findByIdAndUpdate')
+      .mockRejectedValueOnce(new Error('Some error occurred'));
+
+    await updateBlog(req, res);
+
+    expect(res.status).toBeCalledWith(500);
+    expect(res.json).toBeCalledWith({ error: 'Internal server error' });
+  });
 });
-
-it('should handle internal server errors', async () => {
-  const existingBlogPost = {
-    _id: 'existingBlogPostId',
-  };
-
-  const req = {
-    params: {
-      id: existingBlogPost.id,
-    },
-    body: {
-      title: 'Updated Title',
-      bannerImage: 'updated_banner.png',
-      category: 'Updated Category',
-      shortDescription: 'Updated short description',
-      bodyText: 'Updated body text',
-    },
-    user: {
-      userType: 'admin',
-      id: 'userId',
-    },
-  };
-
-  const res = {
-    status: jest.fn().mockReturnThis(),
-    json: jest.fn(),
-  };
-
-  jest.spyOn(BlogPost, 'findById').mockResolvedValueOnce(existingBlogPost);
-  jest.spyOn(User, 'findById').mockResolvedValueOnce({ userType: 'admin' });
-  jest.spyOn(BlogPost, 'findByIdAndUpdate').mockRejectedValueOnce(new Error('Some error occurred'));
-
-  await updateBlog(req, res);
-
-  expect(res.status).toBeCalledWith(500);
-  expect(res.json).toBeCalledWith({ error: 'Internal server error' });
-});
-
-})
 describe('deleteBlog', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -427,7 +431,7 @@ describe('deleteBlog', () => {
   });
   it('should return 404 if the user is not found', async () => {
     const blogPostId = 'existingBlogPostId';
-  
+
     const req = {
       user: {
         userType: 'admin',
@@ -437,7 +441,7 @@ describe('deleteBlog', () => {
         blogPostId,
       },
     };
-  
+
     const res = {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
@@ -447,13 +451,13 @@ describe('deleteBlog', () => {
     };
     jest.spyOn(BlogPost, 'findById').mockResolvedValueOnce(blogPostMock);
     jest.spyOn(User, 'findById').mockResolvedValueOnce(null);
-  
+
     await deleteBlog(req, res);
-  
+
     expect(res.status).toBeCalledWith(404);
     expect(res.json).toBeCalledWith({ error: 'User not found' });
   });
-  
+
   it('should return 401 if the user is not an admin', async () => {
     const blogPostId = 'existingBlogPostId';
     const req = {
@@ -519,7 +523,9 @@ describe('deleteBlog', () => {
       json: jest.fn(),
     };
 
-    jest.spyOn(BlogPost, 'findById').mockRejectedValueOnce(new Error('Some error occurred'));
+    jest
+      .spyOn(BlogPost, 'findById')
+      .mockRejectedValueOnce(new Error('Some error occurred'));
     await deleteBlog(req, res);
 
     expect(res.status).toBeCalledWith(500);
@@ -584,7 +590,7 @@ describe('getBlogById', () => {
   });
   it('should return 404 if the user is not found', async () => {
     const blogPostId = 'validBlogPostId';
-  
+
     const req = {
       params: {
         id: blogPostId,
@@ -607,15 +613,15 @@ describe('getBlogById', () => {
     };
     jest.spyOn(BlogPost, 'findById').mockResolvedValueOnce(blogPostMock);
     jest.spyOn(User, 'findById').mockResolvedValueOnce(null);
-  
+
     await getBlogById(req, res);
-  
+
     expect(res.status).toBeCalledWith(404);
     expect(res.json).toBeCalledWith({ error: 'User not found' });
     expect(BlogPost.findById).toBeCalledWith(blogPostId);
     expect(User.findById).toBeCalledWith(req.user.id);
   });
-  
+
   it('should handle internal server errors', async () => {
     const blogPostId = 'validBlogPostId';
     const req = {
@@ -627,7 +633,9 @@ describe('getBlogById', () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    jest.spyOn(BlogPost, 'findById').mockRejectedValueOnce(new Error('Some error occurred'));
+    jest
+      .spyOn(BlogPost, 'findById')
+      .mockRejectedValueOnce(new Error('Some error occurred'));
 
     await getBlogById(req, res);
 
@@ -636,7 +644,6 @@ describe('getBlogById', () => {
     expect(BlogPost.findById).toBeCalledWith(blogPostId);
   });
 });
-
 
 describe('getAllBlogs', () => {
   it('should return all blog posts', async () => {
@@ -659,9 +666,11 @@ describe('getAllBlogs', () => {
       },
     ];
 
-    const req = {user: {
-      id: 'userId',
-    },};
+    const req = {
+      user: {
+        id: 'userId',
+      },
+    };
     const res = {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
