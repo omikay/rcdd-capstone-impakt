@@ -1,0 +1,103 @@
+/* Global Styles */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+}
+
+/* Header Styles */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background-color: #333;
+  color: #fff;
+}
+
+.logo img {
+  width: 100px; /* Adjust the logo width as needed */
+}
+
+.navbar {
+  display: flex;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+  margin-right: 30px;
+}
+
+.nav-item {
+  text-transform: uppercase;
+}
+
+.nav-item a {
+  color: #fff;
+  text-decoration: none;
+  padding: 5px 10px;
+}
+
+.nav-item a:hover {
+  background-color: #555;
+}
+
+.login-btn a {
+  color: #fff;
+  text-decoration: none;
+  padding: 5px 10px;
+  border: 1px solid #fff;
+  border-radius: 5px;
+}
+
+.login-btn a:hover {
+  background-color: #555;
+}
+
+/* Hero Section Styles */
+.hero {
+  background-color: #f5f5f5;
+  text-align: center;
+  padding: 50px 0;
+}
+
+.hero-content img {
+  width: 100%;
+  max-width: 600px; /* Adjust the maximum image width as needed */
+}
+
+.hero-content h1 {
+  margin-top: 20px;
+}
+
+/* Footer Styles */
+.footer {
+  text-align: center;
+  padding: 20px;
+  background-color: #333;
+  color: #fff;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .navbar {
+    margin-top: 20px;
+  }
+
+  .login-btn {
+    margin-top: 20px;
+  }
+
+  .hero-content h1 {
+    font-size: 24px;
+  }
+}
+
+/* Add more media queries as needed for other screen sizes */

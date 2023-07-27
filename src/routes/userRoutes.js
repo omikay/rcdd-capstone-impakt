@@ -14,16 +14,22 @@ const isAuthorized = require('../middlewares/auth');
 
 const router = express.Router();
 
+// Homepage route
+router.get('/', (req, res) => {
+  // Render the 'landing.ejs' view from the views/pages directory
+  res.render('pages/landing');
+});
+
 // User signup - Render the signup form
 router.get('/signup', (req, res) => {
-  res.render('signup');
+  res.render('pages/signup');
 });
 
 // User signup
 router.post('/api/signup', signup);
 
 router.get('/login', (req, res) => {
-  res.render('login');
+  res.render('pages/login');
 });
 
 // User login
@@ -39,12 +45,12 @@ router.get(
 );
 
 router.get('/profile', isAuthorized, (req, res) => {
-  res.render('user-profile', { user: req.user });
+  res.render('pages/user-profile', { user: req.user });
 });
 
 // Forgot Password - Render the "Forgot Password" form
 router.get('/forgot-password', (req, res) => {
-  res.render('forgot-password');
+  res.render('pages/forgot-password');
 });
 
 // Forgot Password - Submit the "Forgot Password" form
@@ -53,13 +59,11 @@ router.post('/forgot-password', forgotPassword);
 // Password Reset - Render the "Password Reset" form
 router.get('/reset-password/:token', (req, res) => {
   const { token } = req.params;
-  res.render('reset-password', { token });
+  res.render('pages/reset-password', { token });
 });
 
 // Password Reset - Submit the "Password Reset" form
 router.post('/reset-password/:token', resetPassword);
-// User profile
-router.get('/user/profile', isAuthorized, getUserProfile);
 
 // Update user profile
 router.patch('/user/updateProfile', isAuthorized, updateUserProfile);
