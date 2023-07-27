@@ -30,6 +30,7 @@ app.use('/users', userRoutes);
 app.use('/events', eventRoutes);
 app.use('/donations', donationRoutes);
 
+// Error handling middlewarejb
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ error: 'Internal server error' });
@@ -40,6 +41,7 @@ app.use((req, res) => {
 });
 
 const server = app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
   connectToMongo();
 });
 
