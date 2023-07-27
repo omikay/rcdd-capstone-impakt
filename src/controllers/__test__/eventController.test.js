@@ -639,6 +639,7 @@ describe('searchEvents', () => {
       startDate: { $gte: new Date('2023-07-15') },
       endDate: { $lte: new Date('2023-07-20') },
       tags: { $in: ['music', 'live'] },
+    });
 
     // Check if the response contains the mock events
     expect(res.json).toHaveBeenCalledWith(mockEvents);
@@ -675,6 +676,8 @@ describe('searchEvents', () => {
       startDate: { $gte: new Date('2023-07-15') },
       endDate: { $lte: new Date('2023-07-20') },
       tags: { $in: ['tech'] },
+    });
+
     // Check if the response contains an empty array
     expect(res.status).toHaveBeenCalledWith(403);
     expect(res.json).toHaveBeenCalledWith({
@@ -709,107 +712,181 @@ describe('searchEvents', () => {
 });
 
 describe('joinEvent', () => {
-  let mockEvent = {
-    _id: 'event-id',
-    title: 'Test Event',
-    hostId: 'host-id',
-    participants: [],
-    capacity: 50,
-    save: jest.fn(),
-  };
+  it('should allow a user to join an event', async () => {
+    const req = {
+      params: { id: 'event-id' },
+      user: { id: 'user-id' },
+    };
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
 
-  const mockUser = {
-    _id: 'user-id',
-    name: 'John Doe',
-    email: 'john@example.com',
-    events: [],
-    save: jest.fn(),
-  };
+    // Mock the User and Event models
+    const mockUser = {
+      id: 'user-id',
+      joinedEvents: ['event1', 'event2'],
+    };
+    const mockEvent = {
+      id: 'event-id',
+      participants: [],
+      capacity: 100,
+    };
 
-  const mockReq = {
-    params: { eventId: mockEvent.id },
-    user: { id: mockUser.id },
-  };
-
-  const mockRes = {
-    status: jest.fn().mockReturnThis(),
-    json: jest.fn(),
-  };
-  it('should add user to event participants and add event to user events and send email', async () => {
-    Event.findById.mockResolvedValueOnce(mockEvent);
     User.findById.mockResolvedValueOnce(mockUser);
+    Event.findById.mockResolvedValueOnce(mockEvent);
+    Event.findOneAndUpdate.mockResolvedValueOnce(mockEvent);
+    User.findOneAndUpdate.mockResolvedValueOnce(mockUser);
 
-    await joinEvent(mockReq, mockRes);
+    await joinEvent(req, res);
 
-    expect(Event.findById).toHaveBeenCalledWith(mockEvent.id);
-    expect(User.findById).toHaveBeenCalledWith(mockUser.id);
-
-    expect(mockEvent.participants).toContain(mockUser.id);
-    expect(mockEvent.save).toHaveBeenCalled();
-
-    expect(mockUser.events).toContain(mockEvent.id);
-    expect(mockUser.save).toHaveBeenCalled();
-
+    expect(User.findById).toHaveBeenCalledWith(req.user.id);
+    expect(Event.findById).toHaveBeenCalledWith(req.params.id);
+    expect(Event.findOneAndUpdate).toHaveBeenCalledWith(
+      { _id: req.params.id, participants: { $ne: req.user.id } },
+      { $push: { participants: req.user.id } }
+    );
+    expect(User.findOneAndUpdate).toHaveBeenCalledWith(
+      { _id: req.user.id, joinedEvents: { $ne: req.params.id } },
+      { $push: { joinedEvents: req.params.id } }
+    );
     expect(sendEmail).toHaveBeenCalledWith(
       mockUser.email,
       `Event joined: ${mockEvent.title}!`,
       `Dear ${mockUser.name}, you have successfully joined the event ${mockEvent.title}.`
     );
-
-    expect(mockRes.status).toHaveBeenCalledWith(200);
-    expect(mockRes.json).toHaveBeenCalledWith({
+    expect(res.status).toHaveBeenCalledWith(201);
+    expect(res.json).toHaveBeenCalledWith({
       message: 'User joined the event successfully.',
     });
   });
 
   it('should return an error if the event is not found', async () => {
+    const req = {
+      params: { id: 'event-id' },
+      user: { id: 'user-id' },
+    };
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
     Event.findById.mockResolvedValueOnce(null);
 
-    await joinEvent(mockReq, mockRes);
+    await joinEvent(req, res);
 
-    expect(Event.findById).toHaveBeenCalledWith(mockEvent.id);
-
-    expect(mockRes.status).toHaveBeenCalledWith(404);
-    expect(mockRes.json).toHaveBeenCalledWith({ error: 'Event not found.' });
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.json).toHaveBeenCalledWith({
+      error: 'Event not found.',
+    });
   });
 
-  it('should return an error if the user is already participating in the event', async () => {
-    mockEvent.participants.push(mockUser.id);
+  it('should return an error if the user is not found', async () => {
+    const req = {
+      params: { id: 'event-id' },
+      user: { id: 'user-id' },
+    };
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    const mockEvent = {
+      id: 'event-id',
+      participants: [],
+      capacity: 100,
+    };
+
+    User.findById.mockResolvedValueOnce(null);
+
+    await joinEvent(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.json).toHaveBeenCalledWith({
+      error: 'User not found.',
+    });
+  });
+
+  it('should return an error if the user is already a participant of the event', async () => {
+    const req = {
+      params: { id: 'event-id' },
+      user: { id: 'user-id' },
+    };
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    const mockEvent = {
+      id: 'event-id',
+      participants: ['p1', 'user-id'],
+      capacity: 100,
+    };
+    const mockUser = {
+      id: 'user-id',
+      joinedEvents: ['event-id', 'event2'],
+    };
+
+    User.findById.mockResolvedValueOnce(mockUser);
     Event.findById.mockResolvedValueOnce(mockEvent);
 
-    await joinEvent(mockReq, mockRes);
+    await joinEvent(req, res);
 
-    expect(Event.findById).toHaveBeenCalledWith(mockEvent.id);
-
-    expect(mockRes.status).toHaveBeenCalledWith(400);
-    expect(mockRes.json).toHaveBeenCalledWith({
+    expect(User.findById).toHaveBeenCalledWith(req.user.id);
+    expect(Event.findById).toHaveBeenCalledWith(req.params.id);
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({
       error: 'User is already participating in the event.',
     });
   });
 
   it('should return an error if the event has reached its capacity', async () => {
-    mockEvent.capacity = 0; // Set the capacity to zero to simulate a full event
+    const req = {
+      params: { id: 'event-id' },
+      user: { id: 'user-id' },
+    };
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    const mockEvent = {
+      id: 'event-id',
+      participants: ['p1', 'p2', 'p3'],
+      capacity: 3,
+    };
+    const mockUser = {
+      id: 'user-id',
+      joinedEvents: ['event 1', 'event2'],
+    };
+
     Event.findById.mockResolvedValueOnce(mockEvent);
+    User.findById.mockResolvedValueOnce(mockUser);
 
-    await joinEvent(mockReq, mockRes);
+    await joinEvent(req, res);
 
-    expect(Event.findById).toHaveBeenCalledWith(mockEvent.id);
-
-    expect(mockRes.status).toHaveBeenCalledWith(400);
-    expect(mockRes.json).toHaveBeenCalledWith({
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({
       error: 'Event has reached its capacity.',
     });
   });
 
-  it('should handle server errors', async () => {
-    Event.findById.mockRejectedValueOnce(new Error('Internal server error'));
+  it('should return an error if there is a server error', async () => {
+    const req = {
+      params: { id: 'event-id' },
+      user: { id: 'user-id' },
+    };
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
 
-    await joinEvent(mockReq, mockRes);
+    Event.findById.mockRejectedValueOnce(new Error('Server error'));
+    User.findById.mockRejectedValueOnce(new Error('Server error'));
 
-    expect(Event.findById).toHaveBeenCalledWith(mockEvent.id);
-
-    expect(mockRes.status).toHaveBeenCalledWith(500);
-    expect(mockRes.json).toHaveBeenCalledWith({
+    await joinEvent(req, res);
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({
       error: 'An error occurred while joining the event.',
     });
   });

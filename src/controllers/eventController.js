@@ -249,10 +249,11 @@ const deleteEvent = async (req, res) => {
 
 // User joins an event
 const joinEvent = async (req, res) => {
-  const eventId = req.params.id;
-  const userId = req.user.id;
-
   try {
+    const eventId = req.params.id;
+    const userId = req.user.id;
+
+    // Find the user and event
     const user = await User.findById(userId);
 
     if (!user) {
@@ -265,35 +266,45 @@ const joinEvent = async (req, res) => {
       return res.status(404).json({ error: 'Event not found.' });
     }
 
+    // Check if the user is already participating in the event
     if (event.participants.includes(userId)) {
-      return res
-        .status(400)
-        .json({ error: 'User is already participating in the event.' });
+      return res.status(400).json({
+        error: 'User is already participating in the event.',
+      });
     }
 
-    if (event.participants.length >= event.capacity) {
+    // Check if the event has reached its capacity
+    if (event.participants.length + 1 >= event.capacity) {
       return res.status(400).json({ error: 'Event has reached its capacity.' });
     }
 
-    event.participants.push(userId);
-    user.joinedEvents.push(eventId);
+    // Add the user to the participants and the event to the user's joinedEvents
+    await Event.findOneAndUpdate(
+      { _id: eventId, participants: { $ne: userId } }, // Ensure user is not already a participant
+      { $push: { participants: userId } }
+    );
 
-    await event.save();
-    await user.save();
+    await User.findOneAndUpdate(
+      { _id: userId, joinedEvents: { $ne: eventId } }, // Ensure event is not already in the user's joinedEvents
+      { $push: { joinedEvents: eventId } }
+    );
 
+    // Send an email notification to the user
     await sendEmail(
       user.email,
       `Event joined: ${event.title}!`,
       `Dear ${user.name}, you have successfully joined the event ${event.title}.`
     );
 
-    return res
-      .status(201)
-      .json({ message: 'User joined the event successfully.' });
+    // Respond with success message
+    return res.status(201).json({
+      message: 'User joined the event successfully.',
+    });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ error: 'An error occurred while joining the event.' });
+    // Handle errors and respond with an error message
+    return res.status(500).json({
+      error: 'An error occurred while joining the event.',
+    });
   }
 };
 
