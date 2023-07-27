@@ -7,13 +7,24 @@ const {
   getUserProfile,
   updateUserProfile,
   connectGoogleAccount,
+  forgotPassword,
+  resetPassword,
 } = require('../controllers/userController');
 const isAuthorized = require('../middlewares/auth');
 
 const router = express.Router();
 
+// User signup - Render the signup form
+router.get('/signup', (req, res) => {
+  res.render('signup');
+});
+
 // User signup
 router.post('/api/signup', signup);
+
+router.get('/login', (req, res) => {
+  res.render('login');
+});
 
 // User login
 router.post('/api/login', login);
@@ -27,6 +38,26 @@ router.get(
   passport.authenticate('google', { scope: ['profile', 'email'] })
 );
 
+router.get('/profile', isAuthorized, (req, res) => {
+  res.render('user-profile', { user: req.user });
+});
+
+// Forgot Password - Render the "Forgot Password" form
+router.get('/forgot-password', (req, res) => {
+  res.render('forgot-password');
+});
+
+// Forgot Password - Submit the "Forgot Password" form
+router.post('/forgot-password', forgotPassword);
+
+// Password Reset - Render the "Password Reset" form
+router.get('/reset-password/:token', (req, res) => {
+  const { token } = req.params;
+  res.render('reset-password', { token });
+});
+
+// Password Reset - Submit the "Password Reset" form
+router.post('/reset-password/:token', resetPassword);
 // User profile
 router.get('/user/profile', isAuthorized, getUserProfile);
 
