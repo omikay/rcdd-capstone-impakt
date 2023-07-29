@@ -1,7 +1,8 @@
+const path = require('path');
+
 const express = require('express');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
-const path = require('path');
 const swaggerUi = require('swagger-ui-express');
 const dotenv = require('dotenv'); // Import dotenv module
 const swaggerDocument = require('../docs/swagger.json');
