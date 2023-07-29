@@ -1,0 +1,464 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "User API",
+    "description": "API endpoints for user authentication, profile management, and Google OAuth login"
+  },
+  "paths": {
+    "/api/signup": {
+      "post": {
+        "summary": "User signup",
+        "description": "Allows users to sign up using email and password",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "userSignup",
+            "description": "User signup details",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "email": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                },
+                "passwordConfirmation": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successfully signed up user",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "token": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (e.g., email already exists, weak password, password mismatch)",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/api/login": {
+      "post": {
+        "summary": "User login",
+        "description": "Allows users to log in using email and password",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "userLogin",
+            "description": "User login details",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully logged in user",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "token": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (e.g., invalid credentials)",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/api/logout": {
+      "get": {
+        "summary": "User logout",
+        "description": "Allows users to log out and clears the JWT cookie",
+        "responses": {
+          "200": {
+            "description": "Successfully logged out user",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/user/profile": {
+      "get": {
+        "summary": "Get user profile",
+        "description": "Fetches the authenticated user's profile details",
+        "responses": {
+          "200": {
+            "description": "User profile data",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "profilePicture": {
+                  "type": "string"
+                },
+                "location": {
+                  "type": "string"
+                },
+                "dateOfBirth": {
+                  "type": "string"
+                },
+                "email": {
+                  "type": "string"
+                },
+                "phoneNumber": {
+                  "type": "string"
+                },
+                "interests": {
+                  "type": "string"
+                },
+                "googleAccount": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/user/updateProfile": {
+      "patch": {
+        "summary": "Update user profile",
+        "description": "Allows authenticated users to update their profile information",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "updateUserProfile",
+            "description": "Updated user profile data",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "location": {
+                  "type": "string"
+                },
+                "phone": {
+                  "type": "string"
+                },
+                "interests": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                },
+                "profilePicture": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Profile updated successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (e.g., new password matches the previous password)",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/forgot-password": {
+      "get": {
+        "summary": "Forgot Password",
+        "description": "Renders the \"Forgot Password\" form"
+      },
+      "post": {
+        "summary": "Handle \"Forgot Password\" form submission",
+        "description": "Sends a password reset email to the user's email address",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "forgotPassword",
+            "description": "User's email address",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Password reset email sent successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (e.g., user not found, password reset link expired)",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/reset-password/{token}": {
+      "get": {
+        "summary": "Password Reset",
+        "description": "Renders the \"Password Reset\" form",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "token",
+            "description": "Password reset token received via email",
+            "required": true,
+            "type": "string"
+          }
+        ]
+      },
+      "post": {
+        "summary": "Handle \"Password Reset\" form submission",
+        "description": "Resets the user's password based on the password reset token",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "token",
+            "description": "Password reset token received via email",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "resetPassword",
+            "description": "New password and password confirmation",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "password": {
+                  "type": "string"
+                },
+                "confirmPassword": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Password reset successful",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request (e.g., password and confirmation do not match)",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    },
+    "/api/auth/google": {
+      "get": {
+        "summary": "Google OAuth login",
+        "description": "Initiates the Google OAuth process for login",
+        "responses": {
+          "302": {
+            "description": "Redirects to Google login page for authentication"
+          }
+        }
+      }
+    },
+    "/api/auth/google/callback": {
+      "get": {
+        "summary": "Google OAuth callback",
+        "description": "Handles the callback after successful Google OAuth authentication",
+        "responses": {
+          "302": {
+            "description": "Redirects to user profile page after successful authentication"
+          },
+          "401": {
+            "description": "Unauthorized (authentication failed)"
+          }
+        }
+      }
+    },
+    "/api/auth/connectGoogle": {
+      "patch": {
+        "summary": "Connect Google account",
+        "description": "Allows users to connect their Google account to their existing account",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "connectGoogleAccount",
+            "description": "Google account details",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "googleId": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Google account successfully connected",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    }
+  }
+}
