@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "bcrypt": "^5.1.0",
+    "body-parser": "^1.20.2",
     "cookie-parser": "1.4.6",
     "dotenv": "^14.3.2",
     "express": "^4.17.2",
@@ -27,6 +28,8 @@
     "passport": "0.6.0",
     "passport-google-oauth20": "^2.0.0",
     "supertest": "^6.3.3",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.0",
     "yarn-upgrade-all": "^0.6.1"
   },
   "devDependencies": {
