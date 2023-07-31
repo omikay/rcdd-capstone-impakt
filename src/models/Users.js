@@ -19,7 +19,7 @@ const userSchema = new Schema({
   },
   profilePicture: String, // the URL of the image
   interests: [{ type: Schema.Types.ObjectId, ref: 'Tags' }],
-  events: [{ type: Schema.Types.ObjectId, ref: 'Events' }],
+  joinedEvents: [{ type: Schema.Types.ObjectId, ref: 'Events' }],
   userType: String, // 'admin' or 'regular'
   createdEvents: [{ type: Schema.Types.ObjectId, ref: 'Events' }],
   blogPosts: [{ type: Schema.Types.ObjectId, ref: 'BlogPosts' }],
