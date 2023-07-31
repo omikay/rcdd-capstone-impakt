@@ -2,6 +2,7 @@ const express = require('express');
 const passport = require('../utils/googleOAuth');
 const {
   signup,
+  activateUser,
   login,
   logout,
   getUserProfile,
@@ -18,6 +19,9 @@ const router = express.Router();
 router.get('/signup', (req, res) => {
   res.render('signup');
 });
+
+// User account activation
+router.get('/verify-account/:token', activateUser);
 
 // User signup
 router.post('/api/signup', signup);
@@ -58,6 +62,7 @@ router.get('/reset-password/:token', (req, res) => {
 
 // Password Reset - Submit the "Password Reset" form
 router.post('/reset-password/:token', resetPassword);
+
 // User profile
 router.get('/user/profile', isAuthorized, getUserProfile);
 

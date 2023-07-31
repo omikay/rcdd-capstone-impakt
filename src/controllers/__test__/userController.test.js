@@ -90,9 +90,12 @@ describe('signup', () => {
       name: data.name,
       email: data.email,
       password: data.password,
+      accountCreatedOn: data.accountCreatedOn,
       save: userSaveFn,
     }));
     jwt.sign.mockReturnValueOnce(mockToken);
+    // const mockToken = 'mock-activation-token';
+    // jwt.sign.mockReturnValue(mockToken);
 
     await signup(req, res);
 
@@ -101,6 +104,7 @@ describe('signup', () => {
       name: req.body.name,
       email: req.body.email,
       password: mockHashedPassword,
+      accountCreatedOn: expect.any(Number),
     });
     expect(bcrypt.hash).toHaveBeenCalledWith(req.body.password, 10);
     expect(userSaveFn).toHaveBeenCalled();
@@ -116,14 +120,17 @@ describe('signup', () => {
     expect(sendEmail).toHaveBeenCalledWith(
       req.body.email,
       'Welcome to Impakt!',
-      `Dear ${req.body.name}, your Impakt account has been created successfully.`
+      `Hi ${req.body.name}, you have been signed up successfully. Please click on the following link to activate your account: 
+      
+      ${process.env.CLIENT_URL}/verify-account/${mockToken}
+      
+      The activation link is valid for 2 days after the sign-up attempt.`
     );
-    expect(res.cookie).toHaveBeenCalledWith('jwt', mockToken, {
-      httpOnly: true,
-    });
-    // expect(res.redirect).toHaveBeenCalledWith('/user/profile/:id');
+
     expect(res.status).toHaveBeenCalledWith(201);
-    expect(res.json).toHaveBeenCalledWith({ token: mockToken });
+    expect(res.json).toHaveBeenCalledWith({
+      message: 'User signed up successfully. Activate account to login.',
+    });
   });
 
   it('should return an error if the user email already exists', async () => {
@@ -198,6 +205,7 @@ describe('login', () => {
       name: 'John Doe',
       email: 'john.doe@login.com',
       password: await bcrypt.hash('password123', 10),
+      isVerified: true,
     };
 
     User.findOne.mockResolvedValueOnce(existingUser);
@@ -242,6 +250,7 @@ describe('login', () => {
     const existingUser = {
       email: 'test@example.com',
       password: await bcrypt.hash('password123', 10),
+      isVerified: true,
     };
 
     User.findOne.mockResolvedValueOnce(existingUser);
