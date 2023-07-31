@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const uuid = require('uuid');
 const User = require('../models/Users');
 const sendEmail = require('../utils/email');
 
@@ -31,54 +30,106 @@ const signup = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    // console.log(user);
+
     user = new User({
       name,
       email,
       password: hashedPassword,
+      accountCreatedOn: Date.now(),
     });
-    // console.log(user, req);
+
     await user.save();
 
-    const confirmationToken = uuid.v4();
-    const expirationDate = new Date();
-    expirationDate.setHours(expirationDate.getHours() + 24);
-
-    user.confirmationTokenExpirationDate = expirationDate;
-    await user.save();
-
-    await sendEmail(
-      user.email,
-      'Confirm your Impakt account',
-      `Hi ${user.name},
-
-Please click on the following link to confirm your Impakt account:
-
-http://localhost:8080/confirm/${confirmationToken}
-
-This link will expire in 24 hours.
-
-If you did not create an Impakt account, please ignore this email.
-
-Thanks,
-The Impakt Team`
-    );
-
-    const token = jwt.sign(
+    // Generate an account activation token
+    const activationToken = jwt.sign(
       {
         name: user.name,
         email: user.email,
-        exp: expirationDate.getTime(), // Expiration date
+        exp: Math.floor(Date.now() / 1000) + 2 * 24 * 60 * 60, // 2 days expiration
         iat: Math.floor(Date.now() / 1000), // Issued at date
       },
       process.env.JWT_SECRET
     );
 
-    res.cookie('jwt', token, { httpOnly: true });
+    // Create a password reset URL that includes the generated token
+    const activationLink = `${process.env.CLIENT_URL}/verify-account/${activationToken}`;
 
-    return res.status(201).json({ token });
+    await sendEmail(
+      user.email,
+      'Welcome to Impakt!',
+      `Hi ${user.name}, you have been signed up successfully. Please click on the following link to activate your account: 
+      
+      ${activationLink}
+      
+      The activation link is valid for 2 days after the sign-up attempt.`
+    );
+
+    return res.status(201).json({
+      message: 'User signed up successfully. Activate account to login.',
+    });
   } catch (error) {
-    // console.error('Error signing up user:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+// User account activation after sign up
+// This is when the user sign ups with their email and not GoogleOAuth
+const activateUser = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Check if the token is expired
+    const currentTime = Math.floor(Date.now() / 1000);
+    if (decodedToken.exp <= currentTime) {
+      const newToken = jwt.sign(
+        {
+          name: decodedToken.name,
+          email: decodedToken.email,
+          exp: currentTime + 2 * 24 * 60 * 60, // 2 days expiration
+          iat: currentTime, // Issued at date
+        },
+        process.env.JWT_SECRET
+      );
+
+      const activationLink = `${process.env.CLIENT_URL}/verify-account/${newToken}`;
+
+      await sendEmail(
+        decodedToken.email,
+        'Activation required for your Impakt account',
+        `Hi ${decodedToken.name}, your activation link has expired. Please click on the following link to activate your account: 
+        
+        ${activationLink}.
+        
+        The activation link is valid for 2 days.`
+      );
+
+      return res.status(400).json({
+        error:
+          'Activation link has expired. A new link has been sent to your email.',
+      });
+    }
+
+    // Find the user by their email
+    const user = await User.findOne({ email: decodedToken.email });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    if (user.isVerified === true) {
+      return res.status(400).json({ error: 'Account already activated' });
+    }
+
+    // Mark the user as verified
+    user.isVerified = true;
+    await user.save();
+
+    return res.status(201).json({
+      message:
+        'Account activated successfully. You can now log into your account.',
+    });
+  } catch (error) {
     return res.status(500).json({ error: 'Internal server error' });
   }
 };
@@ -95,6 +146,40 @@ const login = async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: "User doesn't exist." });
     }
+
+    // Check if the user's account is verified
+    if (!user.isVerified) {
+      // Generate an account activation token
+      const activationToken = jwt.sign(
+        {
+          name: user.name,
+          email: user.email,
+          exp: Math.floor(Date.now() / 1000) + 2 * 24 * 60 * 60, // 2 days expiration
+          iat: Math.floor(Date.now() / 1000), // Issued at date
+        },
+        process.env.JWT_SECRET
+      );
+
+      // Create a password reset URL that includes the generated token
+      const activationLink = `${process.env.CLIENT_URL}/verify-account/${activationToken}`;
+
+      await sendEmail(
+        user.email,
+        'Account activation required',
+        `Dear ${user.name},
+        
+        Please click on the following link to activate your account to be able to use your account.
+
+        ${activationLink}
+        
+        The activation link is valid for 2 days.`
+      );
+      return res.status(401).json({
+        error:
+          'Account is not verified. Please check your email for the new activation link.',
+      });
+    }
+
     const hashedReqPass = await bcrypt.hash(password);
     const isPasswordCorrect = await bcrypt.compare(
       hashedReqPass,
@@ -230,6 +315,77 @@ const connectGoogleAccount = async (req, res) => {
   }
 };
 
+// Forgot Password - Handle "Forgot Password" form submission
+const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    // Find the user by their email
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    // Generate a password reset token
+    const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, {
+      expiresIn: '1h', // Token will expire in 1 hour
+    });
+
+    // Create a password reset URL that includes the generated token
+    const resetPasswordURL = `http://localhost:3000/reset-password/${token}`;
+
+    // Send the password reset email to the user
+    await sendEmail(
+      user.email,
+      'Password Reset Request',
+      `To reset your password, click the link below:\n${resetPasswordURL}`
+    );
+
+    return res.status(200).json({ message: 'Password reset email sent.' });
+  } catch (error) {
+    return res.status(500).json({ error: 'Server error.' });
+  }
+};
+
+// Password Reset - Handle "Password Reset" form submission
+const resetPassword = async (req, res) => {
+  const { token } = req.params;
+  const { password, confirmPassword } = req.body;
+
+  try {
+    // Verify the token
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Find the user by their email
+    const user = await User.findOne({ email: decodedToken.email });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    if (password !== confirmPassword) {
+      return res.status(400).json({ error: 'Passwords do not match.' });
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(password, 10);
+    user.password = hashedPassword;
+
+    // Save the updated user with the new password to the database
+    await user.save();
+
+    return res.status(200).json({ message: 'Password reset successful.' });
+  } catch (error) {
+    if (error.name === 'TokenExpiredError') {
+      return res
+        .status(400)
+        .json({ error: 'Password reset link has expired.' });
+    }
+    return res.status(500).json({ error: 'Server error.' });
+  }
+};
+
 // User logout
 const logout = (req, res) => {
   try {
@@ -245,9 +401,12 @@ const logout = (req, res) => {
 
 module.exports = {
   signup,
+  activateUser,
   login,
   logout,
   getUserProfile,
   updateUserProfile,
   connectGoogleAccount,
+  forgotPassword,
+  resetPassword,
 };
