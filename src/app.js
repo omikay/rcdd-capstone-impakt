@@ -7,7 +7,7 @@ const dotenv = require('dotenv'); // Import dotenv module
 
 dotenv.config(); // Load environment variables from .env file
 
-const swaggerDocument = require('../docs/swagger.json');
+const swaggerDocument = require('./docs/swagger.json');
 const userRoutes = require('./routes/userRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const donationRoutes = require('./routes/donationRoutes');
@@ -32,16 +32,16 @@ app.use('/', userRoutes);
 app.use('/', eventRoutes);
 app.use('/', donationRoutes);
 
-// Error handling middlewarejb
+// Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ error: 'Internal server error' });
 });
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-// app.use((req, res) => {
-// res.status(404).json({ error: 'Not Found' });
-/// });
+app.get('/', (req, res) => {
+  res.render('index');
+});
 
 const server = app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
