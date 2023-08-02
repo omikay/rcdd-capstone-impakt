@@ -60,14 +60,13 @@
           "500": {
             "description": "Internal server error",
             "schema": {
-                "type": "object",
-                "properties": {
-                  "error": {
-                    "type": "string"
-                  }
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
                 }
               }
-
+            }
           }
         }
       }
@@ -131,13 +130,13 @@
           "500": {
             "description": "Internal server error",
             "schema": {
-                "type": "object",
-                "properties": {
-                  "error": {
-                    "type": "string"
-                  }
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
                 }
               }
+            }
           }
         }
       }
@@ -161,13 +160,13 @@
           "500": {
             "description": "Internal server error",
             "schema": {
-                "type": "object",
-                "properties": {
-                  "error": {
-                    "type": "string"
-                  }
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
                 }
               }
+            }
           }
         }
       }
@@ -223,13 +222,13 @@
           "500": {
             "description": "Internal server error",
             "schema": {
-                "type": "object",
-                "properties": {
-                  "error": {
-                    "type": "string"
-                  }
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
                 }
               }
+            }
           }
         }
       }
@@ -305,13 +304,13 @@
           "500": {
             "description": "Internal server error",
             "schema": {
-                "type": "object",
-                "properties": {
-                  "error": {
-                    "type": "string"
-                  }
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
                 }
               }
+            }
           }
         }
       }
@@ -365,13 +364,13 @@
           "500": {
             "description": "Internal server error",
             "schema": {
-                "type": "object",
-                "properties": {
-                  "error": {
-                    "type": "string"
-                  }
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
                 }
               }
+            }
           }
         }
       }
@@ -444,13 +443,13 @@
           "500": {
             "description": "Internal server error",
             "schema": {
-                "type": "object",
-                "properties": {
-                  "error": {
-                    "type": "string"
-                  }
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
                 }
               }
+            }
           }
         }
       }
@@ -463,13 +462,13 @@
           "302": {
             "description": "Redirects to Google login page for authentication",
             "schema": {
-                "type": "object",
-                "properties": {
-                  "error": {
-                    "type": "string"
-                  }
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
                 }
               }
+            }
           }
         }
       }
@@ -485,13 +484,13 @@
           "401": {
             "description": "Unauthorized (authentication failed)",
             "schema": {
-                "type": "object",
-                "properties": {
-                  "error": {
-                    "type": "string"
-                  }
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
                 }
               }
+            }
           }
         }
       }
@@ -530,13 +529,13 @@
           "500": {
             "description": "Internal server error",
             "schema": {
-                "type": "object",
-                "properties": {
-                  "error": {
-                    "type": "string"
-                  }
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
                 }
               }
+            }
           }
         }
       }

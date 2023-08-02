@@ -328,9 +328,13 @@ const forgotPassword = async (req, res) => {
     }
 
     // Generate a password reset token
-    const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, {
-      expiresIn: '1h', // Token will expire in 1 hour
-    });
+    const token = jwt.sign(
+      {
+        email: req.body.email,
+        expiresIn: '1h',
+      },
+      process.env.JWT_SECRET
+    );
 
     // Create a password reset URL that includes the generated token
     const resetPasswordURL = `http://localhost:3000/reset-password/${token}`;
@@ -339,12 +343,12 @@ const forgotPassword = async (req, res) => {
     await sendEmail(
       user.email,
       'Password Reset Request',
-      `To reset your password, click the link below:\n${resetPasswordURL}`
+      `Hi ${user.name},\n\nTo reset your password, click the link below:\n\n${resetPasswordURL}\n\nThe link is valid for 1 hour.\n\nYou may neglect this email if you did not make this request.`
     );
 
     return res.status(200).json({ message: 'Password reset email sent.' });
   } catch (error) {
-    return res.status(500).json({ error: 'Server error.' });
+    return res.status(500).json({ error: 'Internal server error.' });
   }
 };
 
@@ -352,16 +356,22 @@ const forgotPassword = async (req, res) => {
 const resetPassword = async (req, res) => {
   const { token } = req.params;
   const { password, confirmPassword } = req.body;
-
+  console.log(req.body.password);
+  console.log(password);
   try {
     // Verify the token
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-
+    console.log(decodedToken);
     // Find the user by their email
     const user = await User.findOne({ email: decodedToken.email });
-
+    console.log(user);
     if (!user) {
       return res.status(404).json({ error: 'User not found.' });
+    }
+
+    const isStrongPassword = validatePasswordStrength(req.body.password);
+    if (!isStrongPassword) {
+      return res.status(400).json({ error: 'Password is not strong enough.' });
     }
 
     if (password !== confirmPassword) {
@@ -370,6 +380,7 @@ const resetPassword = async (req, res) => {
 
     // Hash the new password
     const hashedPassword = await bcrypt.hash(password, 10);
+    console.log(hashedPassword);
     user.password = hashedPassword;
 
     // Save the updated user with the new password to the database

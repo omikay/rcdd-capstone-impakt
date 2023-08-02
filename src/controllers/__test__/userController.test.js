@@ -11,6 +11,7 @@ const {
   updateUserProfile,
   signup,
   login,
+  forgotPassword,
 } = require('../userController');
 
 jest.mock('bcrypt');
@@ -84,7 +85,6 @@ describe('signup', () => {
     sendEmail.mockResolvedValueOnce();
     bcrypt.hash.mockResolvedValueOnce(mockHashedPassword);
     User.findOne.mockResolvedValueOnce(null);
-    // User.mockImplementationOnce(() => mockUser);
     const userSaveFn = jest.fn();
     User.mockImplementationOnce((data) => ({
       name: data.name,
@@ -94,8 +94,6 @@ describe('signup', () => {
       save: userSaveFn,
     }));
     jwt.sign.mockReturnValueOnce(mockToken);
-    // const mockToken = 'mock-activation-token';
-    // jwt.sign.mockReturnValue(mockToken);
 
     await signup(req, res);
 
@@ -484,6 +482,94 @@ describe('connectGoogleAccount', () => {
     expect(res.json).toHaveBeenCalledWith({
       message: 'An error occurred during Google account connection.',
     });
+  });
+});
+
+describe('forgotPassword', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+  it('should send a password reset email when the user exists', async () => {
+    const req = {
+      body: {
+        email: 'john.doe@mockUser.com',
+      },
+    };
+
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+    // Mock the findOne method of the User model to return the mock user
+    jwt.sign.mockReturnValueOnce(mockToken);
+    User.findOne.mockResolvedValueOnce(mockUser);
+
+    await forgotPassword(req, res);
+
+    expect(User.findOne).toHaveBeenCalledWith({ email: req.body.email });
+    expect(jwt.sign).toHaveBeenCalledWith(
+      {
+        email: req.body.email,
+        expiresIn: '1h',
+      },
+      process.env.JWT_SECRET
+    );
+
+    expect(sendEmail).toHaveBeenCalledWith(
+      mockUser.email,
+      'Password Reset Request',
+      `Hi ${mockUser.name},\n\nTo reset your password, click the link below:\n\nhttp://localhost:3000/reset-password/${mockToken}\n\nThe link is valid for 1 hour.\n\nYou may neglect this email if you did not make this request.`
+    );
+
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({
+      message: 'Password reset email sent.',
+    });
+  });
+
+  it('should return a 404 error when the user does not exist', async () => {
+    const req = {
+      body: {
+        email: 'non-user@mockUser.com',
+      },
+    };
+
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    jwt.sign.mockReturnValueOnce(mockToken);
+    User.findOne.mockResolvedValueOnce(null);
+
+    await forgotPassword(req, res);
+
+    expect(jwt.sign).not.toHaveBeenCalled();
+    expect(sendEmail).not.toHaveBeenCalled();
+
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.json).toHaveBeenCalledWith({ error: 'User not found.' });
+  });
+
+  it('should return a 500 error if there is a server error', async () => {
+    const req = {
+      body: {
+        email: 'non-user@mockUser.com',
+      },
+    };
+
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    jwt.sign.mockRejectedValueOnce(new Error('Internal server error'));
+    User.findOne.mockRejectedValueOnce(new Error('Internal server error'));
+
+    await forgotPassword(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({ error: 'Internal server error.' });
   });
 });
 
