@@ -62,11 +62,6 @@
           },
           "500": {
             "description": "Internal server error",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "error": {
-                  "type": "string"
             "content": {
               "application/json": {
                 "schema": {
@@ -142,11 +137,6 @@
           },
           "500": {
             "description": "Internal server error",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "error": {
-                  "type": "string"
             "content": {
               "application/json": {
                 "schema": {
@@ -181,11 +171,6 @@
           },
           "500": {
             "description": "Internal server error",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "error": {
-                  "type": "string"
             "content": {
               "application/json": {
                 "schema": {
@@ -240,11 +225,6 @@
           },
           "500": {
             "description": "Internal server error",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "error": {
-                  "type": "string"
             "content": {
               "application/json": {
                 "schema": {
@@ -324,11 +304,6 @@
           },
           "500": {
             "description": "Internal server error",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "error": {
-                  "type": "string"
             "content": {
               "application/json": {
                 "schema": {
@@ -394,11 +369,6 @@
           },
           "500": {
             "description": "Internal server error",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "error": {
-                  "type": "string"
             "content": {
               "application/json": {
                 "schema": {
@@ -487,11 +457,6 @@
           },
           "500": {
             "description": "Internal server error",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "error": {
-                  "type": "string"
             "content": {
               "application/json": {
                 "schema": {
@@ -512,15 +477,6 @@
         "description": "Initiates the Google OAuth process for login",
         "responses": {
           "302": {
-            "description": "Redirects to Google login page for authentication",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "error": {
-                  "type": "string"
-                }
-              }
-            }
             "description": "Redirects to Google login page for authentication"
           }
         }
@@ -534,13 +490,6 @@
           "302": {
             "description": "Redirects back to the application after successful authentication"
           },
-          "401": {
-            "description": "Unauthorized (authentication failed)",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "error": {
-                  "type": "string"
           "500": {
             "description": "Internal server error",
             "content": {
@@ -585,16 +534,6 @@
             "type": "string",
             "format": "email"
           },
-          "500": {
-            "description": "Internal server error",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "error": {
-                  "type": "string"
-                }
-              }
-            }
           "password": {
             "type": "string"
           }
