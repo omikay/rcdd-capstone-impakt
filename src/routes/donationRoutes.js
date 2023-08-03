@@ -8,7 +8,7 @@ const isAuthorized = require('../middlewares/auth');
 
 const router = express.Router();
 
-// Create a new donation
+// Make a new donation
 router.post('/api/donations', isAuthorized, makeDonation);
 
 // Get donations by user

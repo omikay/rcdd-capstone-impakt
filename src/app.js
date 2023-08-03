@@ -33,18 +33,13 @@ app.use('/', eventRoutes);
 app.use('/', donationRoutes);
 
 // Error handling middlewarejb
-app.use((err, req, res, next) => {
-  console.error(err.stack);
+app.use((err, req, res) => {
   res.status(500).json({ error: 'Internal server error' });
 });
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-// app.use((req, res) => {
-// res.status(404).json({ error: 'Not Found' });
-/// });
-
 const server = app.listen(port, () => {
-  console.log(`Server listening on port ${port}`);
+  // console.log(`Server listening on port ${port}`);
   connectToMongo();
 });
 
