@@ -344,7 +344,6 @@ describe('activateUser', () => {
     jwt.verify.mockImplementation(() => {
       throw new Error('Some server error');
     });
-    User.findOne.mockRejectedValueOnce(new Error('Server error'));
 
     await activateUser(req, res);
 
