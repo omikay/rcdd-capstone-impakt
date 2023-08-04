@@ -10,6 +10,8 @@ const {
   deleteEvent,
   searchEvents,
   joinEvent,
+  getEventsForUser,
+  leaveEvent,
 } = require('../eventController');
 
 // Mock the required modules
@@ -885,3 +887,271 @@ describe('joinEvent', () => {
     });
   });
 });
+
+describe('getEventForUser', () => {
+  it('should return events created and participated by the user', async () => {
+    // Mock request and response objects
+    const req = {
+      params: {
+        userId: 'user123',
+      },
+    };
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    // Sample events data
+    const createdEvents = [
+      { title: 'Event 1', startDate: new Date('2023-09-01') },
+      { title: 'Event 2', startDate: new Date('2023-10-01') },
+    ];
+    const participatingEvents = [
+      { title: 'Event 3', endDate: new Date('2023-08-15') },
+      { title: 'Event 4', endDate: new Date('2023-09-15') },
+    ];
+
+    // Mock User.findById to return a sample user
+    User.findById.mockResolvedValue({
+      _id: 'user123',
+      name: 'John Doe',
+      createdEvents: createdEvents.map((event) => ({ _id: event.id })),
+      participatingEvents: participatingEvents.map((event) => ({
+        _id: event.id,
+      })),
+    });
+
+    // Mock Event.find to return the sample events data
+    Event.find
+      .mockResolvedValueOnce(createdEvents)
+      .mockResolvedValueOnce(participatingEvents);
+
+    // Call the getEventsForUser function
+    await getEventsForUser(req, res);
+
+    // Assertions
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({
+      createdEvents,
+      upcomingParticipatingEvents: [
+        { title: 'Event 3', endDate: new Date('2023-08-15') },
+        { title: 'Event 4', endDate: new Date('2023-09-15') },
+      ],
+      passedParticipatingEvents: [],
+    });
+    expect(User.findById).toHaveBeenCalledTimes(1);
+    expect(Event.find).toHaveBeenCalledTimes(2);
+  });
+
+  it('should return an error when user is not found', async () => {
+    const req = {
+      params: {
+        userId: 'user123',
+      },
+    };
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    User.findById.mockResolvedValue(null);
+    // Call the getUserProfile function
+    await getEventsForUser(req, res);
+
+    // Assertions
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.json).toHaveBeenCalledWith({
+      error: 'User not found.',
+    });
+    expect(User.findById).toHaveBeenCalledTimes(1);
+  });
+
+  it('should return an internal server error when a database error occurs', async () => {
+    const req = {
+      params: {
+        userId: 'user123',
+      },
+    };
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    User.findById.mockRejectedValue(new Error('Database error'));
+    // Call the getUserProfile function
+    await getEventsForUser(req, res);
+
+    // Assertions
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({
+      error: 'Internal server error',
+    });
+    expect(User.findById).toHaveBeenCalledTimes(1);
+  });
+});
+describe('leaveEvent ', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should leave the event successfully', async () => {
+    const req = {
+      user: {
+        id: 'user123',
+      },
+      params: {
+        id: 'event246',
+      },
+    };
+
+    const userId = 'user123';
+    const eventId = 'event246';
+
+    // Mock the event and user data
+    const event = {
+      _id: eventId,
+      participants: [userId],
+      title: 'Test Event',
+    };
+
+    const user = {
+      _id: userId,
+      joinedEvents: [eventId],
+    };
+
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    // Mock the database calls
+    Event.findById.mockResolvedValue(event);
+    User.findById.mockResolvedValue(user);
+    User.findOneAndUpdate.mockResolvedValue({});
+    Event.findOneAndUpdate.mockResolvedValue({});
+
+    await leaveEvent(req, res);
+    try {
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({
+        message: 'User left the event successfully.',
+      });
+    } catch (error) {
+      // console.error('Error leaving event:', error);
+      res
+        .status(500)
+        .json({ error: 'An error occurred while leaving the event.' });
+    }
+
+    // Check if the database methods were called with the correct arguments
+    expect(Event.findById).toHaveBeenCalledWith(eventId);
+    expect(User.findById).toHaveBeenCalledWith(userId);
+  });
+
+  it('should return an error when user is not found', async () => {
+    const req = {
+      params: {
+        userId: 'user123',
+      },
+    };
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    User.findById.mockResolvedValue(null);
+    // Call the getUserProfile function
+    await leaveEvent(req, res);
+    try {
+      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.json).toHaveBeenCalledWith({
+        error: 'User not found',
+      });
+    } catch (error) {
+      // console.error('Error leaving event:', error);
+      res
+        .status(500)
+        .json({ error: 'An error occurred while leaving the event.' });
+    }
+  });
+
+  it('should return an error when event is not found', async () => {
+    const req = {
+      params: {
+        eventId: 'event123',
+      },
+    };
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    Event.findById.mockResolvedValue(null);
+    // Call the getUserProfile function
+    await leaveEvent(req, res);
+    try {
+      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.json).toHaveBeenCalledWith({
+        error: 'Event not found',
+      });
+    } catch (error) {
+      // console.error('Error leaving event:', error);
+      res
+        .status(500)
+        .json({ error: 'An error occurred while leaving the event.' });
+    }
+  });
+
+  it('should return 400 if the user is not participating in the event', async () => {
+    const req = {
+      user: {
+        id: 'user123',
+      },
+      params: {
+        id: 'event246',
+      },
+    };
+
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    const eventId = 'event246';
+    const userId = 'user123';
+
+    // Mock the event and user data
+    const event = {
+      _id: eventId,
+      participants: ['someOtherUser'],
+    };
+
+    const user = {
+      _id: userId,
+      joinedEvents: ['someOtherEvent'],
+    };
+
+    // Mock the database calls
+    Event.findById.mockResolvedValue(event);
+    User.findById.mockResolvedValue(user);
+
+    await leaveEvent(req, res);
+    try {
+      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.json).toHaveBeenCalledWith({
+        error: 'event not found',
+      });
+    } catch (error) {
+      // console.error('Error leaving event:', error);
+      res
+        .status(500)
+        .json({ error: 'An error occurred while leaving the event.' });
+    }
+
+    // Check if the database methods were called with the correct arguments
+    expect(Event.findById).toHaveBeenCalledWith(eventId);
+    expect(User.findById).toHaveBeenCalledWith(userId);
+  });
+});
+
+
