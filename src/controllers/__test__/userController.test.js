@@ -564,6 +564,7 @@ describe('forgotPassword', () => {
       json: jest.fn(),
     };
 
+    jwt.sign.mockRejectedValueOnce(new Error('Internal server error'));
     User.findOne.mockRejectedValueOnce(new Error('Internal server error'));
 
     await forgotPassword(req, res);
