@@ -104,11 +104,7 @@ const getBlogById = async (req, res) => {
     if (!blogPost) {
       return res.status(404).json({ error: 'Blog post not found' });
     }
-    // Find the user
-    const user = await User.findById(req.user.id);
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
+
     // Return the blog post
     return res.status(200).json(blogPost);
   } catch (error) {
@@ -120,10 +116,6 @@ const getBlogById = async (req, res) => {
 const getAllBlogs = async (req, res) => {
   try {
     const allBlogs = await BlogPost.find();
-    const user = await User.findById(req.user.id);
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
     return res.status(200).json(allBlogs);
   } catch (error) {
     return res.status(500).json({ error: 'Server error' });
