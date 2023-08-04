@@ -10,13 +10,18 @@ const {
   getAllBlogs,
 } = require('../controllers/blogController');
 
-// Render the donation form
+// Render the blog post form
 router.get('/blogPosts/new', (req, res) => {
   res.render('createBlog');
 });
 
 // Create a new blog post
 router.post('/blogPosts/new', isAuthorized, createBlog);
+
+// Render the blog post form
+router.get('/blogPosts/:blogPostId/update', (req, res) => {
+  res.render('updateBlogPost');
+});
 
 // Update a blog post
 router.patch('/blogPosts/:blogPostId/update', isAuthorized, updateBlog);

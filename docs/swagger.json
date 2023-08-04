@@ -704,6 +704,368 @@
           }
         }
       }
+    },
+    "/blogPosts/new": {
+      "get": {
+        "tags": ["Blog Routes"],
+        "summary": "Create blog post",
+        "description": "Renders the \"Create Blog Post\" form"
+      },
+      "post": {
+        "tags": ["Blog Routes"],
+        "summary": "Create blog post",
+        "description": "Allows admin users to create blog posts",
+        "requestBody": {
+          "description": "Blog post fields",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBlogPost"
+              },
+              "example": {
+                "title": "An introduction to Fluxity",
+                "bannerImage": "/Fluxity/BlogPosts/Img/IntroBanner.jpg",
+                "category": "Article",
+                "shortDescription": "This is an introductory article to Fluxity's work",
+                "bodyText": "Fluxity is a platform to host and join non-profit events. It was created by ..."
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Blog post created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessage"
+                },
+                "example": {
+                  "message": "Blog post created successfully."
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "User not authorized to create blog posts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "User not authorized to create blog posts"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Bad request (e.g., user not found, category not found)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Bad request. User or category not found."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Internal server error."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/blogPosts": {
+      "get": {
+        "tags": ["Blog Routes"],
+        "summary": "Get all blog posts",
+        "description": "Fetches the blog posts",
+        "responses": {
+          "200": {
+            "description": "Fetch all blog posts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AllBlogPosts"
+                },
+                "example": {
+                  "blogPostId": 124563
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Internal server error occurred."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/blogPosts/{blogPostId}": {
+      "get": {
+        "tags": ["Blog Routes"],
+        "summary": "Get the blog post",
+        "description": "Fetches the blog post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "blogPostId",
+            "description": "the desired blog post id to be shown",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Blog post content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BlogPost"
+                },
+                "example": {
+                  "title": "An introduction to Fluxity",
+                  "bannerImage": "/Fluxity/BlogPosts/Img/IntroBanner.jpg",
+                  "author": "Omid Kayhani",
+                  "date": "2023-08-04T10:32:10.292Z",
+                  "category": "Article",
+                  "shortDescription": "This is an introductory article to Fluxity's work",
+                  "bodyText": "Fluxity is a platform to host and join non-profit events. It was created by ..."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Blog post not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Blog post not found."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Internal server error occurred."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/blogPosts/{blogPostId}/update": {
+      "get": {
+        "tags": ["Blog Routes"],
+        "summary": "Get the blog post fields to update",
+        "description": "Fetches the blog post update form",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "blogPostId",
+            "description": "the desired blog post id to be updated",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "patch": {
+        "tags": ["Blog Routes"],
+        "summary": "Update the blog post",
+        "description": "Allows authenticated users to update their blog posts",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "blogPostId",
+            "description": "the desired blog post id to be updated",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Update the blog post",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBlogPost"
+              },
+              "example": {
+                "title": "An introduction to Fluxity",
+                "bannerImage": "/Fluxity/BlogPosts/Img/IntroBanner.jpg",
+                "category": "Article",
+                "shortDescription": "This is an introductory article to Fluxity's work",
+                "bodyText": "Fluxity is a platform to host and join non-profit events. It was created by ..."
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Blog post updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessage"
+                },
+                "example": {
+                  "message": "Blog post updated successfully."
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "User is not an admin",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "User not authorized to update the blog post."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User or blog not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "User or blog not found."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Internal server error occurred."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/blogPosts/{blogPostId}/delete": {
+      "get": {
+        "tags": ["Blog Routes"],
+        "summary": "Blog post deletion",
+        "description": "Allows admins to delete blog posts",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "blogPostId",
+            "description": "the desired blog post id to be deleted",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Blog post deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessage"
+                },
+                "example": {
+                  "message": "Blog post deleted successfully."
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "User is not an admin",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "User not authorized to deleted the blog post."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User or blog not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "User or blog not found."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Internal server error occurred."
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -826,10 +1188,11 @@
         "type": "object",
         "properties": {
           "eventId": {
-            "type": "string"
+            "type": "string",
+            "format": "number"
           },
           "amount": {
-            "type": "string"
+            "type": "integer"
           }
         }
       },
@@ -837,10 +1200,11 @@
         "type": "object",
         "properties": {
           "eventId": {
-            "type": "string"
+            "type": "string",
+            "format": "number"
           },
           "amount": {
-            "type": "string"
+            "type": "integer"
           }
         }
       },
@@ -848,9 +1212,66 @@
         "type": "object",
         "properties": {
           "UserId": {
-            "type": "string"
+            "type": "string",
+            "format": "number"
           },
           "amount": {
+            "type": "integer"
+          }
+        }
+      },
+      "CreateBlogPost": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "bannerImage": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "shortDescription": {
+            "type": "string"
+          },
+          "bodyText": {
+            "type": "string"
+          }
+        }
+      },
+      "AllBlogPosts": {
+        "type": "object",
+        "properties": {
+          "blogPostId": {
+            "type": "string",
+            "format": "number"
+          }
+        }
+      },
+      "BlogPost": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "bannerImage": {
+            "type": "string"
+          },
+          "author": {
+            "type": "string"
+          },
+          "lastModified": {
+            "type": "string",
+            "format": "date"
+          },
+          "category": {
+            "type": "string"
+          },
+          "shortDescription": {
+            "type": "string"
+          },
+          "bodyText": {
             "type": "string"
           }
         }
