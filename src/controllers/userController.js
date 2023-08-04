@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const process = require('process');
 const User = require('../models/Users');
 const sendEmail = require('../utils/email');
 
@@ -355,16 +356,15 @@ const forgotPassword = async (req, res) => {
 // Password Reset - Handle "Password Reset" form submission
 const resetPassword = async (req, res) => {
   const { token } = req.params;
-  const { password, confirmPassword } = req.body;
-  console.log(req.body.password);
-  console.log(password);
+  const { password, passwordConfirmation } = req.body;
   try {
     // Verify the token
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-    console.log(decodedToken);
     // Find the user by their email
-    const user = await User.findOne({ email: decodedToken.email });
-    console.log(user);
+    const user = await User.findOne({
+      email: decodedToken.email,
+    });
+
     if (!user) {
       return res.status(404).json({ error: 'User not found.' });
     }
@@ -374,13 +374,13 @@ const resetPassword = async (req, res) => {
       return res.status(400).json({ error: 'Password is not strong enough.' });
     }
 
-    if (password !== confirmPassword) {
+    if (password !== passwordConfirmation) {
       return res.status(400).json({ error: 'Passwords do not match.' });
     }
 
     // Hash the new password
-    const hashedPassword = await bcrypt.hash(password, 10);
-    console.log(hashedPassword);
+    const hashedPassword = bcrypt.hash(password, 10);
+
     user.password = hashedPassword;
 
     // Save the updated user with the new password to the database
@@ -393,7 +393,7 @@ const resetPassword = async (req, res) => {
         .status(400)
         .json({ error: 'Password reset link has expired.' });
     }
-    return res.status(500).json({ error: 'Server error.' });
+    return res.status(500).json({ error: 'Internal server error.' });
   }
 };
 
