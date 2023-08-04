@@ -791,12 +791,6 @@ describe('joinEvent', () => {
       json: jest.fn(),
     };
 
-    const mockEvent = {
-      id: 'event-id',
-      participants: [],
-      capacity: 100,
-    };
-
     User.findById.mockResolvedValueOnce(null);
 
     await joinEvent(req, res);

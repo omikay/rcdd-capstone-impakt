@@ -73,68 +73,6 @@ const signup = async (req, res) => {
   }
 };
 
-// // User account activation after sign up
-// // This is when the user sign ups with their email and not GoogleOAuth
-// const activateUser = async (req, res) => {
-//   try {
-//     const { token } = req.params;
-//     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-
-//     // Check if the token is expired
-//     const currentTime = Math.floor(Date.now() / 1000);
-//     if (decodedToken.exp <= currentTime) {
-//       const newToken = jwt.sign(
-//         {
-//           name: decodedToken.name,
-//           email: decodedToken.email,
-//           exp: currentTime + 2 * 24 * 60 * 60, // 2 days expiration
-//           iat: currentTime, // Issued at date
-//         },
-//         process.env.JWT_SECRET
-//       );
-
-//       const activationLink = `${process.env.CLIENT_URL}/verify-account/${newToken}`;
-
-//       await sendEmail(
-//         decodedToken.email,
-//         'Activation required for your Impakt account',
-//         `Hi ${decodedToken.name}, your activation link has expired. Please click on the following link to activate your account:
-
-//         ${activationLink}.
-
-//         The activation link is valid for 2 days.`
-//       );
-
-//       return res.status(400).json({
-//         error:
-//           'Activation link has expired. A new link has been sent to your email.',
-//       });
-//     }
-
-//     // Find the user by their email
-//     const user = await User.findOne({ email: decodedToken.email });
-
-//     if (!user) {
-//       return res.status(404).json({ error: 'User not found.' });
-//     }
-
-//     if (user.isVerified === true) {
-//       return res.status(400).json({ error: 'Account already activated' });
-//     }
-
-//     // Mark the user as verified
-//     user.isVerified = true;
-//     await user.save();
-
-//     return res.status(201).json({
-//       message:
-//         'Account activated successfully. You can now log into your account.',
-//     });
-//   } catch (error) {
-//     return res.status(500).json({ error: 'Internal server error' });
-//   }
-// };
-
 // User account activation after sign up
 // This is when the user sign ups with their email and not GoogleOAuth
 const activateUser = async (req, res) => {
@@ -198,7 +136,7 @@ const login = async (req, res) => {
 
   try {
     const user = await User.findOne({ email });
-    console.log(user);
+
     if (!user) {
       return res.status(404).json({ error: "User doesn't exist." });
     }
@@ -237,16 +175,16 @@ const login = async (req, res) => {
     }
 
     const hashedReqPass = await bcrypt.hash(password);
-    console.log(hashedReqPass, user.password);
+
     const isPasswordCorrect = await bcrypt.compare(
       hashedReqPass,
       user.password
     );
-    console.log(isPasswordCorrect);
+
     if (!isPasswordCorrect) {
       return res.status(400).json({ error: 'Invalid credentials.' });
     }
-    // console.log(user);
+
     const token = jwt.sign(
       {
         name: user.name,

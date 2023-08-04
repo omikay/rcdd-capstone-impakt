@@ -14,6 +14,7 @@
   "paths": {
     "/api/signup": {
       "post": {
+        "tags": ["User Routes"],
         "summary": "User signup",
         "description": "Allows users to sign up using email and password",
         "requestBody": {
@@ -39,10 +40,10 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SignupResponse"
+                  "$ref": "#/components/schemas/SuccessMessage"
                 },
                 "example": {
-                  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImJhMzE1MzIyLTU5ZjMtNDZhOS1hZmRmLTQ3NjIyMmQ1ZTljMCIsImlhdCI6MTYyODE3NjY0N30.CZ62KV_Cb8TWW_YiIxy26Im-UjHaTkA4sPbhw2tJvU8"
+                  "message": "Signup successful. Account activation required"
                 }
               }
             }
@@ -78,6 +79,7 @@
     },
     "/api/login": {
       "post": {
+        "tags": ["User Routes"],
         "summary": "User login",
         "description": "Allows users to log in using email and password",
         "requestBody": {
@@ -153,6 +155,7 @@
     },
     "/api/logout": {
       "get": {
+        "tags": ["User Routes"],
         "summary": "User logout",
         "description": "Allows users to log out and clears the JWT cookie",
         "responses": {
@@ -187,6 +190,7 @@
     },
     "/user/profile": {
       "get": {
+        "tags": ["User Routes"],
         "summary": "Get user profile",
         "description": "Fetches the authenticated user's profile details",
         "responses": {
@@ -241,6 +245,7 @@
     },
     "/user/updateProfile": {
       "patch": {
+        "tags": ["User Routes"],
         "summary": "Update user profile",
         "description": "Allows authenticated users to update their profile information",
         "requestBody": {
@@ -320,10 +325,12 @@
     },
     "/forgot-password": {
       "get": {
+        "tags": ["User Routes"],
         "summary": "Forgot Password",
         "description": "Renders the \"Forgot Password\" form"
       },
       "post": {
+        "tags": ["User Routes"],
         "summary": "Handle \"Forgot Password\" form submission",
         "description": "Sends a password reset email to the user's email address",
         "requestBody": {
@@ -385,6 +392,7 @@
     },
     "/reset-password/{token}": {
       "get": {
+        "tags": ["User Routes"],
         "summary": "Password Reset",
         "description": "Renders the \"Password Reset\" form",
         "parameters": [
@@ -400,6 +408,7 @@
         ]
       },
       "post": {
+        "tags": ["User Routes"],
         "summary": "Handle \"Password Reset\" form submission",
         "description": "Resets the user's password based on the password reset token",
         "parameters": [
@@ -473,6 +482,7 @@
     },
     "/api/auth/google": {
       "get": {
+        "tags": ["User Routes"],
         "summary": "Google OAuth login",
         "description": "Initiates the Google OAuth process for login",
         "responses": {
@@ -484,11 +494,562 @@
     },
     "/api/auth/google/callback": {
       "get": {
+        "tags": ["User Routes"],
         "summary": "Google OAuth callback",
         "description": "Handles the callback after successful Google OAuth authentication",
         "responses": {
           "302": {
             "description": "Redirects back to the application after successful authentication"
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Internal server error occurred."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/donations": {
+      "get": {
+        "tags": ["Donation Routes"],
+        "summary": "Make donation",
+        "description": "Renders the \"Make Donation\" form"
+      },
+      "post": {
+        "tags": ["Donation Routes"],
+        "summary": "Make donation",
+        "description": "Allows users to donate to events",
+        "requestBody": {
+          "description": "Donation details",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MakeDonation"
+              },
+              "example": {
+                "eventId": "event-id",
+                "amount": 450
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Donation made successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessage"
+                },
+                "example": {
+                  "message": "Donation made successfully."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Bad request (e.g., user not found, event not found)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Bad request. User or event not found."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Internal server error."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/donations/{userId}": {
+      "get": {
+        "tags": ["Donation Routes"],
+        "summary": "Get user donations",
+        "description": "Fetches the donations the user has made",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "description": "the desired user id whose donations we seek",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User donations data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDonations"
+                },
+                "example": {
+                  "eventId": "event-id",
+                  "amount": 450
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "User not found."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Internal server error occurred."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/donations/{eventId}": {
+      "get": {
+        "tags": ["Donation Routes"],
+        "summary": "Get event donations",
+        "description": "Fetches the donations made to the event",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "eventId",
+            "description": "the desired event id whose donations we seek",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Event donations data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventDonations"
+                },
+                "example": {
+                  "userId": "user-id",
+                  "amount": 450
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "User not found."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Internal server error occurred."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/blogPosts/new": {
+      "get": {
+        "tags": ["Blog Routes"],
+        "summary": "Create blog post",
+        "description": "Renders the \"Create Blog Post\" form"
+      },
+      "post": {
+        "tags": ["Blog Routes"],
+        "summary": "Create blog post",
+        "description": "Allows admin users to create blog posts",
+        "requestBody": {
+          "description": "Blog post fields",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBlogPost"
+              },
+              "example": {
+                "title": "An introduction to Fluxity",
+                "bannerImage": "/Fluxity/BlogPosts/Img/IntroBanner.jpg",
+                "category": "Article",
+                "shortDescription": "This is an introductory article to Fluxity's work",
+                "bodyText": "Fluxity is a platform to host and join non-profit events. It was created by ..."
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Blog post created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessage"
+                },
+                "example": {
+                  "message": "Blog post created successfully."
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "User not authorized to create blog posts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "User not authorized to create blog posts"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Bad request (e.g., user not found, category not found)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Bad request. User or category not found."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Internal server error."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/blogPosts": {
+      "get": {
+        "tags": ["Blog Routes"],
+        "summary": "Get all blog posts",
+        "description": "Fetches the blog posts",
+        "responses": {
+          "200": {
+            "description": "Fetch all blog posts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AllBlogPosts"
+                },
+                "example": {
+                  "blogPostId": 124563
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Internal server error occurred."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/blogPosts/{blogPostId}": {
+      "get": {
+        "tags": ["Blog Routes"],
+        "summary": "Get the blog post",
+        "description": "Fetches the blog post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "blogPostId",
+            "description": "the desired blog post id to be shown",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Blog post content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BlogPost"
+                },
+                "example": {
+                  "title": "An introduction to Fluxity",
+                  "bannerImage": "/Fluxity/BlogPosts/Img/IntroBanner.jpg",
+                  "author": "Omid Kayhani",
+                  "date": "2023-08-04T10:32:10.292Z",
+                  "category": "Article",
+                  "shortDescription": "This is an introductory article to Fluxity's work",
+                  "bodyText": "Fluxity is a platform to host and join non-profit events. It was created by ..."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Blog post not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Blog post not found."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Internal server error occurred."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/blogPosts/{blogPostId}/update": {
+      "get": {
+        "tags": ["Blog Routes"],
+        "summary": "Get the blog post fields to update",
+        "description": "Fetches the blog post update form",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "blogPostId",
+            "description": "the desired blog post id to be updated",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "patch": {
+        "tags": ["Blog Routes"],
+        "summary": "Update the blog post",
+        "description": "Allows authenticated users to update their blog posts",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "blogPostId",
+            "description": "the desired blog post id to be updated",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Update the blog post",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBlogPost"
+              },
+              "example": {
+                "title": "An introduction to Fluxity",
+                "bannerImage": "/Fluxity/BlogPosts/Img/IntroBanner.jpg",
+                "category": "Article",
+                "shortDescription": "This is an introductory article to Fluxity's work",
+                "bodyText": "Fluxity is a platform to host and join non-profit events. It was created by ..."
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Blog post updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessage"
+                },
+                "example": {
+                  "message": "Blog post updated successfully."
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "User is not an admin",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "User not authorized to update the blog post."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User or blog not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "User or blog not found."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Internal server error occurred."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/blogPosts/{blogPostId}/delete": {
+      "get": {
+        "tags": ["Blog Routes"],
+        "summary": "Blog post deletion",
+        "description": "Allows admins to delete blog posts",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "blogPostId",
+            "description": "the desired blog post id to be deleted",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Blog post deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessage"
+                },
+                "example": {
+                  "message": "Blog post deleted successfully."
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "User is not an admin",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "User not authorized to deleted the blog post."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User or blog not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "User or blog not found."
+                }
+              }
+            }
           },
           "500": {
             "description": "Internal server error",
@@ -535,14 +1096,6 @@
             "format": "email"
           },
           "password": {
-            "type": "string"
-          }
-        }
-      },
-      "SignupResponse": {
-        "type": "object",
-        "properties": {
-          "token": {
             "type": "string"
           }
         }
@@ -628,6 +1181,98 @@
           "profilePicture": {
             "type": "string",
             "format": "url"
+          }
+        }
+      },
+      "MakeDonation": {
+        "type": "object",
+        "properties": {
+          "eventId": {
+            "type": "string",
+            "format": "number"
+          },
+          "amount": {
+            "type": "integer"
+          }
+        }
+      },
+      "UserDonations": {
+        "type": "object",
+        "properties": {
+          "eventId": {
+            "type": "string",
+            "format": "number"
+          },
+          "amount": {
+            "type": "integer"
+          }
+        }
+      },
+      "EventDonations": {
+        "type": "object",
+        "properties": {
+          "UserId": {
+            "type": "string",
+            "format": "number"
+          },
+          "amount": {
+            "type": "integer"
+          }
+        }
+      },
+      "CreateBlogPost": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "bannerImage": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "shortDescription": {
+            "type": "string"
+          },
+          "bodyText": {
+            "type": "string"
+          }
+        }
+      },
+      "AllBlogPosts": {
+        "type": "object",
+        "properties": {
+          "blogPostId": {
+            "type": "string",
+            "format": "number"
+          }
+        }
+      },
+      "BlogPost": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "bannerImage": {
+            "type": "string"
+          },
+          "author": {
+            "type": "string"
+          },
+          "lastModified": {
+            "type": "string",
+            "format": "date"
+          },
+          "category": {
+            "type": "string"
+          },
+          "shortDescription": {
+            "type": "string"
+          },
+          "bodyText": {
+            "type": "string"
           }
         }
       },
