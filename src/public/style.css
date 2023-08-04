@@ -1,0 +1,360 @@
+/* Add padding to the left and right sides of the navbar */
+.navbar {
+    padding: 30px;
+}
+
+/* Center the navbar horizontally */
+.navbar .nav-container {
+    max-width: 1200px; /* Add a maximum width to center the navbar on larger screens */
+    margin: 0 80px; /* Center the navbar on the page */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Reduce the gap between navbar elements on smaller screens */
+@media (max-width: 600px) {
+    .navbar .nav-container {
+        gap: 20px;
+    }
+}
+
+/* Additional styles for the logo */
+.navbar img {
+    width: 93px;
+    height: 28px;
+}
+
+/* Additional styles for the login link */
+.navbar .login-link {
+    color: #003637;
+    font-size: 16px;
+    font-family: Roboto;
+    font-weight: 400;
+    word-wrap: break-word;
+}
+
+/* Additional styles for the login container */
+.navbar .login-link {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 50px;
+}
+
+/* Additional styles for the login button */
+.navbar .login-link {
+    padding: 15px 40px;
+    background: #13AE67;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Additional styles for the login link text */
+.navbar .login-link {
+    text-align: center;
+    color: #003637;
+    font-size: 16px;
+    font-family: Roboto;
+    font-weight: 400;
+    word-wrap: break-word;
+}
+/* General styles for the section */
+/* General styles for the section */
+.hero-section {
+    position: relative;
+}
+
+/* Styling for the image */
+.hero-image {
+    width: calc(100% - 60px); /* 30px margin on both left and right sides */
+    height: 100%;
+    margin: 0 30px; /* Set margin to 30px on both left and right sides */
+    border-radius: 20px;
+    display: block;
+}
+
+/* Styling for the text content */
+.section-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: #ffffff;
+    font-size: 64px;
+    font-family: Roboto, sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    word-wrap: break-word;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .section-content {
+        font-size: 48px;
+    }
+}
+
+@media (max-width: 576px) {
+    .section-content {
+        font-size: 36px;
+    }
+}
+
+
+/* General styles for the search fields container */
+.search-fields {
+    padding: 40px 100px;
+    margin-top: -90px; /* Adjust this value to show the search container higher */
+    margin-left: 90px;
+    background: #003637;
+    border-radius: 20px;
+    justify-content: center;
+    align-items: center;
+    gap: 60px;
+    display: inline-flex;
+    position: absolute;
+    z-index: 1;
+}
+
+/* Styling for each search field */
+.search-field {
+    flex: 1 1 0;
+    align-self: stretch;
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+/* Styling for the search field title */
+.search-field-title {
+    color: #D7E0E0;
+    font-size: 16px;
+    font-family: Roboto, sans-serif;
+    font-weight: 400;
+    word-wrap: break-word;
+}
+
+/* Styling for the search input container */
+.search-input-container {
+    width: 100%;
+    height: 100%;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    background: #D7E0E0;
+    border-radius: 5px;
+    justify-content: space-between;
+    align-items: center;
+    gap: 90px;
+    display: inline-flex;
+}
+
+/* Styling for the search input text */
+.search-input-text {
+    color: #003637;
+    font-size: 12px;
+    font-family: Roboto, sans-serif;
+    font-weight: 400;
+    word-wrap: break-word;
+}
+
+/* Styling for the search and calendar icon */
+.search-icon,
+.calendar-icon {
+    width: 24px;
+    height: 24px;
+    position: relative;
+}
+
+/* Styling for the search icon bar */
+.search-icon-bar,
+.calendar-icon-bar1,
+.calendar-icon-bar2 {
+    width: 12px;
+    height: 6px;
+    left: 6px;
+    top: 9px;
+    position: absolute;
+    border: 1px #003637 solid;
+}
+
+/* Styling for the calendar icon bars */
+.calendar-icon-bar1 {
+    border: 1px #F2A283 solid;
+}
+
+.calendar-icon-bar2 {
+    width: 4.35px;
+    height: 4.35px;
+    left: 16.65px;
+    top: 16.65px;
+    position: absolute;
+    border: 1px #F2A283 solid;
+}
+
+/* Styling for the search button */
+.search-button {
+    width: 24px;
+    height: 24px;
+    padding: 10px;
+    background: #D7E0E0;
+    border-radius: 5px;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    display: inline-flex;
+}
+
+/* Styling for the search icon bars in the button */
+.search-button .search-icon-bar1,
+.search-button .search-icon-bar2 {
+    width: 16px;
+    height: 16px;
+    border: 1px #F2A283 solid;
+}
+
+.search-button .search-icon-bar2 {
+    width: 4.35px;
+    height: 4.35px;
+    left: 16.65px;
+    top: 16.65px;
+    position: absolute;
+    border: 1px #F2A283 solid;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .search-fields {
+        padding: 30px 50px;
+        margin-top: -70px;
+        margin-left: 50px;
+        gap: 30px;
+    }
+    .search-input-container {
+        gap: 50px;
+    }
+    .search-button {
+        padding: 8px;
+    }
+}
+
+@media (max-width: 576px) {
+    .search-fields {
+        padding: 20px 30px;
+        margin-top: -50px;
+        margin-left: 30px;
+        gap: 20px;
+    }
+    .search-input-container {
+        gap: 30px;
+    }
+    .search-button {
+        padding: 6px;
+    }
+}
+/* General styles for the upcoming events container */
+.upcoming-events {
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+/* Styling for the upcoming events title */
+.upcoming-events-title {
+    color: #003637;
+    font-size: 36px;
+    font-family: Roboto;
+    font-weight: 700;
+    word-wrap: break-word;
+    margin-top: 30px;
+}
+
+/* Container to display events in a row */
+.events-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+/* Styling for each upcoming event */
+.upcoming-event {
+    width: 347px;
+    height: 460px;
+    border-radius: 10px;
+    background: #003637;
+    box-shadow: 0px -0.274791419506073px 2.7479140758514404px rgba(0, 0, 0, 0.02);
+    overflow: hidden;
+    margin: 0 50px 20px;
+}
+
+/* Styling for the event image */
+.event-image img {
+    width: 347px;
+    height: 240px;
+    border-radius: 10px 10px 0 0;
+}
+
+/* Styling for the event title */
+.event-title {
+    color: #F2A283;
+    font-size: 16px;
+    font-family: Roboto;
+    font-weight: 400;
+    word-wrap: break-word;
+    padding: 10px;
+}
+
+/* Styling for the event time */
+.event-time {
+    color: #13AE67;
+    font-size: 12px;
+    font-family: Roboto;
+    font-weight: 400;
+    word-wrap: break-word;
+    padding: 10px;
+}
+
+/* Styling for the event location */
+.event-location {
+    color: #D7E0E0;
+    font-size: 12px;
+    font-family: Roboto;
+    font-weight: 400;
+    word-wrap: break-word;
+    padding: 10px;
+}
+
+/* General styles for the load more button container */
+.load-more {
+    text-align: center;
+}
+
+/* Styling for the load more button */
+.load-more-button {
+    width: 150px;
+    height: 40px;
+    padding: 15px 20px;
+    background: #13AE67;
+    border-radius: 5px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Styling for the load more button text */
+.load-more-text {
+    color: #003637;
+    font-size: 16px;
+    font-family: Roboto;
+    font-weight: 400;
+    word-wrap: break-word;
+}

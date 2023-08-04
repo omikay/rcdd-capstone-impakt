@@ -16,6 +16,8 @@ const connectToMongo = require('./config/db');
 const app = express();
 const port = 8080;
 
+app.use(express.static('public'));
+
 // View engine setup
 app.set('views', path.join(__dirname, 'views')); // Set the views directory
 app.set('view engine', 'ejs'); // Use EJS as the view engine
@@ -38,10 +40,6 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Internal server error' });
 });
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
-app.get('/', (req, res) => {
-  res.render('index');
-});
 
 const server = app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
