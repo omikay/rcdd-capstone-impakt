@@ -32,7 +32,7 @@ router.get('/verify-account/:token', activateUser);
 router.post('/api/signup', signup);
 
 router.get('/login', (req, res) => {
-  res.render('login');
+  res.render('pages/login');
 });
 
 // User login
