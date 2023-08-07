@@ -42,10 +42,6 @@ router.get(
   passport.authenticate('google', { scope: ['profile', 'email'] })
 );
 
-router.get('/profile', isAuthorized, (req, res) => {
-  res.render('user-profile', { user: req.user });
-});
-
 // Forgot Password - Render the "Forgot Password" form
 router.get('/forgot-password', (req, res) => {
   res.render('forgot-password');
@@ -66,8 +62,16 @@ router.post('/reset-password/:token', resetPassword);
 // User profile
 router.get('/user/profile', isAuthorized, getUserProfile);
 
+router.get('/user/profile', isAuthorized, (req, res) => {
+  res.render('profile', { user: req.user });
+});
+
 // Update user profile
 router.patch('/user/updateProfile', isAuthorized, updateUserProfile);
+router.get('/user/updateProfile', isAuthorized, (req, res) => {
+  res.render('profileUpdate', { user: req.user });
+});
+
 
 // Google OAuth callback
 router.get(
