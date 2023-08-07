@@ -60,14 +60,13 @@
           "500": {
             "description": "Internal server error",
             "schema": {
-                "type": "object",
-                "properties": {
-                  "error": {
-                    "type": "string"
-                  }
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
                 }
               }
-
+            }
           }
         }
       }
@@ -131,13 +130,13 @@
           "500": {
             "description": "Internal server error",
             "schema": {
-                "type": "object",
-                "properties": {
-                  "error": {
-                    "type": "string"
-                  }
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
                 }
               }
+            }
           }
         }
       }
@@ -161,13 +160,13 @@
           "500": {
             "description": "Internal server error",
             "schema": {
-                "type": "object",
-                "properties": {
-                  "error": {
-                    "type": "string"
-                  }
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
                 }
               }
+            }
           }
         }
       }
@@ -223,13 +222,13 @@
           "500": {
             "description": "Internal server error",
             "schema": {
-                "type": "object",
-                "properties": {
-                  "error": {
-                    "type": "string"
-                  }
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
                 }
               }
+            }
           }
         }
       }
@@ -305,13 +304,13 @@
           "500": {
             "description": "Internal server error",
             "schema": {
-                "type": "object",
-                "properties": {
-                  "error": {
-                    "type": "string"
-                  }
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
                 }
               }
+            }
           }
         }
       }
@@ -365,13 +364,13 @@
           "500": {
             "description": "Internal server error",
             "schema": {
-                "type": "object",
-                "properties": {
-                  "error": {
-                    "type": "string"
-                  }
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
                 }
               }
+            }
           }
         }
       }
@@ -444,13 +443,13 @@
           "500": {
             "description": "Internal server error",
             "schema": {
-                "type": "object",
-                "properties": {
-                  "error": {
-                    "type": "string"
-                  }
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
                 }
               }
+            }
           }
         }
       }
@@ -463,13 +462,13 @@
           "302": {
             "description": "Redirects to Google login page for authentication",
             "schema": {
-                "type": "object",
-                "properties": {
-                  "error": {
-                    "type": "string"
-                  }
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
                 }
               }
+            }
           }
         }
       }
@@ -485,13 +484,13 @@
           "401": {
             "description": "Unauthorized (authentication failed)",
             "schema": {
-                "type": "object",
-                "properties": {
-                  "error": {
-                    "type": "string"
-                  }
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
                 }
               }
+            }
           }
         }
       }
@@ -530,14 +529,339 @@
           "500": {
             "description": "Internal server error",
             "schema": {
-                "type": "object",
-                "properties": {
-                  "error": {
-                    "type": "string"
-                  }
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
                 }
               }
+            }
           }
+        }
+      }
+    },
+    "/api/events": {
+      "post": {
+        "summary": "Create an event",
+        "description": "Create a new event.",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "event",
+            "description": "Event details",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "date": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Event created successfully.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get all events",
+        "description": "Get a list of all events.",
+        "responses": {
+          "200": {
+            "description": "List of events.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Event"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/events/search": {
+      "get": {
+        "summary": "Search events",
+        "description": "Search events based on title or description.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "keyword",
+            "description": "Search keyword (title or description).",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of events matching the search criteria.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Event"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/events/{eventId}/update": {
+      "patch": {
+        "summary": "Update an event",
+        "description": "Update an existing event.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "eventId",
+            "description": "ID of the event to update.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+
+        "responses": {
+          "200": {
+            "description": "Event updated successfully.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Event not found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/events/{eventId}/join": {
+      "post": {
+        "summary": "User joins an event",
+        "description": "Allow a user to join an event.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "eventId",
+            "description": "ID of the event to join.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User joined event successfully.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Event not found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/events/{eventId}": {
+      "get": {
+        "summary": "Get a specific event",
+        "description": "Get details of a specific event.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "eventId",
+            "description": "ID of the event to retrieve.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Event details.",
+            "schema": {
+              "$ref": "#/definitions/Event"
+            }
+          },
+          "404": {
+            "description": "Event not found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete an event",
+        "description": "Delete an existing event.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "eventId",
+            "description": "ID of the event to delete.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Event deleted successfully.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Event not found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Event": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "date": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     }
