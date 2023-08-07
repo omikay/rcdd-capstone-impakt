@@ -16,6 +16,7 @@ const createBlog = async (req, res) => {
     if (!existingCategory) {
       return res.status(404).json({ error: 'Category not found' });
     }
+
     const newBlogPost = new BlogPost({
       author: user.id,
       title,
@@ -23,6 +24,7 @@ const createBlog = async (req, res) => {
       category,
       shortDescription,
       bodyText,
+      postDate: Date.now(),
     });
     const savedBlogPost = await newBlogPost.save();
     return res.status(201).json(savedBlogPost);
@@ -56,13 +58,13 @@ const updateBlog = async (req, res) => {
           category: updatedBlogData.category,
           shortDescription: updatedBlogData.shortDescription,
           bodyText: updatedBlogData.bodyText,
+          lastModified: Date.now(),
         },
       },
       { new: true }
     );
-    return res.status(200).json(updatedBlogPost); // Add .toObject() to return the plain JavaScript object
+    return res.status(200).json(updatedBlogPost);
   } catch (error) {
-    // console.error(error); // Log the error for debugging purposes
     return res.status(500).json({ error: 'Internal server error' });
   }
 };
@@ -91,7 +93,6 @@ const deleteBlog = async (req, res) => {
       message: 'Blog post deleted successfully.',
     });
   } catch (error) {
-    // console.error(error); // Log the error for debugging purposes
     return res.status(500).json({ error: 'Server error' });
   }
 };
@@ -104,15 +105,10 @@ const getBlogById = async (req, res) => {
     if (!blogPost) {
       return res.status(404).json({ error: 'Blog post not found' });
     }
-    // Find the user
-    const user = await User.findById(req.user.id);
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
+
     // Return the blog post
     return res.status(200).json(blogPost);
   } catch (error) {
-    // console.error(error); // Log the error for debugging purposes
     return res.status(500).json({ error: 'Server error' });
   }
 };
@@ -120,10 +116,6 @@ const getBlogById = async (req, res) => {
 const getAllBlogs = async (req, res) => {
   try {
     const allBlogs = await BlogPost.find();
-    const user = await User.findById(req.user.id);
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
     return res.status(200).json(allBlogs);
   } catch (error) {
     return res.status(500).json({ error: 'Server error' });

@@ -1,58 +1,62 @@
 {
-  "swagger": "2.0",
+  "openapi": "3.0.3",
   "info": {
-    "version": "1.0.0",
-    "title": "User API",
-    "description": "API endpoints for user authentication, profile management, and Google OAuth login"
+    "title": "Unified API",
+    "description": "API endpoints for user authentication, event management, and Google OAuth login",
+    "version": "v1"
   },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Local Development Server"
+    }
+  ],
   "paths": {
     "/api/signup": {
       "post": {
+        "tags": ["User Routes"],
         "summary": "User signup",
         "description": "Allows users to sign up using email and password",
-        "parameters": [
-          {
-            "in": "body",
-            "name": "userSignup",
-            "description": "User signup details",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "type": "string"
-                },
-                "email": {
-                  "type": "string"
-                },
-                "password": {
-                  "type": "string"
-                },
-                "passwordConfirmation": {
-                  "type": "string"
-                }
+        "requestBody": {
+          "description": "User signup details",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserSignup"
+              },
+              "example": {
+                "name": "John Doe",
+                "email": "john.doe@example.com",
+                "password": "securepassword",
+                "passwordConfirmation": "securepassword"
               }
             }
           }
-        ],
+        },
         "responses": {
           "201": {
             "description": "Successfully signed up user",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "token": {
-                  "type": "string"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessage"
+                },
+                "example": {
+                  "message": "Signup successful. Account activation required"
                 }
               }
             }
           },
           "400": {
             "description": "Bad request (e.g., email already exists, weak password, password mismatch)",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "error": {
-                  "type": "string"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Bad request. Email already exists."
                 }
               }
             }
@@ -64,6 +68,13 @@
               "properties": {
                 "error": {
                   "type": "string"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Internal server error occurred."
                 }
               }
             }
@@ -73,56 +84,60 @@
     },
     "/api/login": {
       "post": {
+        "tags": ["User Routes"],
         "summary": "User login",
         "description": "Allows users to log in using email and password",
-        "parameters": [
-          {
-            "in": "body",
-            "name": "userLogin",
-            "description": "User login details",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "email": {
-                  "type": "string"
-                },
-                "password": {
-                  "type": "string"
-                }
+        "requestBody": {
+          "description": "User login details",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserLogin"
+              },
+              "example": {
+                "email": "john.doe@example.com",
+                "password": "securepassword"
               }
             }
           }
-        ],
+        },
         "responses": {
           "200": {
             "description": "Successfully logged in user",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "token": {
-                  "type": "string"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                },
+                "example": {
+                  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImJhMzE1MzIyLTU5ZjMtNDZhOS1hZmRmLTQ3NjIyMmQ1ZTljMCIsImlhdCI6MTYyODE3NjY0N30.CZ62KV_Cb8TWW_YiIxy26Im-UjHaTkA4sPbhw2tJvU8"
                 }
               }
             }
           },
           "400": {
             "description": "Bad request (e.g., invalid credentials)",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "error": {
-                  "type": "string"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Invalid credentials."
                 }
               }
             }
           },
           "404": {
             "description": "User not found",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "error": {
-                  "type": "string"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "User not found."
                 }
               }
             }
@@ -134,6 +149,14 @@
               "properties": {
                 "error": {
                   "type": "string"
+
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Internal server error occurred."
                 }
               }
             }
@@ -143,16 +166,19 @@
     },
     "/api/logout": {
       "get": {
+        "tags": ["User Routes"],
         "summary": "User logout",
         "description": "Allows users to log out and clears the JWT cookie",
         "responses": {
           "200": {
             "description": "Successfully logged out user",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessage"
+                },
+                "example": {
+                  "message": "Successfully logged out."
                 }
               }
             }
@@ -164,6 +190,13 @@
               "properties": {
                 "error": {
                   "type": "string"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Internal server error occurred."
                 }
               }
             }
@@ -173,48 +206,39 @@
     },
     "/user/profile": {
       "get": {
+        "tags": ["User Routes"],
         "summary": "Get user profile",
         "description": "Fetches the authenticated user's profile details",
         "responses": {
           "200": {
             "description": "User profile data",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "type": "string"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserProfile"
                 },
-                "profilePicture": {
-                  "type": "string"
-                },
-                "location": {
-                  "type": "string"
-                },
-                "dateOfBirth": {
-                  "type": "string"
-                },
-                "email": {
-                  "type": "string"
-                },
-                "phoneNumber": {
-                  "type": "string"
-                },
-                "interests": {
-                  "type": "string"
-                },
-                "googleAccount": {
-                  "type": "string"
+                "example": {
+                  "name": "John Doe",
+                  "profilePicture": "http://example.com/profile.jpg",
+                  "location": "New York, USA",
+                  "dateOfBirth": "1990-01-01",
+                  "email": "john.doe@example.com",
+                  "phoneNumber": "+1 123-456-7890",
+                  "interests": "Travel, Photography",
+                  "googleAccount": "john.doe@gmail.com"
                 }
               }
             }
           },
           "404": {
             "description": "User not found",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "error": {
-                  "type": "string"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "User not found."
                 }
               }
             }
@@ -226,6 +250,14 @@
               "properties": {
                 "error": {
                   "type": "string"
+
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Internal server error occurred."
                 }
               }
             }
@@ -235,68 +267,64 @@
     },
     "/user/updateProfile": {
       "patch": {
+        "tags": ["User Routes"],
         "summary": "Update user profile",
         "description": "Allows authenticated users to update their profile information",
-        "parameters": [
-          {
-            "in": "body",
-            "name": "updateUserProfile",
-            "description": "Updated user profile data",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "type": "string"
-                },
-                "location": {
-                  "type": "string"
-                },
-                "phone": {
-                  "type": "string"
-                },
-                "interests": {
-                  "type": "string"
-                },
-                "password": {
-                  "type": "string"
-                },
-                "profilePicture": {
-                  "type": "string"
-                }
+        "requestBody": {
+          "description": "Updated user profile data",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserProfileUpdate"
+              },
+              "example": {
+                "name": "John Doe",
+                "location": "New York, USA",
+                "phone": "+1 123-456-7890",
+                "interests": "Travel, Photography",
+                "password": "newsecurepassword",
+                "profilePicture": "http://example.com/new_profile.jpg"
               }
             }
           }
-        ],
+        },
         "responses": {
           "200": {
             "description": "Profile updated successfully",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessage"
+                },
+                "example": {
+                  "message": "Profile updated successfully."
                 }
               }
             }
           },
           "400": {
             "description": "Bad request (e.g., new password matches the previous password)",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "error": {
-                  "type": "string"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Bad request. New password matches the previous password."
                 }
               }
             }
           },
           "404": {
             "description": "User not found",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "User not found."
                 }
               }
             }
@@ -308,6 +336,14 @@
               "properties": {
                 "error": {
                   "type": "string"
+
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Internal server error occurred."
                 }
               }
             }
@@ -317,46 +353,51 @@
     },
     "/forgot-password": {
       "get": {
+        "tags": ["User Routes"],
         "summary": "Forgot Password",
         "description": "Renders the \"Forgot Password\" form"
       },
       "post": {
+        "tags": ["User Routes"],
         "summary": "Handle \"Forgot Password\" form submission",
         "description": "Sends a password reset email to the user's email address",
-        "parameters": [
-          {
-            "in": "body",
-            "name": "forgotPassword",
-            "description": "User's email address",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "email": {
-                  "type": "string"
-                }
+        "requestBody": {
+          "description": "User's email address",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserForgotPassword"
+              },
+              "example": {
+                "email": "john.doe@example.com"
               }
             }
           }
-        ],
+        },
         "responses": {
           "200": {
             "description": "Password reset email sent successfully",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessage"
+                },
+                "example": {
+                  "message": "Password reset email sent successfully."
                 }
               }
             }
           },
           "400": {
             "description": "Bad request (e.g., user not found, password reset link expired)",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "error": {
-                  "type": "string"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Bad request. User not found."
                 }
               }
             }
@@ -368,6 +409,13 @@
               "properties": {
                 "error": {
                   "type": "string"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Internal server error occurred."
                 }
               }
             }
@@ -377,6 +425,7 @@
     },
     "/reset-password/{token}": {
       "get": {
+        "tags": ["User Routes"],
         "summary": "Password Reset",
         "description": "Renders the \"Password Reset\" form",
         "parameters": [
@@ -385,11 +434,14 @@
             "name": "token",
             "description": "Password reset token received via email",
             "required": true,
-            "type": "string"
+            "schema": {
+              "type": "string"
+            }
           }
         ]
       },
       "post": {
+        "tags": ["User Routes"],
         "summary": "Handle \"Password Reset\" form submission",
         "description": "Resets the user's password based on the password reset token",
         "parameters": [
@@ -398,44 +450,49 @@
             "name": "token",
             "description": "Password reset token received via email",
             "required": true,
-            "type": "string"
-          },
-          {
-            "in": "body",
-            "name": "resetPassword",
-            "description": "New password and password confirmation",
             "schema": {
-              "type": "object",
-              "properties": {
-                "password": {
-                  "type": "string"
-                },
-                "confirmPassword": {
-                  "type": "string"
-                }
-              }
+              "type": "string"
             }
           }
         ],
+        "requestBody": {
+          "description": "New password and password confirmation",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserResetPassword"
+              },
+              "example": {
+                "password": "newsecurepassword",
+                "confirmPassword": "newsecurepassword"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "Password reset successful",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessage"
+                },
+                "example": {
+                  "message": "Password reset successful."
                 }
               }
             }
           },
           "400": {
             "description": "Bad request (e.g., password and confirmation do not match)",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "error": {
-                  "type": "string"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Bad request. Password and confirmation do not match."
                 }
               }
             }
@@ -447,6 +504,14 @@
               "properties": {
                 "error": {
                   "type": "string"
+
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Internal server error occurred."
                 }
               }
             }
@@ -456,6 +521,7 @@
     },
     "/api/auth/google": {
       "get": {
+        "tags": ["User Routes"],
         "summary": "Google OAuth login",
         "description": "Initiates the Google OAuth process for login",
         "responses": {
@@ -469,25 +535,29 @@
                 }
               }
             }
+            "description": "Redirects to Google login page for authentication"
           }
         }
       }
     },
     "/api/auth/google/callback": {
       "get": {
+        "tags": ["User Routes"],
         "summary": "Google OAuth callback",
         "description": "Handles the callback after successful Google OAuth authentication",
         "responses": {
           "302": {
-            "description": "Redirects to user profile page after successful authentication"
+            "description": "Redirects back to the application after successful authentication"
           },
-          "401": {
-            "description": "Unauthorized (authentication failed)",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "error": {
-                  "type": "string"
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Internal server error occurred."
                 }
               }
             }
@@ -495,40 +565,502 @@
         }
       }
     },
-    "/api/auth/connectGoogle": {
-      "patch": {
-        "summary": "Connect Google account",
-        "description": "Allows users to connect their Google account to their existing account",
-        "parameters": [
-          {
-            "in": "body",
-            "name": "connectGoogleAccount",
-            "description": "Google account details",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "googleId": {
-                  "type": "string"
-                }
+    "/api/donations": {
+      "get": {
+        "tags": ["Donation Routes"],
+        "summary": "Make donation",
+        "description": "Renders the \"Make Donation\" form"
+      },
+      "post": {
+        "tags": ["Donation Routes"],
+        "summary": "Make donation",
+        "description": "Allows users to donate to events",
+        "requestBody": {
+          "description": "Donation details",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MakeDonation"
+              },
+              "example": {
+                "eventId": "event-id",
+                "amount": 450
               }
             }
           }
-        ],
+        },
         "responses": {
-          "200": {
-            "description": "Google account successfully connected",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "message": {
-                  "type": "string"
+          "201": {
+            "description": "Donation made successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessage"
+                },
+                "example": {
+                  "message": "Donation made successfully."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Bad request (e.g., user not found, event not found)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Bad request. User or event not found."
                 }
               }
             }
           },
           "500": {
             "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Internal server error."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/donations/{userId}": {
+      "get": {
+        "tags": ["Donation Routes"],
+        "summary": "Get user donations",
+        "description": "Fetches the donations the user has made",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "description": "the desired user id whose donations we seek",
+            "required": true,
             "schema": {
+              "type": "object",
+              "properties": {
+                "error": {
+                  "type": "string"
+
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User donations data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDonations"
+                },
+                "example": {
+                  "eventId": "event-id",
+                  "amount": 450
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "User not found."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Internal server error occurred."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/donations/{eventId}": {
+      "get": {
+        "tags": ["Donation Routes"],
+        "summary": "Get event donations",
+        "description": "Fetches the donations made to the event",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "eventId",
+            "description": "the desired event id whose donations we seek",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Event donations data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EventDonations"
+                },
+                "example": {
+                  "userId": "user-id",
+                  "amount": 450
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "User not found."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Internal server error occurred."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/blogPosts/new": {
+      "get": {
+        "tags": ["Blog Routes"],
+        "summary": "Create blog post",
+        "description": "Renders the \"Create Blog Post\" form"
+      },
+      "post": {
+        "tags": ["Blog Routes"],
+        "summary": "Create blog post",
+        "description": "Allows admin users to create blog posts",
+        "requestBody": {
+          "description": "Blog post fields",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBlogPost"
+              },
+              "example": {
+                "title": "An introduction to Fluxity",
+                "bannerImage": "/Fluxity/BlogPosts/Img/IntroBanner.jpg",
+                "category": "Article",
+                "shortDescription": "This is an introductory article to Fluxity's work",
+                "bodyText": "Fluxity is a platform to host and join non-profit events. It was created by ..."
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Blog post created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessage"
+                },
+                "example": {
+                  "message": "Blog post created successfully."
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "User not authorized to create blog posts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "User not authorized to create blog posts"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Bad request (e.g., user not found, category not found)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Bad request. User or category not found."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Internal server error."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/blogPosts": {
+      "get": {
+        "tags": ["Blog Routes"],
+        "summary": "Get all blog posts",
+        "description": "Fetches the blog posts",
+        "responses": {
+          "200": {
+            "description": "Fetch all blog posts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AllBlogPosts"
+                },
+                "example": {
+                  "blogPostId": 124563
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Internal server error occurred."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/blogPosts/{blogPostId}": {
+      "get": {
+        "tags": ["Blog Routes"],
+        "summary": "Get the blog post",
+        "description": "Fetches the blog post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "blogPostId",
+            "description": "the desired blog post id to be shown",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Blog post content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BlogPost"
+                },
+                "example": {
+                  "title": "An introduction to Fluxity",
+                  "bannerImage": "/Fluxity/BlogPosts/Img/IntroBanner.jpg",
+                  "author": "Omid Kayhani",
+                  "date": "2023-08-04T10:32:10.292Z",
+                  "category": "Article",
+                  "shortDescription": "This is an introductory article to Fluxity's work",
+                  "bodyText": "Fluxity is a platform to host and join non-profit events. It was created by ..."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Blog post not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Blog post not found."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Internal server error occurred."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/blogPosts/{blogPostId}/update": {
+      "get": {
+        "tags": ["Blog Routes"],
+        "summary": "Get the blog post fields to update",
+        "description": "Fetches the blog post update form",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "blogPostId",
+            "description": "the desired blog post id to be updated",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "patch": {
+        "tags": ["Blog Routes"],
+        "summary": "Update the blog post",
+        "description": "Allows authenticated users to update their blog posts",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "blogPostId",
+            "description": "the desired blog post id to be updated",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Update the blog post",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBlogPost"
+              },
+              "example": {
+                "title": "An introduction to Fluxity",
+                "bannerImage": "/Fluxity/BlogPosts/Img/IntroBanner.jpg",
+                "category": "Article",
+                "shortDescription": "This is an introductory article to Fluxity's work",
+                "bodyText": "Fluxity is a platform to host and join non-profit events. It was created by ..."
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Blog post updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessage"
+                },
+                "example": {
+                  "message": "Blog post updated successfully."
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "User is not an admin",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "User not authorized to update the blog post."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User or blog not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "User or blog not found."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Internal server error occurred."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/blogPosts/{blogPostId}/delete": {
+      "get": {
+        "tags": ["Blog Routes"],
+        "summary": "Blog post deletion",
+        "description": "Allows admins to delete blog posts",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "blogPostId",
+            "description": "the desired blog post id to be deleted",
+            "required": true,
+            "schema": {
+
               "type": "object",
               "properties": {
                 "error": {
@@ -563,6 +1095,7 @@
                   "format": "date-time"
                 }
               }
+              "type": "string"
             }
           }
         ],
@@ -574,6 +1107,15 @@
               "properties": {
                 "message": {
                   "type": "string"
+
+            "description": "Blog post deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessage"
+                },
+                "example": {
+                  "message": "Blog post deleted successfully."
                 }
               }
             }
@@ -588,6 +1130,270 @@
                 }
               }
             }
+          "401": {
+            "description": "User is not an admin",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "User not authorized to deleted the blog post."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User or blog not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "User or blog not found."
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Internal server error occurred."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "UserSignup": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string"
+          },
+          "passwordConfirmation": {
+            "type": "string"
+          }
+        }
+      },
+      "UserLogin": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          }
+        }
+      },
+      "UserForgotPassword": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          }
+        }
+      },
+      "UserResetPassword": {
+        "type": "object",
+        "properties": {
+          "password": {
+            "type": "string"
+          },
+          "confirmPassword": {
+            "type": "string"
+          }
+        }
+      },
+      "UserProfile": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "profilePicture": {
+            "type": "string",
+            "format": "url"
+          },
+          "location": {
+            "type": "string"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "format": "date"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "phoneNumber": {
+            "type": "string"
+          },
+          "interests": {
+            "type": "string"
+          },
+          "googleAccount": {
+            "type": "string"
+          }
+        }
+      },
+      "UserProfileUpdate": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "interests": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "profilePicture": {
+            "type": "string",
+            "format": "url"
+          }
+        }
+      },
+      "MakeDonation": {
+        "type": "object",
+        "properties": {
+          "eventId": {
+            "type": "string",
+            "format": "number"
+          },
+          "amount": {
+            "type": "integer"
+          }
+        }
+      },
+      "UserDonations": {
+        "type": "object",
+        "properties": {
+          "eventId": {
+            "type": "string",
+            "format": "number"
+          },
+          "amount": {
+            "type": "integer"
+          }
+        }
+      },
+      "EventDonations": {
+        "type": "object",
+        "properties": {
+          "UserId": {
+            "type": "string",
+            "format": "number"
+          },
+          "amount": {
+            "type": "integer"
+          }
+        }
+      },
+      "CreateBlogPost": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "bannerImage": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "shortDescription": {
+            "type": "string"
+          },
+          "bodyText": {
+            "type": "string"
+          }
+        }
+      },
+      "AllBlogPosts": {
+        "type": "object",
+        "properties": {
+          "blogPostId": {
+            "type": "string",
+            "format": "number"
+          }
+        }
+      },
+      "BlogPost": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "bannerImage": {
+            "type": "string"
+          },
+          "author": {
+            "type": "string"
+          },
+          "lastModified": {
+            "type": "string",
+            "format": "date"
+          },
+          "category": {
+            "type": "string"
+          },
+          "shortDescription": {
+            "type": "string"
+          },
+          "bodyText": {
+            "type": "string"
+          }
+        }
+      },
+      "SuccessMessage": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string"
           }
         }
       },

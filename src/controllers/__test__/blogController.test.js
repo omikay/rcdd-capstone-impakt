@@ -556,18 +556,14 @@ describe('getBlogById', () => {
       shortDescription: 'Test Short Description',
       bodyText: 'Test Body Text',
     };
-    const userMock = {
-      _id: 'userId',
-    };
+
     jest.spyOn(BlogPost, 'findById').mockResolvedValueOnce(blogPostMock);
-    jest.spyOn(User, 'findById').mockResolvedValueOnce(userMock);
 
     await getBlogById(req, res);
 
     expect(res.status).toBeCalledWith(200);
     expect(res.json).toBeCalledWith(blogPostMock);
     expect(BlogPost.findById).toBeCalledWith(blogPostId);
-    expect(User.findById).toBeCalledWith(req.user.id);
   });
   it('should return 404 for an invalid ID', async () => {
     const invalidId = 'invalidId';
@@ -587,39 +583,6 @@ describe('getBlogById', () => {
     expect(res.status).toBeCalledWith(404);
     expect(res.json).toBeCalledWith({ error: 'Blog post not found' });
     expect(BlogPost.findById).toBeCalledWith(invalidId);
-  });
-  it('should return 404 if the user is not found', async () => {
-    const blogPostId = 'validBlogPostId';
-
-    const req = {
-      params: {
-        id: blogPostId,
-      },
-      user: {
-        id: 'nonExistingUserId',
-      },
-    };
-    const res = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn(),
-    };
-    const blogPostMock = {
-      _id: blogPostId,
-      title: 'Test Blog Post',
-      bannerImage: 'test_banner.png',
-      category: 'Test Category',
-      shortDescription: 'Test Short Description',
-      bodyText: 'Test Body Text',
-    };
-    jest.spyOn(BlogPost, 'findById').mockResolvedValueOnce(blogPostMock);
-    jest.spyOn(User, 'findById').mockResolvedValueOnce(null);
-
-    await getBlogById(req, res);
-
-    expect(res.status).toBeCalledWith(404);
-    expect(res.json).toBeCalledWith({ error: 'User not found' });
-    expect(BlogPost.findById).toBeCalledWith(blogPostId);
-    expect(User.findById).toBeCalledWith(req.user.id);
   });
 
   it('should handle internal server errors', async () => {
@@ -675,10 +638,7 @@ describe('getAllBlogs', () => {
       status: jest.fn().mockReturnThis(),
       json: jest.fn(),
     };
-    const userMock = {
-      _id: 'userId',
-    };
-    jest.spyOn(User, 'findById').mockResolvedValueOnce(userMock);
+
     jest.spyOn(BlogPost, 'find').mockResolvedValueOnce(blogPostsMock);
     await getAllBlogs(req, res);
 

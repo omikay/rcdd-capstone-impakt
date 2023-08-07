@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const process = require('process');
 const User = require('../models/Users');
 const sendEmail = require('../utils/email');
 
@@ -75,40 +76,9 @@ const signup = async (req, res) => {
 // User account activation after sign up
 // This is when the user sign ups with their email and not GoogleOAuth
 const activateUser = async (req, res) => {
+  const { token } = req.params;
   try {
-    const { token } = req.params;
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-
-    // Check if the token is expired
-    const currentTime = Math.floor(Date.now() / 1000);
-    if (decodedToken.exp <= currentTime) {
-      const newToken = jwt.sign(
-        {
-          name: decodedToken.name,
-          email: decodedToken.email,
-          exp: currentTime + 2 * 24 * 60 * 60, // 2 days expiration
-          iat: currentTime, // Issued at date
-        },
-        process.env.JWT_SECRET
-      );
-
-      const activationLink = `${process.env.CLIENT_URL}/verify-account/${newToken}`;
-
-      await sendEmail(
-        decodedToken.email,
-        'Activation required for your Impakt account',
-        `Hi ${decodedToken.name}, your activation link has expired. Please click on the following link to activate your account: 
-        
-        ${activationLink}.
-        
-        The activation link is valid for 2 days.`
-      );
-
-      return res.status(400).json({
-        error:
-          'Activation link has expired. A new link has been sent to your email.',
-      });
-    }
 
     // Find the user by their email
     const user = await User.findOne({ email: decodedToken.email });
@@ -118,19 +88,43 @@ const activateUser = async (req, res) => {
     }
 
     if (user.isVerified === true) {
-      return res.status(400).json({ error: 'Account already activated' });
+      return res.status(400).json({ error: 'Account already activated.' });
     }
 
     // Mark the user as verified
     user.isVerified = true;
-    await user.save();
 
+    await user.save();
     return res.status(201).json({
       message:
         'Account activated successfully. You can now log into your account.',
     });
   } catch (error) {
-    return res.status(500).json({ error: 'Internal server error' });
+    if (error.name === 'TokenExpiredError') {
+      const decodedToken = jwt.decode(token);
+      const newToken = jwt.sign(
+        {
+          name: decodedToken.name,
+          email: decodedToken.email,
+          exp: Math.floor(Date.now() / 1000) + 2 * 24 * 60 * 60, // 2 days expiration
+          iat: Math.floor(Date.now() / 1000), // Issued at date
+        },
+        process.env.JWT_SECRET
+      );
+
+      const activationLink = `${process.env.CLIENT_URL}/verify-account/${newToken}`;
+
+      await sendEmail(
+        decodedToken.email,
+        'Activation required for your Impakt account',
+        `Hi ${decodedToken.name},\n\nYour activation link has expired. Please click on the following link to activate your account:\n\n${activationLink}\n\nThe activation link is valid for 2 days.`
+      );
+      return res.status(400).json({
+        error:
+          'Activation link has expired. A new link has been sent to your email.',
+      });
+    }
+    return res.status(500).json({ error: 'Internal server error.' });
   }
 };
 
@@ -181,14 +175,16 @@ const login = async (req, res) => {
     }
 
     const hashedReqPass = await bcrypt.hash(password);
+
     const isPasswordCorrect = await bcrypt.compare(
       hashedReqPass,
       user.password
     );
+
     if (!isPasswordCorrect) {
       return res.status(400).json({ error: 'Invalid credentials.' });
     }
-    // console.log(user);
+
     const token = jwt.sign(
       {
         name: user.name,
@@ -328,9 +324,13 @@ const forgotPassword = async (req, res) => {
     }
 
     // Generate a password reset token
-    const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, {
-      expiresIn: '1h', // Token will expire in 1 hour
-    });
+    const token = jwt.sign(
+      {
+        email: req.body.email,
+        expiresIn: '1h',
+      },
+      process.env.JWT_SECRET
+    );
 
     // Create a password reset URL that includes the generated token
     const resetPasswordURL = `http://localhost:3000/reset-password/${token}`;
@@ -339,37 +339,43 @@ const forgotPassword = async (req, res) => {
     await sendEmail(
       user.email,
       'Password Reset Request',
-      `To reset your password, click the link below:\n${resetPasswordURL}`
+      `Hi ${user.name},\n\nTo reset your password, click the link below:\n\n${resetPasswordURL}\n\nThe link is valid for 1 hour.\n\nYou may neglect this email if you did not make this request.`
     );
 
     return res.status(200).json({ message: 'Password reset email sent.' });
   } catch (error) {
-    return res.status(500).json({ error: 'Server error.' });
+    return res.status(500).json({ error: 'Internal server error.' });
   }
 };
 
 // Password Reset - Handle "Password Reset" form submission
 const resetPassword = async (req, res) => {
   const { token } = req.params;
-  const { password, confirmPassword } = req.body;
-
+  const { password, passwordConfirmation } = req.body;
   try {
     // Verify the token
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-
     // Find the user by their email
-    const user = await User.findOne({ email: decodedToken.email });
+    const user = await User.findOne({
+      email: decodedToken.email,
+    });
 
     if (!user) {
       return res.status(404).json({ error: 'User not found.' });
     }
 
-    if (password !== confirmPassword) {
+    const isStrongPassword = validatePasswordStrength(req.body.password);
+    if (!isStrongPassword) {
+      return res.status(400).json({ error: 'Password is not strong enough.' });
+    }
+
+    if (password !== passwordConfirmation) {
       return res.status(400).json({ error: 'Passwords do not match.' });
     }
 
     // Hash the new password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = bcrypt.hash(password, 10);
+
     user.password = hashedPassword;
 
     // Save the updated user with the new password to the database
@@ -382,7 +388,7 @@ const resetPassword = async (req, res) => {
         .status(400)
         .json({ error: 'Password reset link has expired.' });
     }
-    return res.status(500).json({ error: 'Server error.' });
+    return res.status(500).json({ error: 'Internal server error.' });
   }
 };
 

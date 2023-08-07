@@ -1,8 +1,8 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const process = require('process');
 const server = require('../../app');
 const User = require('../../models/Users');
-
 const sendEmail = require('../../utils/email');
 const {
   connectGoogleAccount,
@@ -11,6 +11,9 @@ const {
   updateUserProfile,
   signup,
   login,
+  activateUser,
+  resetPassword,
+  forgotPassword,
 } = require('../userController');
 
 jest.mock('bcrypt');
@@ -84,7 +87,6 @@ describe('signup', () => {
     sendEmail.mockResolvedValueOnce();
     bcrypt.hash.mockResolvedValueOnce(mockHashedPassword);
     User.findOne.mockResolvedValueOnce(null);
-    // User.mockImplementationOnce(() => mockUser);
     const userSaveFn = jest.fn();
     User.mockImplementationOnce((data) => ({
       name: data.name,
@@ -94,8 +96,6 @@ describe('signup', () => {
       save: userSaveFn,
     }));
     jwt.sign.mockReturnValueOnce(mockToken);
-    // const mockToken = 'mock-activation-token';
-    // jwt.sign.mockReturnValue(mockToken);
 
     await signup(req, res);
 
@@ -175,6 +175,184 @@ describe('signup', () => {
   });
 });
 
+describe('activateUser', () => {
+  const mockActiveUser = {
+    name: 'non active',
+    email: 'non.active@activateUser.com',
+    isVerified: false,
+    save: jest.fn(),
+  };
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+  it('should activate the user account when the token is valid and not expired', async () => {
+    const req = {
+      params: { token: mockToken },
+    };
+
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    const decodedToken = { email: 'john.doe@mockUser.com' };
+
+    jwt.verify.mockReturnValue(decodedToken);
+    User.findOne.mockResolvedValueOnce(mockActiveUser);
+
+    await activateUser(req, res);
+
+    expect(jwt.verify).toHaveBeenCalledWith(
+      req.params.token,
+      process.env.JWT_SECRET
+    );
+    expect(User.findOne).toHaveBeenCalledWith({ email: decodedToken.email });
+    expect(mockActiveUser.isVerified).toBe(true);
+    // expect(mockActiveUser.save).toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(201);
+    expect(res.json).toHaveBeenCalledWith({
+      message:
+        'Account activated successfully. You can now log into your account.',
+    });
+  });
+
+  it('should return a new activation link when the token is expired', async () => {
+    const req = {
+      params: { token: mockToken },
+    };
+
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    // Mock the verify method of jwt to throw a TokenExpiredError
+    jwt.verify.mockImplementation(() => {
+      const error = new Error('Token expired');
+      error.name = 'TokenExpiredError';
+      throw error;
+    });
+
+    jwt.decode.mockReturnValueOnce({
+      email: mockActiveUser.email,
+      name: mockActiveUser.name,
+    });
+
+    jwt.sign.mockReturnValueOnce(mockToken);
+
+    await activateUser(req, res);
+
+    expect(jwt.verify).toHaveBeenCalledWith(
+      req.params.token,
+      process.env.JWT_SECRET
+    );
+
+    expect(jwt.decode).toHaveBeenCalledWith(req.params.token);
+    expect(jwt.sign).toHaveBeenCalledWith(
+      {
+        name: mockActiveUser.name,
+        email: mockActiveUser.email,
+        exp: expect.any(Number),
+        iat: expect.any(Number),
+      },
+      process.env.JWT_SECRET
+    );
+
+    expect(sendEmail).toHaveBeenCalledWith(
+      mockActiveUser.email,
+      'Activation required for your Impakt account',
+      `Hi ${mockActiveUser.name},\n\nYour activation link has expired. Please click on the following link to activate your account:\n\n${process.env.CLIENT_URL}/verify-account/${mockToken}\n\nThe activation link is valid for 2 days.`
+    );
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({
+      error:
+        'Activation link has expired. A new link has been sent to your email.',
+    });
+  });
+
+  it('should return an error if the user is already activated', async () => {
+    const activeUser = {
+      name: 'John Doe',
+      email: 'john.doe@activateUser.com',
+      isVerified: true,
+    };
+
+    const req = {
+      params: { token: mockToken },
+    };
+
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    jwt.verify.mockReturnValue(activeUser);
+    User.findOne.mockResolvedValueOnce(activeUser);
+
+    await activateUser(req, res);
+
+    expect(jwt.verify).toHaveBeenCalledWith(
+      req.params.token,
+      process.env.JWT_SECRET
+    );
+
+    expect(User.findOne).toHaveBeenCalledWith({ email: activeUser.email });
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({
+      error: 'Account already activated.',
+    });
+  });
+
+  it('should return a 404 error if the user is not found', async () => {
+    const req = {
+      params: { token: mockToken },
+    };
+
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    const decodedToken = { email: 'non.user@activateUser.com' };
+
+    jwt.verify.mockReturnValue(decodedToken);
+    User.findOne.mockResolvedValueOnce(null);
+
+    await activateUser(req, res);
+
+    expect(jwt.verify).toHaveBeenCalledWith(
+      req.params.token,
+      process.env.JWT_SECRET
+    );
+    expect(User.findOne).toHaveBeenCalledWith({ email: decodedToken.email });
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.json).toHaveBeenCalledWith({ error: 'User not found.' });
+  });
+
+  it('should return a 500 error on internal server error', async () => {
+    const req = {
+      params: { token: mockToken },
+    };
+
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    jwt.verify.mockImplementation(() => {
+      throw new Error('Some server error');
+    });
+
+    await activateUser(req, res);
+
+    // Check that the API returns the correct error response
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({ error: 'Internal server error.' });
+  });
+});
+
 // Test the login function
 describe('login', () => {
   let req;
@@ -209,6 +387,8 @@ describe('login', () => {
     };
 
     User.findOne.mockResolvedValueOnce(existingUser);
+    // bcrypt.compare.mockResolvedValueOnce(true);
+    jwt.sign.mockReturnValueOnce(mockToken);
 
     await login(req, res);
 
@@ -484,6 +664,267 @@ describe('connectGoogleAccount', () => {
     expect(res.json).toHaveBeenCalledWith({
       message: 'An error occurred during Google account connection.',
     });
+  });
+});
+
+describe('forgotPassword', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+  it('should send a password reset email when the user exists', async () => {
+    const req = {
+      body: {
+        email: 'john.doe@mockUser.com',
+      },
+    };
+
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+    // Mock the findOne method of the User model to return the mock user
+    jwt.sign.mockReturnValueOnce(mockToken);
+    User.findOne.mockResolvedValueOnce(mockUser);
+
+    await forgotPassword(req, res);
+
+    expect(User.findOne).toHaveBeenCalledWith({ email: req.body.email });
+    expect(jwt.sign).toHaveBeenCalledWith(
+      {
+        email: req.body.email,
+        expiresIn: '1h',
+      },
+      process.env.JWT_SECRET
+    );
+
+    expect(sendEmail).toHaveBeenCalledWith(
+      mockUser.email,
+      'Password Reset Request',
+      `Hi ${mockUser.name},\n\nTo reset your password, click the link below:\n\nhttp://localhost:3000/reset-password/${mockToken}\n\nThe link is valid for 1 hour.\n\nYou may neglect this email if you did not make this request.`
+    );
+
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({
+      message: 'Password reset email sent.',
+    });
+  });
+
+  it('should return a 404 error when the user does not exist', async () => {
+    const req = {
+      body: {
+        email: 'non-user@mockUser.com',
+      },
+    };
+
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    jwt.sign.mockReturnValueOnce(mockToken);
+    User.findOne.mockResolvedValueOnce(null);
+
+    await forgotPassword(req, res);
+
+    expect(jwt.sign).not.toHaveBeenCalled();
+    expect(sendEmail).not.toHaveBeenCalled();
+
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.json).toHaveBeenCalledWith({ error: 'User not found.' });
+  });
+
+  it('should return a 500 error if there is a server error', async () => {
+    const req = {
+      body: {
+        email: 'non-user@mockUser.com',
+      },
+    };
+
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    jwt.sign.mockRejectedValueOnce(new Error('Internal server error'));
+    User.findOne.mockRejectedValueOnce(new Error('Internal server error'));
+
+    await forgotPassword(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({ error: 'Internal server error.' });
+  });
+});
+
+describe('resetPassword', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should reset the password when the token is valid and passwords match', async () => {
+    const req = {
+      body: {
+        password: '!erBR45@sfgGG',
+        passwordConfirmation: '!erBR45@sfgGG',
+      },
+      params: {
+        token: mockToken,
+      },
+    };
+
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    const decodedToken = { email: 'john.doe@mockUser.com' };
+    jwt.verify.mockReturnValue(decodedToken);
+    User.findOne.mockResolvedValue(mockUser);
+    bcrypt.hash.mockResolvedValue('!erBR45@sfgGG');
+
+    await resetPassword(req, res);
+
+    expect(jwt.verify).toHaveBeenCalledWith(
+      req.params.token,
+      process.env.JWT_SECRET
+    );
+    expect(User.findOne).toHaveBeenCalledWith({ email: decodedToken.email });
+    expect(bcrypt.hash).toHaveBeenCalledWith(req.body.password, 10);
+
+    expect(mockUser.save).toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({
+      message: 'Password reset successful.',
+    });
+  });
+
+  it('should return a 404 error when the user does not exist', async () => {
+    const req = {
+      body: {
+        password: '!erBR45@sfgGG',
+        passwordConfirmation: '!erBR45@sfgGG',
+      },
+      params: {
+        token: mockToken,
+      },
+    };
+
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    jwt.verify.mockReturnValueOnce(mockToken, process.env.JWT_SECRET);
+    User.findOne.mockResolvedValueOnce(null);
+
+    await resetPassword(req, res);
+
+    expect(jwt.verify).toHaveBeenCalledWith(
+      req.params.token,
+      process.env.JWT_SECRET
+    );
+
+    expect(sendEmail).not.toHaveBeenCalled();
+
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.json).toHaveBeenCalledWith({ error: 'User not found.' });
+  });
+
+  it('should return a 400 error when the passwords do not match', async () => {
+    const req = {
+      body: {
+        password: '!erBR45@sfgGG',
+        passwordConfirmation: 'not-matching',
+      },
+      params: {
+        token: mockToken,
+      },
+    };
+
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    const decodedToken = { email: 'john.doe@mockUser.com' };
+    jwt.verify.mockReturnValue(decodedToken);
+    User.findOne.mockResolvedValue(mockUser);
+    bcrypt.hash.mockResolvedValue('!erBR45@sfgGG');
+
+    await resetPassword(req, res);
+
+    expect(jwt.verify).toHaveBeenCalledWith(
+      req.params.token,
+      process.env.JWT_SECRET
+    );
+    expect(User.findOne).toHaveBeenCalledWith({ email: mockUser.email });
+
+    // Check that the API returns the correct error response
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({ error: 'Passwords do not match.' });
+  });
+
+  it('should return a 400 error when the token is expired', async () => {
+    const req = {
+      body: {
+        password: '!erBR45@sfgGG',
+        passwordConfirmation: 'not-matching',
+      },
+      params: {
+        token: mockToken,
+      },
+    };
+
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    // Mock the verify method of jwt to throw a TokenExpiredError
+    jwt.verify.mockImplementation(() => {
+      const error = new Error('Token expired');
+      error.name = 'TokenExpiredError';
+      throw error;
+    });
+
+    await resetPassword(req, res);
+
+    expect(jwt.verify).toHaveBeenCalledWith(
+      req.params.token,
+      process.env.JWT_SECRET
+    );
+    // Check that the API returns the correct error response
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({
+      error: 'Password reset link has expired.',
+    });
+  });
+
+  it('should return a 500 error when there is a server error', async () => {
+    const req = {
+      body: {
+        password: '!erBR45@sfgGG',
+        passwordConfirmation: '!erBR45@sfgGG',
+      },
+      params: {
+        token: mockToken,
+      },
+    };
+
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    jwt.verify.mockImplementation(() => {
+      throw new Error('Some server error');
+    });
+    User.findOne.mockRejectedValueOnce(new Error('Server error'));
+
+    await resetPassword(req, res);
+
+    // Check that the API returns the correct error response
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({ error: 'Internal server error.' });
   });
 });
 
