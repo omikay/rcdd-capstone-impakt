@@ -8,12 +8,27 @@ const {
   updateEvent,
   deleteEvent,
   joinEvent,
+  getEventsForUser,
+  leaveEvent,
 } = require('../controllers/eventController');
 
 const router = express.Router();
 
 // Create an event
-router.post('/events', isAuthorized, createEvent);
+router.post('/events/createEvent', isAuthorized, createEvent);
+
+router.get('/events/createEvent', (req, res) => {
+  const event = req.body;
+
+  res.render('createEvent', { event });
+});
+
+// leave an evant
+router.post('/events/leaveEvant', isAuthorized, leaveEvent);
+
+// Get all eveents for an user.
+router.get('/myEvants', isAuthorized, getEventsForUser);
+
 
 // Update an event
 router.patch('/events/:eventId/update', isAuthorized, updateEvent);
