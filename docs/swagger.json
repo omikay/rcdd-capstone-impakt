@@ -1066,6 +1066,369 @@
           }
         }
       }
+    },
+    "/events/user/{userId}": {
+      "get": {
+        "tags": ["Event Routes"],
+        "summary": "Get events for user",
+        "description": "Retrieves events that a specific user has joined.",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [{
+          "in": "path",
+          "name": "userId",
+          "required": true,
+          "schema": { "type": "string" },
+          "description": "User ID"
+        }],
+        "responses": {
+          "200": {
+            "description": "Events for user retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/EventList" }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request or user not found.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error occurred.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/events/search": {
+      "get": {
+        "tags": ["Event Routes"],
+        "summary": "Search events",
+        "description": "Searches for events based on criteria.",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [{
+          "in": "query",
+          "name": "keyword",
+          "required": true,
+          "schema": { "type": "string" },
+          "description": "Keyword for event search"
+        }],
+        "responses": {
+          "200": {
+            "description": "Events search results retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/EventList" }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request or no events found.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error occurred.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/events/{eventId}/join": {
+      "post": {
+        "tags": ["Event Routes"],
+        "summary": "Join an event",
+        "description": "Allows a user to join an existing event.",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [{
+          "in": "path",
+          "name": "eventId",
+          "required": true,
+          "schema": { "type": "string" },
+          "description": "Event ID"
+        }],
+        "responses": {
+          "200": {
+            "description": "User successfully joined the event.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SuccessMessage" }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request, event not found, or user already joined.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error occurred.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/events/createEvent": {
+      "post": {
+        "tags": ["Event Routes"],
+        "summary": "Create an event",
+        "description": "Creates a new event.",
+        "security": [{ "BearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/EventCreate" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Event created successfully.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SuccessMessage" }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request or user not found.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error occurred.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/events/{eventId}/update": {
+      "patch": {
+        "tags": ["Event Routes"],
+        "summary": "Update an event",
+        "description": "Updates an existing event.",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [{
+          "in": "path",
+          "name": "eventId",
+          "required": true,
+          "schema": { "type": "string" },
+          "description": "Event ID"
+        }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/EventUpdate" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Event updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SuccessMessage" }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request, event not found, or event capacity exceeded.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error occurred.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/events/{eventId}/delete": {
+      "delete": {
+        "tags": ["Event Routes"],
+        "summary": "Delete an event",
+        "description": "Deletes an existing event.",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [{
+          "in": "path",
+          "name": "eventId",
+          "required": true,
+          "schema": { "type": "string" },
+          "description": "Event ID"
+        }],
+        "responses": {
+          "200": {
+            "description": "Event deleted successfully.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SuccessMessage" }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request or event not found.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error occurred.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/events/{eventId}": {
+      "get": {
+        "tags": ["Event Routes"],
+        "summary": "Get event details",
+        "description": "Retrieves details of a specific event.",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [{
+          "in": "path",
+          "name": "eventId",
+          "required": true,
+          "schema": { "type": "string" },
+          "description": "Event ID"
+        }],
+        "responses": {
+          "200": {
+            "description": "Event details retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/EventDetails" }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request or event not found.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error occurred.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/eventse/{eventId}/leaveEvent": {
+      "post": {
+        "tags": ["Event Routes"],
+        "summary": "Leave an event",
+        "description": "Leaves an event.",
+        "security": [{ "BearerAuth": [] }],
+        "parameters": [{
+          "in": "path",
+          "name": "eventId",
+          "required": true,
+          "schema": { "type": "string" },
+          "description": "Event ID"
+        }],
+        "responses": {
+          "200": {
+            "description": "User left the event successfully.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SuccessMessage" }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request or user not participating in the event.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error occurred.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/events": {
+      "get": {
+        "tags": ["Event Routes"],
+        "summary": "Get all events",
+        "description": "Retrieves all available events.",
+        "security": [{ "BearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "All events retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/EventList" }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error occurred.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Error" }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1275,6 +1638,80 @@
             "type": "string"
           }
         }
+      },
+      "EventCreate": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Birthday Party"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2023-08-15T18:00:00Z"
+          },
+          "location": {
+            "type": "string",
+            "example": "123 Main St, City"
+          },
+          "capacity": {
+            "type": "integer",
+            "example": 50
+          }
+        }
+      },
+      "EventUpdate": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Updated Birthday Party"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2023-08-15T19:30:00Z"
+          },
+          "location": {
+            "type": "string",
+            "example": "456 Park Ave, Town"
+          },
+          "capacity": {
+            "type": "integer",
+            "example": 60
+          }
+        }
+      },
+      "EventDetails": {
+        "type": "object",
+        "properties": {
+          "eventId": {
+            "type": "string",
+            "example": "event123"
+          },
+          "name": {
+            "type": "string",
+            "example": "Birthday Party"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2023-08-15T18:00:00Z"
+          },
+          "location": {
+            "type": "string",
+            "example": "123 Main St, City"
+          },
+          "capacity": {
+            "type": "integer",
+            "example": 50
+          }
+        }
+      },
+      "EventList": {
+        "type": "array",
+        "items": { "$ref": "#/components/schemas/EventDetails" }
       },
       "SuccessMessage": {
         "type": "object",
