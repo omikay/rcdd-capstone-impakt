@@ -63,7 +63,7 @@ router.post('/reset-password/:token', resetPassword);
 router.get('/user/profile', isAuthorized, getUserProfile);
 
 router.get('/user/profile', isAuthorized, (req, res) => {
-  res.render('pages/profile', { user: req.user });
+  res.render('pages/dashbored', { user: req.user });
 });
 
 // Update user profile
