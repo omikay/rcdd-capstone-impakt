@@ -20,7 +20,7 @@ router.post('/events/createEvent', isAuthorized, createEvent);
 router.get('/events/createEvent', (req, res) => {
   const event = req.body;
 
-  res.render('createEvent', { event });
+  res.render('pages/createEvent', { event });
 });
 
 // leave an evant
