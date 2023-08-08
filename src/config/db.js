@@ -8,11 +8,11 @@ const connectToMongo = () => {
   const db = mongoose.connection; // Declare the 'db' variable
 
   db.once('open', () => {
-    console.log('Database connected: ', url);
+    // console.log('Database connected: ', url);
   });
 
-  db.on('error', (err) => {
-    console.error('Database connection error:', err);
+  db.on('error', () => {
+    // console.error('Database connection error:', err);
     process.exit(1); // Exit process with failure
   });
 };

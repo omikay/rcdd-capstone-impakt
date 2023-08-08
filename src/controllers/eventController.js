@@ -199,7 +199,6 @@ const updateEvent = async (req, res) => {
 
     return res.status(201).json({ message: 'Event updated successfully.' });
   } catch (error) {
-    console.error('Error updating event:', error);
     return res
       .status(500)
       .json({ error: 'An error occurred while updating the event.' });
@@ -308,12 +307,104 @@ const joinEvent = async (req, res) => {
   }
 };
 
+const getEventsForUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    // Find the user by their ID
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    // Fetch all events associated with the user
+    const createdEvents = await Event.find({ creator: userId });
+    const participatingEvents = await Event.find({ participants: userId });
+
+    // Get the current date to determine whether events are passed or upcoming
+    const currentDate = new Date();
+
+    // Sort createdEvents by date (upcoming events first)
+    createdEvents.sort((a, b) => a.startDate - b.startDate);
+
+    // Separate participatingEvents into upcoming and passed events
+    const upcomingParticipatingEvents = [];
+    const passedParticipatingEvents = [];
+
+    participatingEvents.forEach((event) => {
+      if (event.endDate >= currentDate) {
+        upcomingParticipatingEvents.push(event);
+      } else {
+        passedParticipatingEvents.push(event);
+      }
+    });
+
+    return res.status(200).json({
+      createdEvents,
+      upcomingParticipatingEvents,
+      passedParticipatingEvents,
+    });
+  } catch (error) {
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+const leaveEvent = async (req, res) => {
+  try {
+    const eventId = req.params.id;
+    const userId = req.user.id;
+
+    // Find the user and event
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    const event = await Event.findById(eventId);
+
+    if (!event) {
+      return res.status(404).json({ error: 'Event not found.' });
+    }
+
+    // Check if the user is participating in the event
+    if (!event.participants.includes(userId)) {
+      return res.status(400).json({
+        error: 'User is not participating in the event.',
+      });
+    }
+
+    // Remove the user from the participants and the event from the user's joinedEvents
+    await Event.findOneAndUpdate(
+      { _id: eventId },
+      { $pull: { participants: userId } }
+    );
+
+    await User.findOneAndUpdate(
+      { _id: userId },
+      { $pull: { joinedEvents: eventId } }
+    );
+
+    // Respond with success message
+    return res.status(200).json({
+      message: 'User left the event successfully.',
+    });
+  } catch (error) {
+    // console.error('Error leaving event:', error);
+    return res
+      .status(500)
+      .json({ error: 'An error occurred while leaving the event.' });
+  }
+};
+
 module.exports = {
   createEvent,
+  getEventsForUser,
   getAllEvents,
   searchEvents,
   getEvent,
   updateEvent,
   deleteEvent,
   joinEvent,
+  leaveEvent,
 };
