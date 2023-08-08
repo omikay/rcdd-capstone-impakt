@@ -24,7 +24,7 @@ router.get('/events/createEvent', (req, res) => {
 });
 
 // leave an evant
-router.post('/events/leaveEvant', isAuthorized, leaveEvent);
+router.post('/events/:eventId/leaveEvant', isAuthorized, leaveEvent);
 
 // Get all eveents for an user.
 router.get('/events/user/{userId}', isAuthorized, getEventsForUser);
