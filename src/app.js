@@ -17,7 +17,7 @@ const app = express();
 const port = 8080;
 
 // View engine setup
-app.set('views', path.join(__dirname, 'views', 'pages')); // Set the views directory
+app.set('views', path.join(__dirname, 'views')); // Set the views directory
 app.set('view engine', 'ejs'); // Use EJS as the view engine
 
 // Middleware
@@ -25,7 +25,7 @@ app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'views')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Routes
 app.use('/', userRoutes);
