@@ -11,7 +11,7 @@ const router = express.Router();
 // Render the donation form
 router.get('/api/donations', (req, res) => {
   const event = req.body;
-  res.render('donate', { event });
+  res.render('pages/donate', { event });
 });
 
 // Make a new donation
