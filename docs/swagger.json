@@ -1363,7 +1363,7 @@
         }
       }
     },
-    "/eventse/{eventId}/leaveEvent": {
+    "/events/{eventId}/leaveEvent": {
       "post": {
         "tags": ["Event Routes"],
         "summary": "Leave an event",
