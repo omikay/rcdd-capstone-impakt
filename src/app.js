@@ -1,8 +1,8 @@
+const path = require('path');
 const express = require('express');
 const swaggerUi = require('swagger-ui-express');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
-const path = require('path');
 const dotenv = require('dotenv'); // Import dotenv module
 
 dotenv.config(); // Load environment variables from .env file
