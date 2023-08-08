@@ -15,6 +15,11 @@ const isAuthorized = require('../middlewares/auth');
 
 const router = express.Router();
 
+// Homepage route
+router.get('/', (req, res) => {
+  // Render the 'landing.ejs' view from the views/pages directory
+  res.render('pages/index');
+});
 // User signup - Render the signup form
 router.get('/signup', (req, res) => {
   res.render('signup');
@@ -27,7 +32,7 @@ router.get('/verify-account/:token', activateUser);
 router.post('/api/signup', signup);
 
 router.get('/login', (req, res) => {
-  res.render('login');
+  res.render('pages/login');
 });
 
 // User login

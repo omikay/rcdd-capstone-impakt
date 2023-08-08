@@ -1,6 +1,6 @@
+const process = require('process');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const process = require('process');
 const User = require('../models/Users');
 const sendEmail = require('../utils/email');
 

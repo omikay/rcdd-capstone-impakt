@@ -1,0 +1,34 @@
+<!-- views/partials/search-fields.ejs -->
+<div class="search-container">
+    <div class="search-field">
+        <div class="search-field-label">Looking for</div>
+        <div class="search-input-container">
+            <select name="eventType" id="eventType">
+                <option value="">Choose event type</option>
+                <option value="concert">Concert</option>
+                <option value="workshop">Workshop</option>
+                <!-- Add more event types as needed -->
+            </select>
+        </div>
+    </div>
+    <div class="search-field">
+        <div class="search-field-label">Location</div>
+        <div class="search-input-container">
+            <input type="text" name="location" id="location" placeholder="Enter location">
+        </div>
+    </div>
+    <div class="search-field">
+        <div class="search-field-label">When</div>
+        <div class="search-input-container">
+            <!-- Use EJS to include a date input with a calendar icon -->
+            <input type="text" name="eventDate" id="eventDate" placeholder="Choose date and time" />
+            <div class="calendar-icon" onclick="showCalendar()">
+            </div>
+        </div>
+    </div>
+    <!-- Add the search button here -->
+    <div class="search-button">
+        <img src="/images/search.png" alt="Search">
+        <button type="submit" onclick="showEvents()"></button>
+    </div>
+</div>

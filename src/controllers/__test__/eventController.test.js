@@ -1153,5 +1153,3 @@ describe('leaveEvent ', () => {
     expect(User.findById).toHaveBeenCalledWith(userId);
   });
 });
-
-

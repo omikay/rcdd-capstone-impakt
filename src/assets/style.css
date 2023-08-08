@@ -1,0 +1,785 @@
+/* Add padding to the left and right sides of the navbar */
+.navbar {
+    padding: 30px;
+}
+
+/* Center the navbar horizontally */
+.navbar .nav-container {
+    max-width: 1200px; /* Add a maximum width to center the navbar on larger screens */
+    margin: 0 80px; /* Center the navbar on the page */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Reduce the gap between navbar elements on smaller screens */
+@media (max-width: 600px) {
+    .navbar .nav-container {
+        gap: 20px;
+    }
+}
+
+/* Additional styles for the logo */
+.navbar img {
+    width: 93px;
+    height: 28px;
+}
+
+/* Additional styles for the login link */
+.navbar .login-link {
+    color: #003637;
+    font-size: 16px;
+    font-family: Roboto;
+    font-weight: 400;
+    word-wrap: break-word;
+}
+
+/* Additional styles for the login container */
+.navbar .login-link {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 50px;
+}
+
+/* Additional styles for the login button */
+.navbar .login-link {
+    padding: 15px 40px;
+    background: #13AE67;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Additional styles for the login link text */
+.navbar .login-link {
+    text-align: center;
+    color: #003637;
+    font-size: 16px;
+    font-family: Roboto;
+    font-weight: 400;
+    word-wrap: break-word;
+}
+/* General styles for the section */
+/* General styles for the section */
+.hero-section {
+    position: relative;
+}
+
+/* Styling for the image */
+.hero-image {
+    width: calc(100% - 60px); /* 30px margin on both left and right sides */
+    height: 100%;
+    margin: 0 30px; /* Set margin to 30px on both left and right sides */
+    border-radius: 20px;
+    display: block;
+}
+
+/* Styling for the text content */
+.section-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: #ffffff;
+    font-size: 64px;
+    font-family: Roboto, sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    word-wrap: break-word;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .section-content {
+        font-size: 48px;
+    }
+}
+
+@media (max-width: 576px) {
+    .section-content {
+        font-size: 36px;
+    }
+}
+/* General styles for the search fields container */
+.search-container {
+    width: 1200px;
+    height: 144px;
+    margin: 0 auto; /* Center the search fields */
+    background: #003637;
+    border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+}
+
+/* Styling for each search field */
+.search-field {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+/* Styling for the search field label */
+.search-field-label {
+    color: #D7E0E0;
+    font-size: 16px;
+    font-family: Roboto, sans-serif;
+    font-weight: 400;
+    word-wrap: break-word;
+}
+
+/* Styling for the search input container */
+.search-input-container {
+    width: 100%;
+    height: 100%;
+    padding: 8px;
+    background: #D7E0E0;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Styling for the search and calendar icon */
+.search-icon,
+.calendar-icon {
+    width: 16px;
+    height: 16px;
+    position: relative;
+}
+
+/* Styling for the search icon bar */
+.search-icon-bar,
+.calendar-icon-bar1,
+.calendar-icon-bar2 {
+    width: 8px;
+    height: 4px;
+    left: 4px;
+    top: 6px;
+    position: absolute;
+    border: 1px #003637 solid;
+}
+
+/* Styling for the calendar icon bars */
+.calendar-icon-bar1 {
+    border: 1px #F2A283 solid;
+}
+
+.calendar-icon-bar2 {
+    width: 2.9px;
+    height: 2.9px;
+    left: 8.1px;
+    top: 8.1px;
+    position: absolute;
+    border: 1px #F2A283 solid;
+}
+
+/* Styling for the search button */
+.search-button {
+    width: 24px;
+    height: 24px;
+    padding: 8px;
+    background: #D7E0E0;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Styling for the search button image */
+.search-button img {
+    width: 100%;
+    height: 100%;
+}
+
+/* Hide the search button text */
+.search-button button {
+    display: none;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    /* Your existing responsive styles... */
+}
+
+@media (max-width: 576px) {
+    /* Your existing responsive styles... */
+}
+
+
+
+
+
+
+/* Styling for the text content */
+.section-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: #ffffff;
+    font-size: 64px;
+    font-family: Roboto, sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    word-wrap: break-word;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .section-content {
+        font-size: 48px;
+    }
+}
+
+@media (max-width: 576px) {
+    .section-content {
+        font-size: 36px;
+    }
+}
+
+
+
+/* Styling for the text content */
+.section-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: #ffffff;
+    font-size: 64px;
+    font-family: Roboto, sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    word-wrap: break-word;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .section-content {
+        font-size: 48px;
+    }
+}
+
+@media (max-width: 576px) {
+    .section-content {
+        font-size: 36px;
+    }
+}
+
+/* General styles for the search container */
+.search-container {
+    width: 85%;
+    margin: 30px 10px;
+    position: relative;
+    top: 20px;
+    padding: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+/* Styling for each search field */
+.search-field {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+
+/* Styling for the search field label */
+.search-field-title {
+    color: #D7E0E0;
+    font-size: 16px;
+    font-family: Roboto, sans-serif;
+    font-weight: 400;
+}
+
+/* Styling for the search input container */
+.search-input-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    color: #D7E0E0;
+}
+
+/* Styling for the search and calendar icon */
+.search-icon,
+.calendar-icon {
+    width: 16px;
+    height: 16px;
+    position: relative;
+}
+
+/* Styling for the search icon bar */
+.search-icon-bar,
+.calendar-icon-bar1,
+.calendar-icon-bar2 {
+    width: 8px;
+    height: 4px;
+    left: 4px;
+    top: 6px;
+    position: absolute;
+    border: 1px #003637 solid;
+}
+
+/* Styling for the calendar icon bars */
+.calendar-icon-bar1 {
+    border: 1px #F2A283 solid;
+}
+
+.calendar-icon-bar2 {
+    width: 2.9px;
+    height: 2.9px;
+    left: 8.1px;
+    top: 8.1px;
+    position: absolute;
+    border: 1px #F2A283 solid;
+}
+
+/* Styling for the search button */
+.search-button {
+    width: 24px;
+    height: 24px;
+    padding: 8px;
+    background: #D7E0E0;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Styling for the search button image */
+.search-button img {
+    width: 100%;
+    height: 100%;
+}
+
+/* Hide the search button text */
+.search-button button {
+    display: none;
+}
+
+
+
+/* General styles for the upcoming events container */
+.upcoming-events {
+    margin-top: 90px;
+}
+
+/* Styling for the upcoming events title */
+.upcoming-events-title {
+    color: #13AE67;
+
+    font-size: 36px;
+    font-family: Roboto;
+    font-weight: 700;
+    word-wrap: break-word;
+    margin-bottom: 30px;
+    display: flex; /* Add flex display */
+    align-items: baseline; /* Align items at the baseline */
+    margin-left: 160px; /* Add left margin of 50px */
+}
+
+/* Styling for the "Upcoming" span */
+.upcoming-events-span {
+    color: #003637;
+    font-size: 36px;
+    font-family: Roboto;
+    font-weight: 700;
+    word-wrap: break-word;
+    margin-right: 10px; /* Add right margin between the words */
+}
+/* Container to display events in a row */
+.events-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+
+/* Styling for each upcoming event */
+.upcoming-event {
+    width: 300px; /* Adjust the width for smaller event cards */
+    height: 350px;
+    border-radius: 10px;
+    background: #003637;
+    box-shadow: 0px -0.274791419506073px 2.7479140758514404px rgba(0, 0, 0, 0.02);
+    overflow: hidden;
+    margin: 0 10px 20px; /* Adjust the horizontal margin */
+    padding: 10px; /* Add padding for the event content */
+}
+
+/* Styling for the event image */
+.event-image img {
+    width: 100%; /* Make the image fill the entire container */
+    height: 240px;
+    border-radius: 10px 10px 0 0;
+}
+
+/* Styling for the event title */
+.event-title {
+    color: #F2A283;
+    font-size: 16px;
+    font-family: Roboto;
+    font-weight: 400;
+    word-wrap: break-word;
+    padding: 10px;
+}
+
+/* Styling for the event time */
+.event-time {
+    color: #13AE67;
+    font-size: 12px;
+    font-family: Roboto;
+    font-weight: 400;
+    word-wrap: break-word;
+    padding: 10px;
+}
+
+/* Styling for the event location */
+.event-location {
+    color: #D7E0E0;
+    font-size: 12px;
+    font-family: Roboto;
+    font-weight: 400;
+    word-wrap: break-word;
+    padding: 10px;
+}
+
+/* General styles for the load more button container */
+.load-more {
+    text-align: center;
+}
+
+/* Styling for the load more button */
+.load-more-button {
+    width: 150px;
+    height: 40px;
+    padding: 15px 20px;
+    background: #13AE67;
+    border-radius: 5px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Styling for the load more button text */
+.load-more-text {
+    color: #003637;
+    font-size: 16px;
+    font-family: Roboto;
+    font-weight: 400;
+    word-wrap: break-word;
+}
+
+
+
+
+
+/* Styling for the create event container */
+.create-event-container {
+    display: flex;
+    align-items: center;
+    padding: 30px;
+    background: #003637;
+    border-radius: 20px;
+    margin-top: 30px;
+}
+
+/* Styling for the create event image */
+.create-event-image {
+    margin-left: 90px;
+}
+
+.create-event-image img {
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+}
+
+/* Styling for the create event content */
+.create-event-content {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Styling for the create event text spans */
+.create-event-text span {
+    font-size: 36px;
+    font-family: Roboto;
+    font-weight: 700;
+    word-wrap: break-word;
+}
+
+/* Styling for the create event text1 */
+.create-event-text span:nth-child(odd) {
+    color: #D7E0E0;
+}
+
+/* Styling for the create event text2 */
+.create-event-text span:nth-child(even) {
+    color: #F2A283;
+    margin-bottom: 10px; /* Add a margin between the text elements */
+}
+
+/* Styling for the create event description */
+.create-event-description {
+    color: #D7E0E0;
+    font-size: 18px;
+    font-family: Roboto;
+    font-weight: 400;
+    word-wrap: break-word;
+    margin-top: 20px;
+    text-align: center;
+}
+
+/* General styles for the create event button */
+.create-event-button {
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* Styling for the create event button text */
+.create-event-button-text {
+    padding: 15px 40px;
+    background: #13AE67;
+    border-radius: 5px;
+    color: #003637;
+    font-size: 18px;
+    font-family: Roboto;
+    font-weight: 700;
+    word-wrap: break-word;
+    cursor: pointer;
+}
+
+
+
+
+
+/* General styles for the our blog container */
+.our-blog {
+    margin-top: 90px;
+}
+
+/* Styling for the our blog title */
+.our-blog-title {
+    color: #13AE67;
+    font-size: 36px;
+    font-family: Roboto;
+    font-weight: 700;
+    word-wrap: break-word;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: baseline;
+    margin-left: 160px;
+}
+
+/* Styling for the event container */
+.events-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+
+/* Styling for each event */
+.event {
+    width: 300px;
+    height: 350px;
+    border-radius: 10px;
+    background: #003637;
+    box-shadow: 0px -0.274791419506073px 2.7479140758514404px rgba(0, 0, 0, 0.02);
+    overflow: hidden;
+    margin: 0 10px 20px;
+    padding: 10px;
+}
+
+/* Styling for the event image */
+.event-image img {
+    width: 100%;
+    height: 240px;
+    border-radius: 10px 10px 0 0;
+}
+
+/* Styling for the event title */
+.event-title {
+    color: #F2A283;
+    font-size: 16px;
+    font-family: Roboto;
+    font-weight: 400;
+    word-wrap: break-word;
+    padding: 10px;
+}
+
+/* Styling for the event time */
+.event-time {
+    color: #13AE67;
+    font-size: 12px;
+    font-family: Roboto;
+    font-weight: 400;
+    word-wrap: break-word;
+    padding: 10px;
+}
+
+/* Styling for the event location */
+.event-location {
+    color: #D7E0E0;
+    font-size: 12px;
+    font-family: Roboto;
+    font-weight: 400;
+    word-wrap: break-word;
+    padding: 10px;
+}
+
+
+
+/* Styling for the footer container */
+.footer {
+    width: 100%;
+    height: 330px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    background: #003637;
+    margin-top: 50px;
+
+}
+
+/* Styling for the footer logo */
+.footer-logo {
+    width: 51px;
+    height: 51px;
+    margin-top: 90px;
+}
+
+/* Styling for the footer line */
+.footer-line {
+    width: 85%;
+        margin-top: 90px;
+
+    height: 0.5px;
+    background: #D7E0E0;
+}
+
+/* Styling for the footer icons */
+.footer-icons {
+    display: flex;
+    justify-content: center;
+}
+
+/* Styling for each footer icon */
+.footer-icon {
+    width: 24px;
+    height: 24px;
+    margin:30px 10px;
+    position: relative;
+}
+
+.footer-icon:before,
+.footer-icon:after {
+    content: '';
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background: inherit;
+}
+
+.footer-icon:before {
+    left: 9px;
+    top: 9px;
+}
+
+.footer-icon:after {
+    left: 15px;
+    top: 6px;
+}
+
+
+
+
+
+
+
+/* General styles for the error container */
+.error-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    padding: 20% 0;
+    text-align: center;
+}
+
+/* Styling for the error image */
+.error-container img {
+    width: 75%;
+    height: 75%;
+    margin-bottom: 30px;
+}
+
+/* Styling for the error title */
+.error-title {
+    color: black;
+    font-size: 16px;
+    font-family: Roboto;
+    font-weight: 700;
+    word-wrap: break-word;
+        margin-bottom: 30px;
+
+}
+
+/* Styling for the error message */
+.error-message {
+    color: rgba(0, 0, 0, 0.50);
+    font-size: 14px;
+    font-family: Inter;
+    font-weight: 400;
+    word-wrap: break-word;
+    margin-bottom: 90px;
+}
+
+/* Styling for the "Back to Homepage" link */
+.back-to-home a {
+    width: 100%;
+    height: 100%;
+    padding: 19px 30px;
+    background: #13AE67;
+    border-radius: 30px;
+    color: white;
+    font-size: 18px;
+    font-family: Inter;
+    font-weight: 700;
+    word-wrap: break-word;
+    text-decoration: none;
+        margin-top: 10px;
+
+}
