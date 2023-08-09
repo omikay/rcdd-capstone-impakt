@@ -21,8 +21,8 @@ router.get('/', (req, res) => {
   res.render('pages/index');
 });
 // User signup - Render the signup form
-router.get('/signup', (req, res) => {
-  res.render('signup');
+router.get('/api/signup', (req, res) => {
+  res.render('pages/signup');
 });
 
 // User account activation
@@ -31,7 +31,7 @@ router.get('/verify-account/:token', activateUser);
 // User signup
 router.post('/api/signup', signup);
 
-router.get('/login', (req, res) => {
+router.get('/api/login', (req, res) => {
   res.render('pages/login');
 });
 
