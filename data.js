@@ -8,30 +8,6 @@ const BlogPost = require('./src/models/BlogPosts');
 const Category = require('./src/models/Categories');
 const Tag = require('./src/models/Tags');
 
-(async () => {
-  try {
-    await mongoose.connect(
-      'mongodb+srv://doadmin:8YVn476BbE321mp9@db-mongodb-fra1-65852-846c044b.mongo.ondigitalocean.com/admin?tls=true&authSource=admin&replicaSet=db-mongodb-fra1-65852',
-      {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      }
-    );
-
-    // Generate Sample Data
-  
-await generateSampleUsers(5);
-await generateSampleEvents(10);
-await generateSampleDonations(15);
-await generateSampleBlogPosts(8);
-await generateSampleCategories(5);
-await generateSampleTags(7);
-    mongoose.disconnect();
-  } catch (error) {
-    console.error('Error:', error);
-  }
-})();
-
 async function generateSampleEvents(count) {
   try {
     for (let i = 0; i < count; i++) {
@@ -162,3 +138,28 @@ async function generateSampleBlogPosts(count) {
     console.error('Error:', error);
 }
 } 
+(async () => {
+    try {
+      await mongoose.connect(
+        'mongodb+srv://doadmin:8YVn476BbE321mp9@db-mongodb-fra1-65852-846c044b.mongo.ondigitalocean.com/admin?tls=true&authSource=admin&replicaSet=db-mongodb-fra1-65852',
+        {
+          useNewUrlParser: true,
+          useUnifiedTopology: true,
+        }
+      );
+  
+      // Generate Sample Data
+      
+     await generateSampleUsers(5);
+     await generateSampleEvents(10);
+     await generateSampleDonations(15);
+     await generateSampleBlogPosts(8);
+     await generateSampleCategories(5);
+     await generateSampleTags(7);
+  
+    
+      mongoose.disconnect();
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  })();
