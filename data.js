@@ -10,7 +10,7 @@ const Tag = require('./src/models/Tags');
 
 async function generateSampleEvents(count) {
   try {
-    for (let i = 0; i < count; i++) {
+    for (let i = 0; i < count; i+= 1) {
       const event = new Event({
         creator: new mongoose.Types.ObjectId(), // Fixed: Use new keyword
         title: casual.title,
@@ -29,7 +29,7 @@ async function generateSampleEvents(count) {
         donations: [], // You might need to populate these with actual donation IDs
       });
 
-      await event.save();
+       event.save();
 
       console.log(`Event ${i + 1} saved.`);
     }
