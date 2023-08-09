@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Impakt - Signup</title>
+    <link rel="icon" type="image/png" sizes= "32x32" href="../images/Logo.png" />
+    <link rel="stylesheet" href="../styles/signup.css" />
+    <link rel="stylesheet" href="../styles/font.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="left">
+        <div class="logo">
+            <a href="/">
+                <img src="../images/Vector.svg" alt="Clickable Image">
+            </a>
+            <p>Sign up to <span>impakt</span></p>
+        </div>
+  
+        <form action="/api/signup" method="post" class="form-group">
+            <div class="inputs">
+              <label for="email">Email Address</label>
+              <input type="email" placeholder="Enter your email address" name="email" />
+            </div>
+            <div class="inputs">
+              <label>Password</label>
+              <input type="password" placeholder="Enter your password" />
+            </div>
+            <div class="inputs">
+                <label>Confirm Password</label>
+                <input type="password" placeholder="Re-enter your password" />
+              </div>
+  
+            <div class="btns">
+              <input type="submit" value="Signup" class="btn" />
+  
+              <p>Or</p>
+              <button id="google-signup-btn" class="google-btn" type="button">
+                <img src="../images/Logo.svg" alt="" />
+                Signup with Google
+              </button>
+            </div>
+        </form>
+
+        <div class="terms">
+            <p>By signing up you agree to our <a href="#">terms and conditions</a></p>
+        </div>
+      </div>
+
+      <div class="right">
+        <h1> Welcome! </h1>
+        <p> Join the community to start creating <span>impakt</span> in the world around you </p>
+      </div>
+    </div>
+
+    <script>
+      document.getElementById('google-signup-btn').addEventListener('click', function() {
+          window.location.href = '/api/auth/google';
+      });
+    </script>
+  </body>
+</html>

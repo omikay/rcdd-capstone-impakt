@@ -1,0 +1,178 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body {
+  height: 100dvh;
+  background-color: #d7e0e0;
+  font-family: Roboto;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.left {
+  width: 40%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #ffffff;
+  background-image: url(./images/Login.jpeg);
+  background-repeat: no-repeat;
+  background-size: cover;
+  font-size: 18px;
+}
+
+.left span {
+  font-family: wes;
+  font-size: 20px;
+  color: #f2a283;
+  text-shadow: 2px 2px 2px #000000;
+}
+
+.left p {
+  background-blend-mode: darken;
+  text-shadow: 2px 2px 2px #000000;
+}
+
+.left h1 {
+  margin-bottom: 41px;
+  font-size: 40px;
+  text-shadow: 2px 2px 2px #000000;
+}
+
+.left img {
+  width: 100%;
+}
+
+.right {
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  display: flex;
+  width: 60%;
+}
+
+.logo {
+  text-align: center;
+  font-family: Roboto;
+  font-weight: bold;
+  font-size: 40px;
+  margin-bottom: 15px;
+}
+
+.logo p {
+  margin-top: 46px;
+  color: #003637;
+}
+
+.logo span {
+  color: #f2a283;
+  font-family: Wes;
+}
+
+.form-group input {
+  border-radius: 5px;
+  background: #003637;
+  width: 578px;
+  height: 46px;
+  padding: 10px 15px;
+  border: none;
+  color: #d7e0e0;
+}
+
+input::placeholder {
+  color: #d7e0e0;
+  opacity: 1;
+}
+
+.inputs {
+  display: flex;
+  flex-direction: column;
+  margin-top: 15px;
+  font-size: 16px;
+}
+
+.inputs label {
+  margin-bottom: 15px;
+}
+
+.inputs a {
+  text-decoration: none;
+  color: #003637;
+  margin-top: 20px;
+}
+
+.btns {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 578px;
+  margin-top: 48px;
+}
+
+button,
+input[type='submit'] {
+  border: none;
+  font-size: 16px;
+  width: 260px;
+  height: 40px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn {
+  background-color: #13ae67 !important;
+}
+
+.btn:hover {
+  background-color: #108c54 !important;
+}
+
+.google-btn {
+  background: #fff;
+  color: #f2a283;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.google-btn:hover {
+  background-color: #e7e7e7;
+}
+
+.google-btn img {
+  margin-right: 16px;
+}
+
+.line {
+  background: #000;
+  width: 240px;
+  height: 2px;
+  margin-top: 49px;
+}
+
+.link {
+  margin-top: 48px;
+  font-size: 16px;
+}
+
+.link a {
+  color: #f2a283;
+  text-decoration: none;  
+}
+
+@media (min-width: 360px) and (max-width: 82em) {
+  .left {
+    display: none;
+  }
+}
