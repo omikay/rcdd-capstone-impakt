@@ -1,4 +1,3 @@
-const process = require('process');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const server = require('../../app');

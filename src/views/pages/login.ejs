@@ -1,17 +1,61 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <title>Styled Div Elements</title>
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-  <!-- First div -->
-  <div style="width: 100%; height: 100%; position: relative; background: #D7E0E0"></div>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Impakt - Login</title>
+    <link rel="icon" type="image/png" sizes= "32x32" href="../images/Logo.png" />
+    <link rel="stylesheet" href="../styles/login.css" />
+    <link rel="stylesheet" href="../styles/font.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="left">
+        <h1> Welcome Back! </h1>
+        <p> Log back in to continue creating <span>impakt</span> in the world </p>
+      </div>
+      <div class="right">
+        <div class="logo">
+          <a href="/">
+            <img src="../images/Vector.svg" alt="Clickable Image">
+          </a>
+          <p>Log in to <span>impakt</span></p>
+        </div>
 
-  <!-- Second div -->
-  <div style="width: 100%; height: 100%; background: #F2A283"></div>
+        <form action="/" method="post" class="form-group">
+          <div class="inputs">
+            <label for="email">Email Address</label>
+            <input type="email" placeholder="Enter your email address" name="email" />
+          </div>
+          <div class="inputs">
+            <label>Password</label>
+            <input type="password" placeholder="Enter your password" />
+            <a href="#">Forgot password? </a>
+          </div>
 
-  <!-- Third div with text styles -->
-  <div style="width: 100%; color: #003637; font-size: 16px; font-family: Roboto; font-weight: 400; text-transform: uppercase; word-wrap: break-word">Email address</div>
-</body>
+          <div class="btns">
+            <input type="submit" value="Login" class="btn" />
+
+            <p>Or</p>
+            <button id="google-signup-btn" class="google-btn" type="button">
+              <img src="../images/Logo.svg" alt="" />
+              Login with Google
+            </button>
+          </div>
+        </form>
+
+        <div class="line"></div>
+
+        <div class="link">
+          <p>No Account? Sign up <a href="signup.ejs">here</a></p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.getElementById('google-signup-btn').addEventListener('click', function() {
+          window.location.href = '/api/auth/google';
+      });
+    </script>
+  </body>
 </html>

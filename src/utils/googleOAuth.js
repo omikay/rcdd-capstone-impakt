@@ -48,6 +48,7 @@ passport.use(
           email: profile.emails[0].value,
           googleAccountId: profile.id,
           profilePic: profile.photos[0].value,
+          isVerified: true,
         }).save();
 
         await sendEmail(

@@ -1,0 +1,17 @@
+@font-face {
+  font-family: 'Wes';
+  src: url('./Fonts/Westgate-Regular.woff');
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('./Fonts/Roboto-Regular.ttf');
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: 'Roboto-Bold';
+  src: url('./Fonts/Roboto-Bold.ttf');
+  font-weight: normal;
+}
