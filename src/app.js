@@ -3,7 +3,7 @@ const express = require('express');
 const swaggerUi = require('swagger-ui-express');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
-const dotenv = require('dotenv'); // Import dotenv module
+const dotenv = require('dotenv');
 
 dotenv.config(); // Load environment variables from .env file
 
@@ -11,6 +11,7 @@ const swaggerDocument = require('./docs/swagger.json');
 const userRoutes = require('./routes/userRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const donationRoutes = require('./routes/donationRoutes');
+const blogRoutes = require('./routes/blogRoutes');
 const connectToMongo = require('./config/db');
 
 const app = express();
@@ -33,10 +34,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', userRoutes);
 app.use('/', eventRoutes);
 app.use('/', donationRoutes);
+app.use('/', blogRoutes);
 
 // Error handling middlewarejb
-app.use((err, req, res, next) => {
-  console.error(err.stack);
+app.use((err, res) => {
+  // console.error(err.stack);
   res.status(500).json({ error: 'Internal server error' });
 });
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
