@@ -20,6 +20,12 @@ const Tag = require('./src/models/Tags');
 
     // Generate Sample Data
   
+await generateSampleUsers(5);
+await generateSampleEvents(10);
+await generateSampleDonations(15);
+await generateSampleBlogPosts(8);
+await generateSampleCategories(5);
+await generateSampleTags(7);
     mongoose.disconnect();
   } catch (error) {
     console.error('Error:', error);
@@ -156,10 +162,3 @@ async function generateSampleBlogPosts(count) {
     console.error('Error:', error);
 }
 } 
-
-await generateSampleUsers(5);
-await generateSampleEvents(10);
-await generateSampleDonations(15);
-await generateSampleBlogPosts(8);
-await generateSampleCategories(5);
-await generateSampleTags(7);
