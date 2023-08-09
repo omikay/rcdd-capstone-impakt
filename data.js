@@ -40,12 +40,12 @@ async function generateSampleEvents(count) {
 }
 async function generateSampleCategories(count) {
   try {
-    for (let i = 0; i < count; i++) {
+    for (let i = 0; i < count; i+= 1 ) {
       const category = new Category({
         categoryName: casual.word,
       });
 
-      await category.save();
+       category.save();
       console.log(`Category ${i + 1} saved.`);
     }
     console.log(`${count} sample categories generated.`);
@@ -55,7 +55,7 @@ async function generateSampleCategories(count) {
 }
 async function generateSampleUsers(count) {
   try {
-    for (let i = 0; i < count; i++) {
+    for (let i = 0; i < count; i+= 1) {
       const user = new User({
         googleId: casual.uuid,
         name: casual.full_name,
@@ -73,7 +73,7 @@ async function generateSampleUsers(count) {
         accountCreatedOn: casual.date(),
       });
 
-      await user.save();
+       user.save();
 
       console.log(`User ${i + 1} saved.`);
     }
@@ -85,11 +85,11 @@ async function generateSampleUsers(count) {
 
 async function generateSampleTags(count) {
   try {
-    for (let i = 0; i < count; i++) {
+    for (let i = 0; i < count; i+= 1) {
       const tag = new Tag({
         tagName: casual.word,
 });
-    await tag.save();
+     tag.save();
   
         console.log(`Tag ${i + 1} saved.`);
       }
@@ -100,7 +100,7 @@ async function generateSampleTags(count) {
   }
   async function generateSampleDonations(count) {
     try {
-      for (let i = 0; i < count; i++) {
+      for (let i = 0; i < count; i+= 1) {
         const donation = new Donation({
           donor: new mongoose.Types.ObjectId(), // Use new keyword
           event: new mongoose.Types.ObjectId(), // Use new keyword
@@ -108,7 +108,7 @@ async function generateSampleTags(count) {
           donationDate: casual.date('YYYY-MM-DD'),
         });
   
-        await donation.save();
+         donation.save();
   
         console.log(`Donation ${i + 1} saved.`);
       }
@@ -119,7 +119,7 @@ async function generateSampleTags(count) {
   }
 async function generateSampleBlogPosts(count) {
   try {
-    for (let i = 0; i < count; i++) {
+    for (let i = 0; i < count; i+= 1) {
       const blogPost = new BlogPost({
         author: new mongoose.Types.ObjectId(), // Use new keyword
         title: casual.title,
@@ -130,7 +130,7 @@ async function generateSampleBlogPosts(count) {
         postDate: casual.date('YYYY-MM-DD'),
       });
 
-        await blogPost.save();
+         blogPost.save();
       console.log(`Blog post ${i + 1} saved.`);
     }
     console.log(`${count} sample blog posts generated.`);
@@ -147,19 +147,13 @@ async function generateSampleBlogPosts(count) {
           useUnifiedTopology: true,
         }
       );
-    const userCount = 5;
-    const eventCount = 10;
-    const donationCount = 15;
-    const blogPostCount = 8;
-    const categoryCount = 5;
-    const tagCount = 7;
-
-    await generateSampleUsers(userCount);
-    await generateSampleEvents(eventCount);
-    await generateSampleDonations(donationCount);
-    await generateSampleBlogPosts(blogPostCount);
-    await generateSampleCategories(categoryCount);
-    await generateSampleTags(tagCount);
+  
+    await generateSampleUsers(5);
+    await generateSampleEvents(5);
+    await generateSampleDonations(5);
+    await generateSampleBlogPosts(5);
+    await generateSampleCategories(10);
+    await generateSampleTags(10);
     
       mongoose.disconnect();
     } catch (error) {
