@@ -147,16 +147,19 @@ async function generateSampleBlogPosts(count) {
           useUnifiedTopology: true,
         }
       );
-  
-      // Generate Sample Data
-      
-     await generateSampleUsers(5);
-     await generateSampleEvents(10);
-     await generateSampleDonations(15);
-     await generateSampleBlogPosts(8);
-     await generateSampleCategories(5);
-     await generateSampleTags(7);
-  
+    const userCount = 5;
+    const eventCount = 10;
+    const donationCount = 15;
+    const blogPostCount = 8;
+    const categoryCount = 5;
+    const tagCount = 7;
+
+    await generateSampleUsers(userCount);
+    await generateSampleEvents(eventCount);
+    await generateSampleDonations(donationCount);
+    await generateSampleBlogPosts(blogPostCount);
+    await generateSampleCategories(categoryCount);
+    await generateSampleTags(tagCount);
     
       mongoose.disconnect();
     } catch (error) {
