@@ -69,7 +69,7 @@ passport.use(
 
         return done(null, { user: newUser, token });
       } catch (error) {
-        // console.error('Error with Google OAuth:', error);
+        console.error('Error with Google OAuth:', error);
         return done(error, null);
       }
     }

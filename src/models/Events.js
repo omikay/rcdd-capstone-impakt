@@ -6,8 +6,8 @@ const eventSchema = new Schema({
   creator: { type: Schema.Types.ObjectId, ref: 'Users', required: true },
   title: { type: String, required: true },
   description: { type: String, required: true },
-  bannerImage: String, // the URL of the image
-  location: { type: String, required: true }, // google map location
+  bannerImage: String,
+  location: { type: String, required: true },
   startDate: { type: Date, required: true },
   endDate: { type: Date, required: true },
   ageLimit: {
