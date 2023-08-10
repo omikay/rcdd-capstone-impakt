@@ -17,7 +17,7 @@ const connectToMongo = require('./config/db');
 const app = express();
 const port = 8080;
 
-app.use(express.static('public'));
+app.use(express.static('assets'));
 
 // View engine setup
 app.set('views', path.join(__dirname, 'views')); // Set the views directory
@@ -28,10 +28,8 @@ app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'assets')));
 app.use(express.static(path.join(__dirname, 'views')));
-
 
 // Routes
 app.use('/', userRoutes);
@@ -47,7 +45,7 @@ app.use((err, res) => {
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 const server = app.listen(port, () => {
-  // console.log(`Server listening on port ${port}`);
+  console.log(`Server listening on port ${port}`);
   connectToMongo();
 });
 
