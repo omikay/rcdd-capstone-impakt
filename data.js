@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-// eslint-disable-next-line import/no-unresolved
 const casual = require('casual');
 
 const User = require('./src/models/Users');
@@ -13,7 +12,7 @@ async function generateSampleEvents(count) {
   try {
     for (let i = 0; i < count; i += 1) {
       const event = new Event({
-        creator: new mongoose.Types.ObjectId(), // Fixed: Use new keyword
+        creator: new mongoose.Types.ObjectId(),
         title: casual.title,
         description: casual.description,
         bannerImage: casual.url,
@@ -24,19 +23,19 @@ async function generateSampleEvents(count) {
           lower: casual.integer(0, 17),
           upper: casual.integer(18, 99),
         },
-        tags: [], // You might need to populate these with actual tag IDs
+        tags: [],
         capacity: casual.integer(10, 100),
-        participants: [], // You might need to populate these with actual user IDs
-        donations: [], // You might need to populate these with actual donation IDs
+        participants: [],
+        donations: [],
       });
 
       event.save();
 
-      console.log(`Event ${i + 1} saved.`);
+      // console.log(`Event ${i + 1} saved.`);
     }
-    console.log(`${count} sample events generated.`);
+    // console.log(`${count} sample events generated.`);
   } catch (error) {
-    console.error('Error:', error);
+    // console.error('Error:', error);
   }
 }
 async function generateSampleCategories(count) {
@@ -47,11 +46,11 @@ async function generateSampleCategories(count) {
       });
 
       category.save();
-      console.log(`Category ${i + 1} saved.`);
+      // console.log(`Category ${i + 1} saved.`);
     }
-    console.log(`${count} sample categories generated.`);
+    // console.log(`${count} sample categories generated.`);
   } catch (error) {
-    console.error('Error:', error);
+    // console.error('Error:', error);
   }
 }
 async function generateSampleUsers(count) {
@@ -76,11 +75,11 @@ async function generateSampleUsers(count) {
 
       user.save();
 
-      console.log(`User ${i + 1} saved.`);
+      // console.log(`User ${i + 1} saved.`);
     }
-    console.log(`${count} sample users generated.`);
+    // console.log(`${count} sample users generated.`);
   } catch (error) {
-    console.error('Error:', error);
+    // console.error('Error:', error);
   }
 }
 
@@ -92,51 +91,51 @@ async function generateSampleTags(count) {
       });
       tag.save();
 
-      console.log(`Tag ${i + 1} saved.`);
+      // console.log(`Tag ${i + 1} saved.`);
     }
-    console.log(`${count} sample tags generated.`);
+    // console.log(`${count} sample tags generated.`);
   } catch (error) {
-    console.error('Error:', error);
+    // console.error('Error:', error);
   }
 }
 async function generateSampleDonations(count) {
   try {
     for (let i = 0; i < count; i += 1) {
       const donation = new Donation({
-        donor: new mongoose.Types.ObjectId(), // Use new keyword
-        event: new mongoose.Types.ObjectId(), // Use new keyword
+        donor: new mongoose.Types.ObjectId(),
+        event: new mongoose.Types.ObjectId(),
         amount: casual.integer(10, 500),
         donationDate: casual.date('YYYY-MM-DD'),
       });
 
       donation.save();
 
-      console.log(`Donation ${i + 1} saved.`);
+      // console.log(`Donation ${i + 1} saved.`);
     }
-    console.log(`${count} sample donations generated.`);
+    // console.log(`${count} sample donations generated.`);
   } catch (error) {
-    console.error('Error:', error);
+    // console.error('Error:', error);
   }
 }
 async function generateSampleBlogPosts(count) {
   try {
     for (let i = 0; i < count; i += 1) {
       const blogPost = new BlogPost({
-        author: new mongoose.Types.ObjectId(), // Use new keyword
+        author: new mongoose.Types.ObjectId(),
         title: casual.title,
         bannerImage: casual.url,
-        category: new mongoose.Types.ObjectId(), // Use new keyword
+        category: new mongoose.Types.ObjectId(),
         shortDescription: casual.sentences(2),
-        bodyText: casual.text, // Use casual.text to generate body text
+        bodyText: casual.text,
         postDate: casual.date('YYYY-MM-DD'),
       });
 
       blogPost.save();
-      console.log(`Blog post ${i + 1} saved.`);
+      // console.log(`Blog post ${i + 1} saved.`);
     }
-    console.log(`${count} sample blog posts generated.`);
+    // console.log(`${count} sample blog posts generated.`);
   } catch (error) {
-    console.error('Error:', error);
+    // console.error('Error:', error);
   }
 }
 (async () => {
@@ -158,6 +157,6 @@ async function generateSampleBlogPosts(count) {
 
     mongoose.disconnect();
   } catch (error) {
-    console.error('Error:', error);
+    // console.error('Error:', error);
   }
 })();
