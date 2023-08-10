@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+// eslint-disable-next-line import/no-unresolved
 const casual = require('casual');
 
 const User = require('./src/models/Users');
@@ -10,7 +11,7 @@ const Tag = require('./src/models/Tags');
 
 async function generateSampleEvents(count) {
   try {
-    for (let i = 0; i < count; i+= 1) {
+    for (let i = 0; i < count; i += 1) {
       const event = new Event({
         creator: new mongoose.Types.ObjectId(), // Fixed: Use new keyword
         title: casual.title,
@@ -29,7 +30,7 @@ async function generateSampleEvents(count) {
         donations: [], // You might need to populate these with actual donation IDs
       });
 
-       event.save();
+      event.save();
 
       console.log(`Event ${i + 1} saved.`);
     }
@@ -40,12 +41,12 @@ async function generateSampleEvents(count) {
 }
 async function generateSampleCategories(count) {
   try {
-    for (let i = 0; i < count; i+= 1 ) {
+    for (let i = 0; i < count; i += 1) {
       const category = new Category({
         categoryName: casual.word,
       });
 
-       category.save();
+      category.save();
       console.log(`Category ${i + 1} saved.`);
     }
     console.log(`${count} sample categories generated.`);
@@ -55,7 +56,7 @@ async function generateSampleCategories(count) {
 }
 async function generateSampleUsers(count) {
   try {
-    for (let i = 0; i < count; i+= 1) {
+    for (let i = 0; i < count; i += 1) {
       const user = new User({
         googleId: casual.uuid,
         name: casual.full_name,
@@ -73,7 +74,7 @@ async function generateSampleUsers(count) {
         accountCreatedOn: casual.date(),
       });
 
-       user.save();
+      user.save();
 
       console.log(`User ${i + 1} saved.`);
     }
@@ -85,41 +86,41 @@ async function generateSampleUsers(count) {
 
 async function generateSampleTags(count) {
   try {
-    for (let i = 0; i < count; i+= 1) {
+    for (let i = 0; i < count; i += 1) {
       const tag = new Tag({
         tagName: casual.word,
-});
-     tag.save();
-  
-        console.log(`Tag ${i + 1} saved.`);
-      }
-      console.log(`${count} sample tags generated.`);
-    } catch (error) {
-      console.error('Error:', error);
+      });
+      tag.save();
+
+      console.log(`Tag ${i + 1} saved.`);
     }
+    console.log(`${count} sample tags generated.`);
+  } catch (error) {
+    console.error('Error:', error);
   }
-  async function generateSampleDonations(count) {
-    try {
-      for (let i = 0; i < count; i+= 1) {
-        const donation = new Donation({
-          donor: new mongoose.Types.ObjectId(), // Use new keyword
-          event: new mongoose.Types.ObjectId(), // Use new keyword
-          amount: casual.integer(10, 500),
-          donationDate: casual.date('YYYY-MM-DD'),
-        });
-  
-         donation.save();
-  
-        console.log(`Donation ${i + 1} saved.`);
-      }
-      console.log(`${count} sample donations generated.`);
-    } catch (error) {
-      console.error('Error:', error);
+}
+async function generateSampleDonations(count) {
+  try {
+    for (let i = 0; i < count; i += 1) {
+      const donation = new Donation({
+        donor: new mongoose.Types.ObjectId(), // Use new keyword
+        event: new mongoose.Types.ObjectId(), // Use new keyword
+        amount: casual.integer(10, 500),
+        donationDate: casual.date('YYYY-MM-DD'),
+      });
+
+      donation.save();
+
+      console.log(`Donation ${i + 1} saved.`);
     }
+    console.log(`${count} sample donations generated.`);
+  } catch (error) {
+    console.error('Error:', error);
   }
+}
 async function generateSampleBlogPosts(count) {
   try {
-    for (let i = 0; i < count; i+= 1) {
+    for (let i = 0; i < count; i += 1) {
       const blogPost = new BlogPost({
         author: new mongoose.Types.ObjectId(), // Use new keyword
         title: casual.title,
@@ -130,33 +131,33 @@ async function generateSampleBlogPosts(count) {
         postDate: casual.date('YYYY-MM-DD'),
       });
 
-         blogPost.save();
+      blogPost.save();
       console.log(`Blog post ${i + 1} saved.`);
     }
     console.log(`${count} sample blog posts generated.`);
   } catch (error) {
     console.error('Error:', error);
+  }
 }
-} 
 (async () => {
-    try {
-      await mongoose.connect(
-        'mongodb+srv://doadmin:8YVn476BbE321mp9@db-mongodb-fra1-65852-846c044b.mongo.ondigitalocean.com/admin?tls=true&authSource=admin&replicaSet=db-mongodb-fra1-65852',
-        {
-          useNewUrlParser: true,
-          useUnifiedTopology: true,
-        }
-      );
-  
+  try {
+    await mongoose.connect(
+      'mongodb+srv://doadmin:8YVn476BbE321mp9@db-mongodb-fra1-65852-846c044b.mongo.ondigitalocean.com/admin?tls=true&authSource=admin&replicaSet=db-mongodb-fra1-65852',
+      {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      }
+    );
+
     await generateSampleUsers(5);
     await generateSampleEvents(5);
     await generateSampleDonations(5);
     await generateSampleBlogPosts(5);
     await generateSampleCategories(10);
     await generateSampleTags(10);
-    
-      mongoose.disconnect();
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  })();
+
+    mongoose.disconnect();
+  } catch (error) {
+    console.error('Error:', error);
+  }
+})();
