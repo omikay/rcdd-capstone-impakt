@@ -5,7 +5,7 @@ const { Schema } = mongoose;
 const blogPostSchema = new Schema({
   author: { type: Schema.Types.ObjectId, ref: 'Users' },
   title: String,
-  bannerImage: String, // the URL of the image
+  bannerImage: String,
   category: { type: Schema.Types.ObjectId, ref: 'Categories' },
   shortDescription: String,
   bodyText: String,

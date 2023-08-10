@@ -160,12 +160,10 @@ const login = async (req, res) => {
       await sendEmail(
         user.email,
         'Account activation required',
-        `Dear ${user.name},
-        
+        `Dear ${user.name},       
         Please click on the following link to activate your account to be able to use your account.
 
-        ${activationLink}
-        
+        ${activationLink}       
         The activation link is valid for 2 days.`
       );
       return res.status(401).json({
@@ -199,7 +197,7 @@ const login = async (req, res) => {
 
     return res.status(200).json({ token });
   } catch (error) {
-    // console.error('Error logging in user:', error);
+    console.error('Error logging in user:', error);
     return res.status(500).json({ error: 'Something went wrong.' });
   }
 };
@@ -245,7 +243,7 @@ const updateUserProfile = async (req, res) => {
 
     return res.status(200).json({ message: 'Profile updated successfully.' });
   } catch (error) {
-    // console.error('Error updating user profile:', error);
+    console.error('Error updating user profile:', error);
     return res
       .status(500)
       .json({ message: 'An error occurred during profile update.' });
@@ -304,7 +302,7 @@ const connectGoogleAccount = async (req, res) => {
       .status(200)
       .json({ message: 'Google account successfully connected.' });
   } catch (error) {
-    // console.error('Error connecting Google account:', error);
+    console.error('Error connecting Google account:', error);
     return res
       .status(500)
       .json({ message: 'An error occurred during Google account connection.' });
@@ -398,7 +396,7 @@ const logout = (req, res) => {
     res.clearCookie('jwt');
     return res.status(200).json({ message: 'Logged out successfully.' });
   } catch (error) {
-    // console.error('Error logging out user:', error);
+    console.error('Error logging out user:', error);
     return res
       .status(500)
       .json({ error: 'An error occurred while logging out.' });

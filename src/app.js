@@ -38,10 +38,11 @@ app.use('/', donationRoutes);
 app.use('/', blogRoutes);
 
 // Error handling middlewarejb
-app.use((err, res) => {
-  // console.error(err.stack);
+app.use((err, req, res, next) => {
+  console.error(err.stack);
   res.status(500).json({ error: 'Internal server error' });
 });
+
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 const server = app.listen(port, () => {

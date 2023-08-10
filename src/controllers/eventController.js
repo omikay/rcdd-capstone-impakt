@@ -390,7 +390,7 @@ const leaveEvent = async (req, res) => {
       message: 'User left the event successfully.',
     });
   } catch (error) {
-    // console.error('Error leaving event:', error);
+    console.error('Error leaving event:', error);
     return res
       .status(500)
       .json({ error: 'An error occurred while leaving the event.' });
