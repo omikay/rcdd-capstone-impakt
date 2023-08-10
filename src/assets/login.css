@@ -7,7 +7,7 @@
 body {
   height: 100dvh;
   background-color: #d7e0e0;
-  font-family: Roboto;
+  font-family: Roboto-Bold;
 }
 
 .container {
@@ -25,7 +25,7 @@ body {
   justify-content: center;
   align-items: center;
   color: #ffffff;
-  background-image: url(./images/Login.jpeg);
+  background-image: url(/images/Login.jpeg);
   background-repeat: no-repeat;
   background-size: cover;
   font-size: 18px;
