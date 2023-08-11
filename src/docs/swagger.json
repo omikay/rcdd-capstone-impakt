@@ -150,14 +150,12 @@
               }
             }
           }
-        }
-      }
-    },
+        },
         "security": [
           {
             "jwtAuth": []
           }
-        ]  // Apply the security scheme to this endpoint
+        ]
       }
     },
     "/api/logout": {
@@ -1467,6 +1465,13 @@
     }
   },
   "components": {
+    "securitySchemes": {
+      "jwtAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
     "schemas": {
       "UserSignup": {
         "type": "object",
