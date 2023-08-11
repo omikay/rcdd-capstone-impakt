@@ -172,7 +172,7 @@ const login = async (req, res) => {
       });
     }
 
-    const hashedReqPass = await bcrypt.hash(password);
+    const hashedReqPass = await bcrypt.hash(password, 10);
 
     const isPasswordCorrect = await bcrypt.compare(
       hashedReqPass,
