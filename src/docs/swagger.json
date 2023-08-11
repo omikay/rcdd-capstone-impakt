@@ -153,6 +153,13 @@
         }
       }
     },
+        "security": [
+          {
+            "jwtAuth": []
+          }
+        ]  // Apply the security scheme to this endpoint
+      }
+    },
     "/api/logout": {
       "get": {
         "tags": ["User Routes"],
