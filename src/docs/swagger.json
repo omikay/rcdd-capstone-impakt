@@ -198,6 +198,17 @@
         "tags": ["User Routes"],
         "summary": "Get user profile",
         "description": "Fetches the authenticated user's profile details",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "description": "the desired user id whose donations we seek",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "User profile data",
