@@ -171,9 +171,7 @@ const login = async (req, res) => {
           'Account is not verified. Please check your email for the new activation link.',
       });
     }
-
-    const hashedReqPass = await bcrypt.hash(password, 10);
-
+    
     const isPasswordCorrect = await bcrypt.compare(
       hashedReqPass,
       user.password
