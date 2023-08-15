@@ -198,8 +198,7 @@ const login = async (req, res) => {
     console.error('Error logging in user:', error);
     return res.status(500).json({ error: 'Something went wrong.' });
   }
-};
-const updateUserProfile = async (req, res) => {
+};const updateUserProfile = async (req, res) => {
   const { name, location, phone, interests, password, profilePicture } =
     req.body;
 
@@ -236,15 +235,26 @@ const updateUserProfile = async (req, res) => {
     if (!updatedUser) {
       return res.status(404).json({ message: 'User not found.' });
     }
-    
+
     return res.status(200).json({ message: 'Profile updated successfully.' });
   } catch (error) {
+    // Log the specific error for debugging
     console.error('Error updating user profile:', error);
-    return res
-      .status(500)
-      .json({ message: 'An error occurred during profile update.' });
+
+    if (error.name === 'ValidationError') {
+      // Handle validation errors
+      return res.status(400).json({ message: 'Validation error.', error: error.message });
+    } else {
+      // Handle other errors
+      return res.status(500).json({ message: 'An error occurred during profile update.' });
+    }
   }
 };
+
+module.exports = {
+  updateUserProfile,
+};
+
 // Get user profile
 const getUserProfile = async (req, res) => {
   const { id } = req.params;
