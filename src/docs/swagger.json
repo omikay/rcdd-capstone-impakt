@@ -256,7 +256,9 @@
           }
         }
       }
-    },
+    }
+  }
+ },
     "/user/updateProfile": {
       "patch": {
         "tags": ["User Routes"],
