@@ -69,7 +69,7 @@ router.get('/reset-password/:token', (req, res) => {
 router.post('/reset-password/:token', resetPassword);
 
 // User profile
-router.get('/user/profile', isAuthorized, getUserProfile);
+router.get('/user/:id', isAuthorized, getUserProfile);
 
 // Update user profile
 router.patch('/user/updateProfile', isAuthorized, updateUserProfile);
