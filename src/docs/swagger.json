@@ -193,67 +193,65 @@
         }
       }
     },
-    "/user/:id": {
-      "get": {
-        "tags": ["User Routes"],
-        "summary": "Get user profile",
-        "description": "Fetches the authenticated user's profile details",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "userId",
-            "description": "the desired user id whose donations we seek",
-            "required": true,
+   "/user/{userId}": {
+  "get": {
+    "tags": ["User Routes"],
+    "summary": "Get user profile",
+    "description": "Fetches the authenticated user's profile details",
+    "parameters": [
+      {
+        "in": "path",
+        "name": "userId",
+        "description": "The desired user ID whose profile we seek",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "User profile data",
+        "content": {
+          "application/json": {
             "schema": {
-              "type": "string"
+              "$ref": "#/components/schemas/UserProfile"
+            },
+            "example": {
+              "name": "John Doe",
+              "profilePicture": "http://example.com/profile.jpg",
+              "location": "New York, USA",
+              "dateOfBirth": "1990-01-01",
+              "email": "john.doe@example.com",
+              "phoneNumber": "+1 123-456-7890",
+              "interests": ["Travel", "Photography"],
+              "googleAccount": "john.doe@gmail.com"
             }
           }
-        ],
-        "responses": {
-          "200": {
-            "description": "User profile data",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UserProfile"
-                },
-                "example": {
-                  "name": "John Doe",
-                  "profilePicture": "http://example.com/profile.jpg",
-                  "location": "New York, USA",
-                  "dateOfBirth": "1990-01-01",
-                  "email": "john.doe@example.com",
-                  "phoneNumber": "+1 123-456-7890",
-                  "interests": "Travel, Photography",
-                  "googleAccount": "john.doe@gmail.com"
-                }
-              }
+        }
+      },
+      "404": {
+        "description": "User not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "error": "User not found."
             }
-          },
-          "404": {
-            "description": "User not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                },
-                "example": {
-                  "error": "User not found."
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                },
-                "example": {
-                  "error": "Internal server error occurred."
-                }
-              }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal server error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "example": {
+              "error": "Internal server error occurred."
             }
           }
         }
