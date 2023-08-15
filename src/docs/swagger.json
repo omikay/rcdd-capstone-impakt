@@ -256,7 +256,12 @@
           }
         }
       }
-    }
+    },
+        "security": [
+          {
+            "jwtAuth": []
+          }
+        ]
   }
  },
     "/user/updateProfile": {
