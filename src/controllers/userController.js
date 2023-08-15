@@ -265,9 +265,9 @@ const getUserProfile = async (req, res) => {
       name: user.name,
       profilePicture: user.profilePicture,
       location: user.location,
-      dateOfBirth: user.dateOfBirth,
+      dateOfBirth: user.dob,
       email: user.email,
-      phoneNumber: user.phoneNumber,
+      phoneNumber: user.phone,
       interests: user.interests,
       googleAccount: user.googleId ? 'Connected' : 'Not connected',
     };
