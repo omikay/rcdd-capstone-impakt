@@ -193,7 +193,7 @@
         }
       }
     },
-    "/user/profile": {
+    "/user/:id": {
       "get": {
         "tags": ["User Routes"],
         "summary": "Get user profile",
