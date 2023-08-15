@@ -72,7 +72,7 @@ router.post('/reset-password/:token', resetPassword);
 router.get('/user/:id', isAuthorized, getUserProfile);
 
 // Update user profile
-router.patch('/user/:id/updateProfile', isAuthorized, updateUserProfile);
+router.patch('/user/:id/updateProfile', updateUserProfile);
 
 // Google OAuth callback
 router.get(
