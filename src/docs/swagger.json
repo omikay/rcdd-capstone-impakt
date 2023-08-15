@@ -264,7 +264,7 @@
         ]
   }
  },
-  "/user/{userId}/updateProfile": {
+  "/user/updateProfile/{userId}": {
   "patch": {
     "tags": ["User Routes"],
     "summary": "Update user profile",
