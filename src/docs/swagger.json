@@ -352,12 +352,7 @@
           }
         }
       }
-    },
-     "security": [
-         {
-          "jwtAuth": []
-          }
-        ]
+    }
   }
 },
   "/forgot-password": {
