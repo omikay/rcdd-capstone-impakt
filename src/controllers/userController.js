@@ -206,38 +206,38 @@ const updateUserProfile = async (req, res) => {
     req.body;
 
   try {
-    // Retrieve the user from the database based on the authenticated user's ID
-    const user = await User.findById(req.user.id);
-
-    // Check if the user exists
-    if (!user) {
-      return res.status(404).json({ message: 'User not found.' });
-    }
-
-    // Update the user profile fields
-    user.name = name;
-    user.location = location;
-    user.phone = phone;
-    user.interests = interests;
-    user.profilePicture = profilePicture;
-
-    // Check if a new password is provided
+    // Update user profile fields and optionally password
+    const updateFields = {
+      name,
+      location,
+      phone,
+      interests,
+      profilePicture,
+    };
+    
     if (password) {
-      // Check if the new password matches the previous password
-      const isPasswordMatch = await bcrypt.compare(password, user.password);
+      const isPasswordMatch = await bcrypt.compare(password, req.user.password);
       if (isPasswordMatch) {
         return res.status(400).json({
-          message: 'New password cannot be the same as the previous password.',
+          message: 'New password must be different from the previous password.',
         });
       }
 
-      // Hash the new password
       const hashedPassword = await bcrypt.hash(password, 10);
-      user.password = hashedPassword;
+      updateFields.password = hashedPassword;
     }
 
-    // Save the updated user profile to the database
-    await user.save();
+    // Find and update the user in the database based on the authenticated user's ID
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: req.user.id },
+      updateFields,
+      { new: true } // Return the updated document
+    );
+
+    // Check if the user exists
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
 
     return res.status(200).json({ message: 'Profile updated successfully.' });
   } catch (error) {
