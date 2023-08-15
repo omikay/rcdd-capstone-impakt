@@ -199,8 +199,6 @@ const login = async (req, res) => {
     return res.status(500).json({ error: 'Something went wrong.' });
   }
 };
-
-// Update user profile
 const updateUserProfile = async (req, res) => {
   const { name, location, phone, interests, password, profilePicture } =
     req.body;
@@ -247,7 +245,6 @@ const updateUserProfile = async (req, res) => {
       .json({ message: 'An error occurred during profile update.' });
   }
 };
-
 // Get user profile
 const getUserProfile = async (req, res) => {
   const { id } = req.params;
