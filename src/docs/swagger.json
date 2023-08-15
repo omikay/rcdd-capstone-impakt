@@ -263,8 +263,7 @@
           }
         ]
   }
- },
-  "/user/updateProfile/{userId}": {
+ },"/user/updateProfile/{userId}": {
   "patch": {
     "tags": ["User Routes"],
     "summary": "Update user profile",
@@ -314,14 +313,14 @@
         }
       },
       "400": {
-        "description": "Bad request (e.g., new password matches the previous password)",
+        "description": "Bad request (e.g., new password matches the previous password or validation error)",
         "content": {
           "application/json": {
             "schema": {
               "$ref": "#/components/schemas/Error"
             },
             "example": {
-              "error": "Bad request. New password matches the previous password."
+              "error": "Bad request. New password must be different from the previous password."
             }
           }
         }
@@ -347,14 +346,15 @@
               "$ref": "#/components/schemas/Error"
             },
             "example": {
-              "error": "Internal server error occurred."
+              "error": "An error occurred during profile update."
             }
           }
         }
       }
     }
   }
-},
+}
+,
   "/forgot-password": {
       "post": {
         "tags": ["User Routes"],
