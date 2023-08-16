@@ -263,98 +263,99 @@
           }
         ]
   }
- },"/user/updateProfile/{userId}": {
-  "patch": {
-    "tags": ["User Routes"],
-    "summary": "Update user profile",
-    "description": "Allows authenticated users to update their profile information",
-    "parameters": [
-      {
-        "name": "userId",
-        "in": "path",
-        "description": "ID of the user whose profile is being updated",
-        "required": true,
-        "schema": {
-          "type": "string"
-        }
-      }
-    ],
-    "requestBody": {
-      "description": "Updated user profile data",
-      "required": true,
-      "content": {
-        "application/json": {
-          "schema": {
-            "$ref": "#/components/schemas/UserProfileUpdate"
+ },"paths": {
+    "/user/updateProfile/{userId}": {
+      "patch": {
+        "tags": ["User Routes"],
+        "summary": "Update user profile",
+        "description": "Allows authenticated users to update their profile information",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "ID of the user whose profile is being updated",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Updated user profile data",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserProfileUpdate"
+              },
+              "example": {
+                "name": "John Doe",
+                "location": "New York, USA",
+                "phone": "+1 123-456-7890",
+                "interests": "Travel, Photography",
+                "password": "newsecurepassword",
+                "profilePicture": "http://example.com/new_profile.jpg"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Profile updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessMessage"
+                },
+                "example": {
+                  "message": "Profile updated successfully."
+                }
+              }
+            }
           },
-          "example": {
-            "name": "John Doe",
-            "location": "New York, USA",
-            "phone": "+1 123-456-7890",
-            "interests": "Travel, Photography",
-            "password": "newsecurepassword",
-            "profilePicture": "http://example.com/new_profile.jpg"
-          }
-        }
-      }
-    },
-    "responses": {
-      "200": {
-        "description": "Profile updated successfully",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/SuccessMessage"
-            },
-            "example": {
-              "message": "Profile updated successfully."
+          "400": {
+            "description": "Bad request (e.g., new password matches the previous password or validation error)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Bad request. New password must be different from the previous password."
+                }
+              }
             }
-          }
-        }
-      },
-      "400": {
-        "description": "Bad request (e.g., new password matches the previous password or validation error)",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/Error"
-            },
-            "example": {
-              "error": "Bad request. New password must be different from the previous password."
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "User not found."
+                }
+              }
             }
-          }
-        }
-      },
-      "404": {
-        "description": "User not found",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/Error"
-            },
-            "example": {
-              "error": "User not found."
-            }
-          }
-        }
-      },
-      "500": {
-        "description": "Internal server error",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/Error"
-            },
-            "example": {
-              "error": "An error occurred during profile update."
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "An error occurred during profile update."
+                }
+              }
             }
           }
         }
       }
     }
-  }
-}
-,
+  },
   "/forgot-password": {
       "post": {
         "tags": ["User Routes"],
