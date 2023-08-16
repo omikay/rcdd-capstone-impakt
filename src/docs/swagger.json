@@ -263,9 +263,9 @@
           }
         ]
   }
- },"paths": {
-    "/user/updateProfile/{userId}": {
-      "patch": {
+ },
+  "/user/updateProfile/{userId}": {
+        "patch": {
         "tags": ["User Routes"],
         "summary": "Update user profile",
         "description": "Allows authenticated users to update their profile information",
