@@ -368,7 +368,7 @@ const resetPassword = async (req, res) => {
     }
 
     // Hash the new password
-    const hashedPassword = bcrypt.hash(password, 10);
+    const hashedPassword = bcrypt.hash('password', 10);
 
     user.password = hashedPassword;
 
