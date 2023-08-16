@@ -140,7 +140,7 @@ async function generateSampleBlogPosts(count) {
 }
 (async () => {
   try {
-    await mongoose.connect(.env.MONGO_URL, {
+    await mongoose.connect(process.env.MONGO_URL, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
       }
