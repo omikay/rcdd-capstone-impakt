@@ -353,9 +353,8 @@
             }
           }
         }
-      }
-    }
-  },
+      }  
+    },
   "/forgot-password": {
       "post": {
         "tags": ["User Routes"],
