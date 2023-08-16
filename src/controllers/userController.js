@@ -222,8 +222,7 @@ const updateUserProfile = async (req, res) => {
         });
       }
 
-      const hashedPassword = await bcrypt.hash(password, 10);
-      updateFields.password = hashedPassword;
+      updateFields.password = isPasswordMatch;
     }
 
     // Find and update the user in the database based on the authenticated user's ID
