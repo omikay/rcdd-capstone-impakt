@@ -53,10 +53,10 @@ router.post('/forgot-password', forgotPassword);
 router.post('/reset-password/:token', resetPassword);
 
 // User profile
-router.get('/user/:id',getUserProfile);
+router.get('/user/:id', isAuthorized, getUserProfile);
 
 // Update user profile
-router.patch('/user/:id/updateProfile', updateUserProfile);
+router.patch('/user/:id/updateProfile', isAuthorized, updateUserProfile);
 
 // Google OAuth callback
 router.get(
