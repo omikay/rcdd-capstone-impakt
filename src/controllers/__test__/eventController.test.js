@@ -931,14 +931,15 @@ describe('getEventForUser', () => {
 
     // Assertions
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith({
-      createdEvents,
-      upcomingParticipatingEvents: [
-        { title: 'Event 3', endDate: new Date('2023-08-15') },
-        { title: 'Event 4', endDate: new Date('2023-09-15') },
-      ],
-      passedParticipatingEvents: [],
-    });
+   expect(res.json).toHaveBeenCalledWith({
+  createdEvents,
+  upcomingParticipatingEvents: [
+    { title: 'Event 4', endDate: new Date('2023-09-15') },
+  ],
+  passedParticipatingEvents: [
+    { title: 'Event 3', endDate: new Date('2023-08-15') },
+  ],
+});
     expect(User.findById).toHaveBeenCalledTimes(1);
     expect(Event.find).toHaveBeenCalledTimes(2);
   });
