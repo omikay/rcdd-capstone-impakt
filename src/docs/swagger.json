@@ -353,7 +353,7 @@
             }
           }
         }
-      }  
+      }
     },
   "/forgot-password": {
       "post": {
