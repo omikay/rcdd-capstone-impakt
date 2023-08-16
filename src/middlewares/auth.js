@@ -8,7 +8,7 @@ function isAuthorized(requiredPermissions) {
       return res.status(401).json({ message: 'No token provided.' });
     }
 
-    jwt.verify(token, secretKey, (err, decoded) => {
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
       if (err) {
         return res.status(401).json({ message: 'Invalid token.' });
       }
