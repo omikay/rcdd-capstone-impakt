@@ -150,12 +150,7 @@
               }
             }
           }
-        },
-        "security": [
-          {
-            "jwtAuth": []
-          }
-        ]
+        }
       }
     },
     "/api/logout": {
@@ -261,7 +256,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "jwtAuth": []
+          }
+        ]
       }
     },
     "/user/{userId}/updateProfile": {
@@ -352,7 +352,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "jwtAuth": []
+          }
+        ]
       }
     },
     "/forgot-password": {
