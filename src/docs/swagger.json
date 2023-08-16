@@ -190,7 +190,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "jwtAuth": []
+          }
+        ]
       }
     },
     "/user/{userId}": {
@@ -1548,7 +1553,7 @@
           "password": {
             "type": "string"
           },
-          "confirmPassword": {
+          "passwordConfirmation": {
             "type": "string"
           }
         }
