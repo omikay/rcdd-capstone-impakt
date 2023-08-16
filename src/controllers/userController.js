@@ -199,56 +199,50 @@ const login = async (req, res) => {
     return res.status(500).json({ error: 'Something went wrong.' });
   }
 };
-
 const updateUserProfile = async (req, res) => {
   const { name, location, phone, interests, password, profilePicture } =
     req.body;
 
   try {
-    // Update user profile fields and optionally password
-    const updateFields = {
-      name,
-      location,
-      phone,
-      interests,
-      profilePicture,
-    };
-    
-    if (password) {
-      const isPasswordMatch = await bcrypt.compare(password, req.user.password);
-      if (isPasswordMatch) {
-        return res.status(400).json({
-          message: 'New password must be different from the previous password.',
-        });
-      }
-
-      updateFields.password = isPasswordMatch;
-    }
-
-    // Find and update the user in the database based on the authenticated user's ID
-    const updatedUser = await User.findOneAndUpdate(
-      { _id: req.user.id },
-      updateFields,
-      { new: true } // Return the updated document
-    );
+    // Retrieve the user from the database based on the authenticated user's ID
+    const user = await User.findById(req.user.id);
 
     // Check if the user exists
-    if (!updatedUser) {
+    if (!user) {
       return res.status(404).json({ message: 'User not found.' });
     }
 
+    // Update the user profile fields
+    user.name = name;
+    user.location = location;
+    user.phone = phone;
+    user.interests = interests;
+    user.profilePicture = profilePicture;
+
+    // Check if a new password is provided
+    if (password) {
+      // Check if the new password matches the previous password
+      const isPasswordMatch = await bcrypt.compare(password, user.password);
+      if (isPasswordMatch) {
+        return res.status(400).json({
+          message: 'New password cannot be the same as the previous password.',
+        });
+      }
+
+      // Hash the new password
+      const hashedPassword = await bcrypt.hash(password, 10);
+      user.password = hashedPassword;
+    }
+
+    // Save the updated user profile to the database
+    await user.save();
+
     return res.status(200).json({ message: 'Profile updated successfully.' });
   } catch (error) {
-    // Log the specific error for debugging
     console.error('Error updating user profile:', error);
-
-    if (error.name === 'ValidationError') {
-      // Handle validation errors
-      return res.status(400).json({ message: 'Validation error.', error: error.message });
-    } else {
-      // Handle other errors
-      return res.status(500).json({ message: 'An error occurred during profile update.' });
-    }
+    return res
+      .status(500)
+      .json({ message: 'An error occurred during profile update.' });
   }
 };
 
