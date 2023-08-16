@@ -1,35 +1,21 @@
-const isAuthorized = (requiredPermissions) => (req, res, next) => {
-  // Check if the request contains a token in the Authorization header.
-  const token = req.headers.authorization;
+const jwt = require('jsonwebtoken');
+const JWT_SECRET = process.env.JWT_SECRET;
+
+const isAuthorized = (req, res, next) => {
+  const token = req.header('Authorization');
 
   if (!token) {
-    // No token provided, return an error.
-    return res.status(401).json({ message: 'No token provided.' });
+    return res.status(401).json({ msg: 'No token, authorization denied.' });
   }
 
-  // Try to verify the token with the secret key.
-  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-    // If the token is invalid, return an error.
-    if (err) {
-      return res.status(401).json({ message: 'Invalid token.' });
-    }
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
 
-    // Get the user's permissions from the decoded token.
-    const userPermissions = decoded.permissions || [];
-
-    // Check if the user has all of the required permissions.
-    const hasRequiredPermissions = requiredPermissions.every(permission =>
-      userPermissions.includes(permission)
-    );
-
-    // If the user has the required permissions, continue with the request.
-    if (hasRequiredPermissions) {
-      next();
-    } else {
-      // The user does not have the required permissions, return an error.
-      return res.status(403).json({ message: 'Insufficient permissions.' });
-    }
-  });
+    req.user = decoded.user;
+    return next();
+  } catch (err) {
+    return res.status(401).json({ msg: 'Token is not valid.' });
+  }
 };
 
 module.exports = isAuthorized;
