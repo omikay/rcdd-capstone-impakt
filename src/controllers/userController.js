@@ -327,7 +327,7 @@ const forgotPassword = async (req, res) => {
     );
 
     // Create a password reset URL that includes the generated token
-    const resetPasswordURL = `http://localhost:3000/reset-password/${token}`;
+    const resetPasswordURL = `https://plankton-app-e3b4u.ondigitalocean.app/reset-password/${token}`;
 
     // Send the password reset email to the user
     await sendEmail(
