@@ -198,6 +198,17 @@
         "tags": ["User Routes"],
         "summary": "Get user profile",
         "description": "Fetches the authenticated user's profile details",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "ID of the user whose profile is being showed",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "User profile data",
@@ -253,6 +264,17 @@
         "tags": ["User Routes"],
         "summary": "Update user profile",
         "description": "Allows authenticated users to update their profile information",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "ID of the user whose profile is being updated",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "description": "Updated user profile data",
           "required": true,
