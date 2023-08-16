@@ -69,10 +69,10 @@ router.get('/reset-password/:token', (req, res) => {
 router.post('/reset-password/:token', resetPassword);
 
 // User profile
-router.get('/user/:userId',getUserProfile);
+router.get('/user/:id',getUserProfile);
 
 // Update user profile
-router.patch('/user/:userId/updateProfile', updateUserProfile);
+router.patch('/user/:id/updateProfile', updateUserProfile);
 
 // Google OAuth callback
 router.get(
