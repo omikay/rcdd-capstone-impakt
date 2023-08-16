@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "http://localhost:8080",
+      "url": "https://plankton-app-e3b4u.ondigitalocean.app",
       "description": "Local Development Server"
     }
   ],
@@ -193,7 +193,7 @@
         }
       }
     },
-    "/user/profile": {
+    "/user/{userId}": {
       "get": {
         "tags": ["User Routes"],
         "summary": "Get user profile",
@@ -248,7 +248,7 @@
         }
       }
     },
-    "/user/updateProfile": {
+    "/user/{userId}/updateProfile": {
       "patch": {
         "tags": ["User Routes"],
         "summary": "Update user profile",
