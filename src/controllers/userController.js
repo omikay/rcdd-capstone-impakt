@@ -198,7 +198,9 @@ const login = async (req, res) => {
     console.error('Error logging in user:', error);
     return res.status(500).json({ error: 'Something went wrong.' });
   }
-};const updateUserProfile = async (req, res) => {
+};
+
+const updateUserProfile = async (req, res) => {
   const { name, location, phone, interests, password, profilePicture } =
     req.body;
 
@@ -249,10 +251,6 @@ const login = async (req, res) => {
       return res.status(500).json({ message: 'An error occurred during profile update.' });
     }
   }
-};
-
-module.exports = {
-  updateUserProfile,
 };
 
 // Get user profile
