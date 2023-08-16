@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "https://plankton-app-e3b4u.ondigitalocean.app",
+      "url": "http://localhost:8080",
       "description": "Local Development Server"
     }
   ],
@@ -193,93 +193,66 @@
         }
       }
     },
-   "/user/{userId}": {
-  "get": {
-    "tags": ["User Routes"],
-    "summary": "Get user profile",
-    "description": "Fetches the authenticated user's profile details",
-    "parameters": [
-      {
-        "in": "path",
-        "name": "userId",
-        "description": "The desired user ID whose profile we seek",
-        "required": true,
-        "schema": {
-          "type": "string"
-        }
-      }
-    ],
-    "responses": {
-      "200": {
-        "description": "User profile data",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/UserProfile"
-            },
-            "example": {
-              "name": "John Doe",
-              "profilePicture": "http://example.com/profile.jpg",
-              "location": "New York, USA",
-              "dateOfBirth": "1990-01-01",
-              "email": "john.doe@example.com",
-              "phoneNumber": "+1 123-456-7890",
-              "interests": ["Travel", "Photography"],
-              "googleAccount": "john.doe@gmail.com"
+    "/user/profile": {
+      "get": {
+        "tags": ["User Routes"],
+        "summary": "Get user profile",
+        "description": "Fetches the authenticated user's profile details",
+        "responses": {
+          "200": {
+            "description": "User profile data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserProfile"
+                },
+                "example": {
+                  "name": "John Doe",
+                  "profilePicture": "http://example.com/profile.jpg",
+                  "location": "New York, USA",
+                  "dateOfBirth": "1990-01-01",
+                  "email": "john.doe@example.com",
+                  "phoneNumber": "+1 123-456-7890",
+                  "interests": "Travel, Photography",
+                  "googleAccount": "john.doe@gmail.com"
+                }
+              }
             }
-          }
-        }
-      },
-      "404": {
-        "description": "User not found",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/Error"
-            },
-            "example": {
-              "error": "User not found."
+          },
+          "404": {
+            "description": "User not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "User not found."
+                }
+              }
             }
-          }
-        }
-      },
-      "500": {
-        "description": "Internal server error",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/Error"
-            },
-            "example": {
-              "error": "Internal server error occurred."
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Internal server error occurred."
+                }
+              }
             }
           }
         }
       }
     },
-        "security": [
-          {
-            "jwtAuth": []
-          }
-        ]
-  }
- },
-  "/user/updateProfile/{userId}": {
-        "patch": {
+    "/user/updateProfile": {
+      "patch": {
         "tags": ["User Routes"],
         "summary": "Update user profile",
         "description": "Allows authenticated users to update their profile information",
-        "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "description": "ID of the user whose profile is being updated",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
         "requestBody": {
           "description": "Updated user profile data",
           "required": true,
@@ -314,14 +287,14 @@
             }
           },
           "400": {
-            "description": "Bad request (e.g., new password matches the previous password or validation error)",
+            "description": "Bad request (e.g., new password matches the previous password)",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Error"
                 },
                 "example": {
-                  "error": "Bad request. New password must be different from the previous password."
+                  "error": "Bad request. New password matches the previous password."
                 }
               }
             }
@@ -347,7 +320,7 @@
                   "$ref": "#/components/schemas/Error"
                 },
                 "example": {
-                  "error": "An error occurred during profile update."
+                  "error": "Internal server error occurred."
                 }
               }
             }
@@ -355,7 +328,7 @@
         }
       }
     },
-  "/forgot-password": {
+    "/forgot-password": {
       "post": {
         "tags": ["User Routes"],
         "summary": "Handle \"Forgot Password\" form submission",
