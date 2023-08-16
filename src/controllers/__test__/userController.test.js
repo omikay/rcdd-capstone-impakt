@@ -386,14 +386,14 @@ describe('login', () => {
     };
 
     User.findOne.mockResolvedValueOnce(existingUser);
-    // bcrypt.compare.mockResolvedValueOnce(true);
+    bcrypt.compare.mockResolvedValueOnce(true);
     jwt.sign.mockReturnValueOnce(mockToken);
 
     await login(req, res);
 
     expect(User.findOne).toHaveBeenCalledWith({ email: req.body.email });
     expect(bcrypt.compare).toHaveBeenCalledWith(
-      await bcrypt.hash(req.body.password, 10),
+      req.body.password,
       existingUser.password
     );
     expect(jwt.sign).toHaveBeenCalledWith(
@@ -439,7 +439,7 @@ describe('login', () => {
 
     expect(User.findOne).toHaveBeenCalledWith({ email: req.body.email });
     expect(bcrypt.compare).toHaveBeenCalledWith(
-      await bcrypt.hash(req.body.password, 10),
+      req.body.password,
       existingUser.password
     );
     expect(res.status).toHaveBeenCalledWith(400);
@@ -492,9 +492,9 @@ describe('getUserProfile', () => {
       name: mockUser.name,
       profilePicture: mockUser.profilePicture,
       location: mockUser.location,
-      dateOfBirth: mockUser.dateOfBirth,
+      dateOfBirth: mockUser.dob,
       email: mockUser.email,
-      phoneNumber: mockUser.phoneNumber,
+      phoneNumber: mockUser.phone,
       interests: mockUser.interests,
       googleAccount: 'Not connected',
     });
@@ -699,7 +699,7 @@ describe('forgotPassword', () => {
     expect(sendEmail).toHaveBeenCalledWith(
       mockUser.email,
       'Password Reset Request',
-      `Hi ${mockUser.name},\n\nTo reset your password, click the link below:\n\nhttp://localhost:3000/reset-password/${mockToken}\n\nThe link is valid for 1 hour.\n\nYou may neglect this email if you did not make this request.`
+      `Hi ${mockUser.name},\n\nTo reset your password, click the link below:\n\nhttps://plankton-app-e3b4u.ondigitalocean.app/reset-password/${mockToken}\n\nThe link is valid for 1 hour.\n\nYou may neglect this email if you did not make this request.`
     );
 
     expect(res.status).toHaveBeenCalledWith(200);
