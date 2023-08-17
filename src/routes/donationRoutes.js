@@ -9,12 +9,12 @@ const isAuthorized = require('../middlewares/auth');
 const router = express.Router();
 
 // Make a new donation
-router.post('/donate', makeDonation);
+router.post('/donate', isAuthorized, makeDonation);
 
 // Get donations by user
-router.get('/user/:id/donations', getUserDonations);
+router.get('/user/:id/donations', isAuthorized, getUserDonations);
 
 // Get donations by event
-router.get('/events/:id/donations', getEventDonations);
+router.get('/events/:id/donations', isAuthorized, getEventDonations);
 
 module.exports = router;
