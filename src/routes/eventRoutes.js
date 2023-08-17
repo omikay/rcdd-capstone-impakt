@@ -8,6 +8,8 @@ const {
   updateEvent,
   deleteEvent,
   joinEvent,
+  leaveEvent,
+  getEvebtsForUser,
 } = require('../controllers/eventController');
 
 const router = express.Router();
