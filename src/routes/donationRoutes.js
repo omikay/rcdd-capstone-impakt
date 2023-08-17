@@ -14,12 +14,12 @@ router.get('/api/donations', (req, res) => {
 });
 
 // Make a new donation
-router.post('/api/donations', isAuthorized, makeDonation);
+router.post('/api/donations', makeDonation);
 
 // Get donations by user
-router.get('/api/donations/:userId', isAuthorized, getUserDonations);
+router.get('/api/donations/:userId', getUserDonations);
 
 // Get donations by event
-router.get('/api/donations/:eventId', isAuthorized, getEventDonations);
+router.get('/api/donations/:eventId', getEventDonations);
 
 module.exports = router;
