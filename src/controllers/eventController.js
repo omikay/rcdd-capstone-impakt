@@ -2,14 +2,6 @@ const Event = require('../models/Events');
 const User = require('../models/Users');
 const sendEmail = require('../utils/email');
 
-// Create an event
-const mongoose = require('mongoose');
-const Event = require('./path/to/event/model'); // Adjust the path as needed
-const User = require('./path/to/user/model');   // Adjust the path as needed
-const sendEmail = require('./path/to/sendEmail'); // Adjust the path as needed
-
-// ...
-
 const createEvent = async (req, res) => {
   try {
     const {
@@ -32,9 +24,6 @@ const createEvent = async (req, res) => {
       return res.status(404).json({ error: 'User not found.' });
     }
 
-    // Create an array of tag IDs (convert to ObjectId)
-    const tagIds = tags.map(tag => mongoose.Types.ObjectId(tag));
-
     const event = new Event({
       creator: creator.id,
       title,
@@ -48,7 +37,7 @@ const createEvent = async (req, res) => {
         lower: ageLimitLower,
         upper: ageLimitUpper,
       },
-      tags: tagIds, // Assign the array of tag IDs to the event
+      tags,
     });
 
     await event.save();
