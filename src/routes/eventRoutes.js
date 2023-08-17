@@ -13,7 +13,7 @@ const {
 const router = express.Router();
 
 // Create an event
-router.post('/events', isAuthorized, createEvent);
+router.post('/events', createEvent);
 
 // leave event
 router.post('/events/:id/leave', leaveEvent)
@@ -22,10 +22,10 @@ router.post('/events/:id/leave', leaveEvent)
 router.get('/user/:id/events' , getEventsForUser)
 
 // Update an event
-router.patch('/events/:eventId/update', isAuthorized, updateEvent);
+router.patch('/events/:eventId/update', updateEvent);
 
 // User joins an event
-router.post('/events/:eventId/join', isAuthorized, joinEvent);
+router.post('/events/:eventId/join', joinEvent);
 
 // Get all events
 router.get('/events', getAllEvents);
@@ -37,6 +37,6 @@ router.get('/events/search', searchEvents);
 router.get('events/:eventId', getEvent);
 
 // Delete an event
-router.delete('events/:eventId', isAuthorized, deleteEvent);
+router.delete('events/:eventId', deleteEvent);
 
 module.exports = router;
