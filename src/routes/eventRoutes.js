@@ -15,6 +15,12 @@ const router = express.Router();
 // Create an event
 router.post('/events', isAuthorized, createEvent);
 
+// leave event
+router.post('/events/:id/leave', leaveEvent)
+
+// get events for user
+router.get('/user/:id/events' , getEventsForUser)
+
 // Update an event
 router.patch('/events/:eventId/update', isAuthorized, updateEvent);
 
