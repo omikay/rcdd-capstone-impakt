@@ -3,6 +3,13 @@ const User = require('../models/Users');
 const sendEmail = require('../utils/email');
 
 // Create an event
+const mongoose = require('mongoose');
+const Event = require('./path/to/event/model'); // Adjust the path as needed
+const User = require('./path/to/user/model');   // Adjust the path as needed
+const sendEmail = require('./path/to/sendEmail'); // Adjust the path as needed
+
+// ...
+
 const createEvent = async (req, res) => {
   try {
     const {
@@ -13,16 +20,20 @@ const createEvent = async (req, res) => {
       capacity,
       location,
       bannerImage,
-      ageLimit,
-      tags,
+      ageLimitLower,
+      ageLimitUpper,
+      tags, // Assuming tags is an array of tag IDs
     } = req.body;
 
-    // Find the the authenticated user for event creation
+    // Find the authenticated user for event creation
     const creator = await User.findById(req.user.id);
 
     if (!creator) {
       return res.status(404).json({ error: 'User not found.' });
     }
+
+    // Create an array of tag IDs (convert to ObjectId)
+    const tagIds = tags.map(tag => mongoose.Types.ObjectId(tag));
 
     const event = new Event({
       creator: creator.id,
@@ -33,27 +44,28 @@ const createEvent = async (req, res) => {
       capacity,
       location,
       bannerImage,
-      ageLimit,
-      tags,
+      ageLimit: {
+        lower: ageLimitLower,
+        upper: ageLimitUpper,
+      },
+      tags: tagIds, // Assign the array of tag IDs to the event
     });
 
     await event.save();
 
-    const host = await User.findById(req.user.id);
-
     // Add the event to the user's createdEvents array
-    host.createdEvents.push(event.id);
-
-    await host.save();
+    creator.createdEvents.push(event.id);
+    await creator.save();
 
     const message = `Event created successfully: ${event.title}`;
-    await sendEmail(host.email, 'Event Created', message);
+    
+    // Ensure sendEmail() is asynchronous if using await
+    await sendEmail(creator.email, 'Event Created', message);
 
     return res.status(201).json({ message: 'Event created successfully.' });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ error: 'An error occurred while creating the event.' });
+    console.error(error); // Log the error for debugging
+    return res.status(500).json({ error: 'An error occurred while creating the event.' });
   }
 };
 
