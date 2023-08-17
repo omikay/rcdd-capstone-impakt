@@ -17,9 +17,9 @@ router.get('/api/donations', (req, res) => {
 router.post('/api/donations', makeDonation);
 
 // Get donations by user
-router.get('/api/donations/:userId', getUserDonations);
+router.get('/api/donations/:id', getUserDonations);
 
 // Get donations by event
-router.get('/api/donations/:eventId', getEventDonations);
+router.get('/api/donations/:id', getEventDonations);
 
 module.exports = router;
