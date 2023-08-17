@@ -1558,9 +1558,10 @@
   },
   "components": {
     "securitySchemes": {
-      "jwtAuth": {
-        "type": "http",
-        "bearerFormat": "JWT",
+     "jwtAuth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "jwt"
       }
     },
     "schemas": {
