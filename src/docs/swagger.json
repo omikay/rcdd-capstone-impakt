@@ -593,7 +593,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "jwtAuth": []
+          }
+        ]
       }
     },
     "/user/{userId}/donations": {
@@ -653,7 +658,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "jwtAuth": []
+          }
+        ]
       }
     },
     "/events/{eventId}/donations": {
@@ -713,7 +723,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "jwtAuth": []
+          }
+        ]
       }
     },
     "/blogPosts/new": {
@@ -996,7 +1011,7 @@
       }
     },
     "/blogPosts/{blogPostId}/delete": {
-      "get": {
+      "delete": {
         "tags": ["Blog Routes"],
         "summary": "Blog post deletion",
         "description": "Allows admins to delete blog posts",
@@ -1119,7 +1134,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "jwtAuth": []
+          }
+        ]
       }
     },
     "/events/search": {
@@ -1219,7 +1239,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "jwtAuth": []
+          }
+        ]
       }
     },
     "/events/createEvent": {
@@ -1268,7 +1293,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "jwtAuth": []
+          }
+        ]
       }
     },
     "/events/{eventId}/update": {
@@ -1328,7 +1358,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "jwtAuth": []
+          }
+        ]
       }
     },
     "/events/{eventId}/delete": {
@@ -1378,7 +1413,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "jwtAuth": []
+          }
+        ]
       }
     },
     "/events/{eventId}": {
@@ -1478,7 +1518,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "jwtAuth": []
+          }
+        ]
       }
     },
     "/events": {
@@ -1643,11 +1688,7 @@
           },
           "amount": {
             "type": "integer"
-          },
-           "userId": {
-            "type": "string",
-            "description": "ID of the user making the donation."
-        }
+          }
       }
       },
       "UserDonations": {
