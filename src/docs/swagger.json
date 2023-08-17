@@ -1632,6 +1632,7 @@
            "userId": {
             "type": "string",
             "description": "ID of the user making the donation."
+          }
         }
       },
       "UserDonations": {
