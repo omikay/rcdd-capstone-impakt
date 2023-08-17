@@ -12,18 +12,13 @@ const {
 
 
 // Create a new blog post
-router.post('/blogPosts/new', isAuthorized, createBlog);
-
-// Render the blog post form
-router.get('/blogPosts/:id/update', (req, res) => {
-  res.render('updateBlogPost');
-});
+router.post('/blogPosts/new', createBlog);
 
 // Update a blog post
-router.patch('/blogPosts/:id/update', isAuthorized, updateBlog);
+router.patch('/blogPosts/:id/update', updateBlog);
 
 // Delete a blog post
-router.delete('/blogPosts/:id/delete', isAuthorized, deleteBlog);
+router.delete('/blogPosts/:id/delete', deleteBlog);
 
 // Get a blog post by ID
 router.get('/blogPosts/:id', getBlogById);
