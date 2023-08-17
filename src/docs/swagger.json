@@ -538,17 +538,6 @@
         "tags": ["Donation Routes"],
         "summary": "Make donation",
         "description": "Allows users to donate to events",
-         "parameters": [
-          {
-            "name": "userId",
-            "in": "path",
-            "description": "ID of the user who want to donate",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
         "requestBody": {
           "description": "Donation details",
           "required": true,
@@ -1639,7 +1628,10 @@
           },
           "amount": {
             "type": "integer"
-          }
+          },
+           "userId": {
+            "type": "string",
+            "description": "ID of the user making the donation."
         }
       },
       "UserDonations": {
