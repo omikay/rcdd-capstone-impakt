@@ -12,13 +12,13 @@ const {
 
 
 // Create a new blog post
-router.post('/blogPosts/new', createBlog);
+router.post('/blogPosts/new', isAuthorized, createBlog);
 
 // Update a blog post
-router.patch('/blogPosts/:id/update', updateBlog);
+router.patch('/blogPosts/:id/update', isAuthorized, updateBlog);
 
 // Delete a blog post
-router.delete('/blogPosts/:id/delete', deleteBlog);
+router.delete('/blogPosts/:id/delete', isAuthorized, deleteBlog);
 
 // Get a blog post by ID
 router.get('/blogPosts/:id', getBlogById);
