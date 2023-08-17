@@ -596,22 +596,27 @@
         }
       }
     },
-    "/user/{userId}/donations": {
+    "/donate": {
       "get": {
         "tags": ["Donation Routes"],
         "summary": "Get user donations",
         "description": "Fetches the donations the user has made",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "userId",
-            "description": "the desired user id whose donations we seek",
-            "required": true,
-            "schema": {
-              "type": "string"
+         "requestBody": {
+          "description": "Donation details",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MakeDonation"
+              },
+              "example": {
+                "userId" : "user-id",
+                "eventId": "event-id",
+                "amount": 450
+              }
             }
           }
-        ],
+        },
         "responses": {
           "200": {
             "description": "User donations data",
