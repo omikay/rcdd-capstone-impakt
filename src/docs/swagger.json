@@ -533,7 +533,7 @@
         }
       }
     },
-    "/api/donations": {
+    "/user/{userId}/donate": {
       "post": {
         "tags": ["Donation Routes"],
         "summary": "Make donation",
@@ -607,7 +607,7 @@
         }
       }
     },
-    "/api/donations/{userId}": {
+    "/user/{userId}/donations": {
       "get": {
         "tags": ["Donation Routes"],
         "summary": "Get user donations",
@@ -667,7 +667,7 @@
         }
       }
     },
-    "/api/donations/{eventId}": {
+    "/events/{eventId}/donations": {
       "get": {
         "tags": ["Donation Routes"],
         "summary": "Get event donations",
