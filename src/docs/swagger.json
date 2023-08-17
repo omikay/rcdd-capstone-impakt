@@ -533,7 +533,7 @@
         }
       }
     },
-    "/user/{userId}/donate": {
+    "/donate": {
       "post": {
         "tags": ["Donation Routes"],
         "summary": "Make donation",
@@ -596,27 +596,22 @@
         }
       }
     },
-    "/donate": {
+    "/user/{userId}/donations": {
       "get": {
         "tags": ["Donation Routes"],
         "summary": "Get user donations",
         "description": "Fetches the donations the user has made",
-         "requestBody": {
-          "description": "Donation details",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/MakeDonation"
-              },
-              "example": {
-                "userId" : "user-id",
-                "eventId": "event-id",
-                "amount": 450
-              }
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "description": "the desired user id whose donations we seek",
+            "required": true,
+            "schema": {
+              "type": "string"
             }
           }
-        },
+        ],
         "responses": {
           "200": {
             "description": "User donations data",
@@ -1637,8 +1632,8 @@
            "userId": {
             "type": "string",
             "description": "ID of the user making the donation."
-          }
         }
+      }
       },
       "UserDonations": {
         "type": "object",
