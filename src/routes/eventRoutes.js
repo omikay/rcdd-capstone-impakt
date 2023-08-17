@@ -9,7 +9,7 @@ const {
   deleteEvent,
   joinEvent,
   leaveEvent,
-  getEvebtsForUser,
+  getEventsForUser,
 } = require('../controllers/eventController');
 
 const router = express.Router();
