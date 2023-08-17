@@ -15,7 +15,7 @@ const {
 const router = express.Router();
 
 // Create an event
-router.post('/events', isAuthorized, createEvent);
+router.post('/events/createEvent', isAuthorized, createEvent);
 
 // leave event
 router.post('/events/:id/leave', isAuthorized, leaveEvent);
