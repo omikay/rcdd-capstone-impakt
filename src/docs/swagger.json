@@ -792,7 +792,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "jwtAuth": []
+          }
+        ]
       }
     },
     "/blogPosts": {
@@ -982,7 +987,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "jwtAuth": []
+          }
+        ]
       }
     },
     "/blogPosts/{blogPostId}/delete": {
@@ -1054,7 +1064,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "jwtAuth": []
+          }
+        ]
       }
     },
     "/events/user/{userId}": {
