@@ -14,18 +14,12 @@ const createEvent = async (req, res) => {
       bannerImage,
       ageLimitLower,
       ageLimitUpper,
-      tags, // Assuming tags is an array of tag IDs
+      tags,
     } = req.body;
 
-    // Find the authenticated user for event creation
-    const creator = await User.findById(req.user.id);
-
-    if (!creator) {
-      return res.status(404).json({ error: 'User not found.' });
-    }
-
+    // creator already checked above
     const event = new Event({
-      creator: creator.id,
+      creator: req.user.id, // Use req.user.id directly
       title,
       description,
       startDate,
@@ -43,18 +37,19 @@ const createEvent = async (req, res) => {
     await event.save();
 
     // Add the event to the user's createdEvents array
-    creator.createdEvents.push(event.id);
-    await creator.save();
+    req.user.createdEvents.push(event.id);
+
+    await req.user.save();
 
     const message = `Event created successfully: ${event.title}`;
-    
-    // Ensure sendEmail() is asynchronous if using await
-    await sendEmail(creator.email, 'Event Created', message);
+    await sendEmail(req.user.email, 'Event Created', message);
 
     return res.status(201).json({ message: 'Event created successfully.' });
   } catch (error) {
-    console.error(error); // Log the error for debugging
-    return res.status(500).json({ error: 'An error occurred while creating the event.' });
+    console.error('Error creating event:', error);
+    return res
+      .status(500)
+      .json({ error: 'An error occurred while creating the event.' });
   }
 };
 
