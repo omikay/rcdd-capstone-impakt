@@ -9,7 +9,6 @@ const {
   deleteEvent,
   joinEvent,
   leaveEvent,
-  getEventsForUser,
 } = require('../controllers/eventController');
 
 const router = express.Router();
@@ -19,9 +18,6 @@ router.post('/events/createEvent', isAuthorized, createEvent);
 
 // leave event
 router.post('/events/:id/leave', isAuthorized, leaveEvent);
-
-// get events for user
-router.get('/user/:id/events', isAuthorized, getEventsForUser);
 
 // Update an event
 router.patch('/events/:id/update', isAuthorized, updateEvent);
@@ -39,6 +35,6 @@ router.get('/events/search', searchEvents);
 router.get('/events/:id', getEvent);
 
 // Delete an event
-router.delete('/events/:id', isAuthorized, deleteEvent);
+router.delete('/events/:id/delete', isAuthorized, deleteEvent);
 
 module.exports = router;
