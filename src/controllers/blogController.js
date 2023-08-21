@@ -71,9 +71,9 @@ const updateBlog = async (req, res) => {
 
 // Delete Blog Post
 const deleteBlog = async (req, res) => {
-  const { blogPostId } = req.params;
+  const { id } = req.params;
   try {
-    const blogPost = await BlogPost.findById(blogPostId);
+    const blogPost = await BlogPost.findById(id);
     if (!blogPost) {
       return res.status(404).json({
         error: 'Blog post not found.',
@@ -87,7 +87,7 @@ const deleteBlog = async (req, res) => {
       return res.status(401).json({ error: 'Unauthorized' });
     }
     // Delete the blog post
-    await BlogPost.findByIdAndDelete(blogPostId);
+    await BlogPost.findByIdAndDelete(id);
     // Return the response object
     return res.status(200).json({
       message: 'Blog post deleted successfully.',
