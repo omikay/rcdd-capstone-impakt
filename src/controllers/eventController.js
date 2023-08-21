@@ -2,6 +2,7 @@ const Event = require('../models/Events');
 const User = require('../models/Users');
 const sendEmail = require('../utils/email');
 
+// Create an event
 const createEvent = async (req, res) => {
   try {
     const {
@@ -16,10 +17,15 @@ const createEvent = async (req, res) => {
       ageLimitUpper,
       tags,
     } = req.body;
+    // Find the the authenticated user for event creation
+    const creator = await User.findById(req.user.id);
 
-    // creator already checked above
+    if (!creator) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
     const event = new Event({
-      creator: req.user.id, // Use req.user.id directly
+      creator: creator.id,
       title,
       description,
       startDate,
@@ -37,16 +43,20 @@ const createEvent = async (req, res) => {
     await event.save();
 
     // Add the event to the user's createdEvents array
-    req.user.createdEvents.push(event.id);
+    await event.save();
 
-    await req.user.save();
+    const host = await User.findById(req.user.id);
+
+    // Add the event to the user's createdEvents array
+    host.createdEvents.push(event.id);
+
+    await host.save();
 
     const message = `Event created successfully: ${event.title}`;
-    await sendEmail(req.user.email, 'Event Created', message);
+    await sendEmail(host.email, 'Event Created', message);
 
     return res.status(201).json({ message: 'Event created successfully.' });
   } catch (error) {
-    console.error('Error creating event:', error);
     return res
       .status(500)
       .json({ error: 'An error occurred while creating the event.' });
@@ -131,7 +141,6 @@ const getEvent = async (req, res) => {
       .json({ error: 'An error occurred while retrieving the event.' });
   }
 };
-
 const updateEvent = async (req, res) => {
   try {
     const eventId = req.params.id;
@@ -241,13 +250,11 @@ const deleteEvent = async (req, res) => {
       .json({ error: 'An error occurred while deleting the event.' });
   }
 };
-
 // User joins an event
 const joinEvent = async (req, res) => {
   try {
     const eventId = req.params.id;
     const userId = req.user.id;
-
     // Find the user and event
     const user = await User.findById(userId);
 
@@ -303,48 +310,6 @@ const joinEvent = async (req, res) => {
   }
 };
 
-const getEventsForUser = async (req, res) => {
-  try {
-    const { userId } = req.params;
-    // Find the user by their ID
-    const user = await User.findById(userId);
-
-    if (!user) {
-      return res.status(404).json({ error: 'User not found.' });
-    }
-
-    // Fetch all events associated with the user
-    const createdEvents = await Event.find({ creator: userId });
-    const participatingEvents = await Event.find({ participants: userId });
-
-    // Get the current date to determine whether events are passed or upcoming
-    const currentDate = new Date();
-
-    // Sort createdEvents by date (upcoming events first)
-    createdEvents.sort((a, b) => a.startDate - b.startDate);
-
-    // Separate participatingEvents into upcoming and passed events
-    const upcomingParticipatingEvents = [];
-    const passedParticipatingEvents = [];
-
-    participatingEvents.forEach((event) => {
-      if (event.endDate >= currentDate) {
-        upcomingParticipatingEvents.push(event);
-      } else {
-        passedParticipatingEvents.push(event);
-      }
-    });
-
-    return res.status(200).json({
-      createdEvents,
-      upcomingParticipatingEvents,
-      passedParticipatingEvents,
-    });
-  } catch (error) {
-    return res.status(500).json({ error: 'Internal server error' });
-  }
-};
-
 const leaveEvent = async (req, res) => {
   try {
     const eventId = req.params.id;
@@ -386,7 +351,7 @@ const leaveEvent = async (req, res) => {
       message: 'User left the event successfully.',
     });
   } catch (error) {
-    console.error('Error leaving event:', error);
+    // console.error('Error leaving event:', error);
     return res
       .status(500)
       .json({ error: 'An error occurred while leaving the event.' });
@@ -395,7 +360,6 @@ const leaveEvent = async (req, res) => {
 
 module.exports = {
   createEvent,
-  getEventsForUser,
   getAllEvents,
   searchEvents,
   getEvent,
