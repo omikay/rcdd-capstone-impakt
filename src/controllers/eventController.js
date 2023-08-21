@@ -41,10 +41,7 @@ const createEvent = async (req, res) => {
     });
 
     await event.save();
-
-    // Add the event to the user's createdEvents array
-    await event.save();
-
+    
     const host = await User.findById(req.user.id);
 
     // Add the event to the user's createdEvents array
