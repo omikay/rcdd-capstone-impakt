@@ -1,7 +1,9 @@
 const jwt = require('jsonwebtoken');
+const User = require('../models/Users');
 
-const isAuthorized = (req, res, next) => {
-const token = req.cookies.jwt
+const isAuthorized = async (req, res, next) => {
+  const token = req.cookies.jwt;
+
   if (!token) {
     return res.status(401).json({ msg: 'No token, authorization denied.' });
   }
@@ -9,7 +11,13 @@ const token = req.cookies.jwt
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    req.user = decoded.user;
+    // eslint-disable-next-line no-underscore-dangle
+    const user = await User.findById(decoded._id);
+    if (!user) {
+      return res.status(401).json({ msg: 'User not found.' });
+    }
+
+    req.user = user;
     return next();
   } catch (err) {
     return res.status(401).json({ msg: 'Token is not valid.' });
