@@ -2,6 +2,8 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const server = require('../../app');
 const User = require('../../models/Users');
+const Event = require('../../models/Events');
+
 const sendEmail = require('../../utils/email');
 const {
   connectGoogleAccount,
@@ -13,10 +15,12 @@ const {
   activateUser,
   resetPassword,
   forgotPassword,
+  getEventsForUser,
 } = require('../userController');
 
 jest.mock('bcrypt');
 jest.mock('../../models/Users');
+jest.mock('../../models/Events');
 jest.mock('../../utils/email');
 jest.mock('jsonwebtoken');
 
@@ -950,6 +954,107 @@ describe('logout', () => {
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({
       message: 'Logged out successfully.',
+    });
+  });
+});
+
+describe('getEventForUser', () => {
+  it('should return events created and participated by the user', async () => {
+    // Mock request and response objects
+    const req = {
+      params: {
+        userId: 'user123',
+      },
+    };
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    // Sample events data
+    const createdEvents = [
+      { title: 'Event 1', startDate: new Date('2023-09-01') },
+      { title: 'Event 2', startDate: new Date('2023-10-01') },
+    ];
+    const participatingEvents = [
+      { title: 'Event 3', endDate: new Date('2023-08-15') },
+      { title: 'Event 4', endDate: new Date('2023-09-15') },
+    ];
+
+    // Mock User.findById to return a sample user
+    User.findById.mockResolvedValue({
+      _id: 'user123',
+      name: 'John Doe',
+      createdEvents: createdEvents.map((event) => ({ _id: event.id })),
+      participatingEvents: participatingEvents.map((event) => ({
+        _id: event.id,
+      })),
+    });
+
+    // Mock Event.find to return the sample events data
+    Event.find
+      .mockResolvedValueOnce(createdEvents)
+      .mockResolvedValueOnce(participatingEvents);
+
+    // Call the getEventsForUser function
+    await getEventsForUser(req, res);
+
+    // Assertions
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({
+      createdEvents,
+      upcomingParticipatingEvents: [
+        { title: 'Event 4', endDate: new Date('2023-09-15') },
+      ],
+      passedParticipatingEvents: [
+        { title: 'Event 3', endDate: new Date('2023-08-15') },
+      ],
+    });
+    expect(User.findById).toHaveBeenCalledTimes(1);
+    expect(Event.find).toHaveBeenCalledTimes(2);
+  });
+
+  it('should return an error when user is not found', async () => {
+    const req = {
+      params: {
+        userId: 'user123',
+      },
+    };
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    User.findById.mockResolvedValue(null);
+    // Call the getUserProfile function
+    await getEventsForUser(req, res);
+
+    // Assertions
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.json).toHaveBeenCalledWith({
+      error: 'User not found.',
+    });
+  });
+
+  it('should return an internal server error when a database error occurs', async () => {
+    const req = {
+      params: {
+        userId: 'user123',
+      },
+    };
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    User.findById.mockRejectedValue(new Error('Database error'));
+    // Call the getUserProfile function
+    await getEventsForUser(req, res);
+
+    // Assertions
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({
+      error: 'Internal server error',
     });
   });
 });
