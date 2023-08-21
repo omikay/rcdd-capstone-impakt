@@ -2,7 +2,13 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Unified API",
-     "description": "Local Development Server"
+    "description": "API endpoints for user authentication, event management, and Google OAuth login",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "https://plankton-app-e3b4u.ondigitalocean.app",
+      "description": "Local Development Server"
     }
   ],
   "paths": {
