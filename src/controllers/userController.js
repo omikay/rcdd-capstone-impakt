@@ -2,6 +2,7 @@ const process = require('process');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const User = require('../models/Users');
+const Event = require('../models/Events');
 const sendEmail = require('../utils/email');
 
 const validatePasswordStrength = (password) => {
@@ -180,6 +181,7 @@ const login = async (req, res) => {
 
     const token = jwt.sign(
       {
+        _id: user.id,
         name: user.name,
         email: user.email,
         exp: Math.floor(Date.now() / 1000) + 1209600, // 14 days expiration
@@ -236,7 +238,7 @@ const updateUserProfile = async (req, res) => {
 
     return res.status(200).json({ message: 'Profile updated successfully.' });
   } catch (error) {
-    // console.error('Error updating user profile:', error);
+    console.error('Error updating user profile:', error);
     return res
       .status(500)
       .json({ message: 'An error occurred during profile update.' });
@@ -270,6 +272,8 @@ const getUserProfile = async (req, res) => {
     // Return the user's profile
     return res.status(200).json(userProfileData);
   } catch (error) {
+    console.error('Error updating user profile:', error);
+
     return res.status(500).json({ error: 'Server error' });
   }
 };
@@ -396,6 +400,49 @@ const logout = (req, res) => {
   }
 };
 
+const getEventsForUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    // Find the user by their ID
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    // Fetch all events associated with the user
+    const createdEvents = await Event.find({ creator: id });
+    const participatingEvents = await Event.find({ participants: id });
+
+    // Get the current date to determine whether events are passed or upcoming
+    const currentDate = new Date();
+
+    // Sort createdEvents by date (upcoming events first)
+    createdEvents.sort((a, b) => a.startDate - b.startDate);
+
+    // Separate participatingEvents into upcoming and passed events
+    const upcomingParticipatingEvents = [];
+    const passedParticipatingEvents = [];
+
+    participatingEvents.forEach((event) => {
+      if (event.endDate >= currentDate) {
+        upcomingParticipatingEvents.push(event);
+      } else {
+        passedParticipatingEvents.push(event);
+      }
+    });
+
+    return res.status(200).json({
+      createdEvents,
+      upcomingParticipatingEvents,
+      passedParticipatingEvents,
+    });
+  } catch (error) {
+    console.error('Error fetching events:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
 module.exports = {
   signup,
   activateUser,
@@ -406,4 +453,5 @@ module.exports = {
   connectGoogleAccount,
   forgotPassword,
   resetPassword,
+  getEventsForUser,
 };
