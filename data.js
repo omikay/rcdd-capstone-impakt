@@ -140,9 +140,7 @@ async function generateSampleBlogPosts(count) {
 }
 (async () => {
   try {
-    await mongoose.connect(
-      'mongodb+srv://doadmin:8YVn476BbE321mp9@db-mongodb-fra1-65852-846c044b.mongo.ondigitalocean.com/admin?tls=true&authSource=admin&replicaSet=db-mongodb-fra1-65852',
-      {
+    await mongoose.connect(process.env.MONGO_URL, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
       }

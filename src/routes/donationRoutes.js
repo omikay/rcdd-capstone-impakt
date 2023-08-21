@@ -8,18 +8,13 @@ const isAuthorized = require('../middlewares/auth');
 
 const router = express.Router();
 
-// Render the donation form
-router.get('/api/donations', (req, res) => {
-  res.render('makeDonation');
-});
-
 // Make a new donation
-router.post('/api/donations', isAuthorized, makeDonation);
+router.post('/donate', isAuthorized, makeDonation);
 
 // Get donations by user
-router.get('/api/donations/:userId', isAuthorized, getUserDonations);
+router.get('/user/:id/donations', isAuthorized, getUserDonations);
 
 // Get donations by event
-router.get('/api/donations/:eventId', isAuthorized, getEventDonations);
+router.get('/events/:id/donations', isAuthorized, getEventDonations);
 
 module.exports = router;

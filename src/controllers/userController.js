@@ -2,6 +2,7 @@ const process = require('process');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const User = require('../models/Users');
+const Event = require('../models/Events');
 const sendEmail = require('../utils/email');
 
 const validatePasswordStrength = (password) => {
@@ -172,12 +173,7 @@ const login = async (req, res) => {
       });
     }
 
-    const hashedReqPass = await bcrypt.hash(password);
-
-    const isPasswordCorrect = await bcrypt.compare(
-      hashedReqPass,
-      user.password
-    );
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
 
     if (!isPasswordCorrect) {
       return res.status(400).json({ error: 'Invalid credentials.' });
@@ -185,6 +181,7 @@ const login = async (req, res) => {
 
     const token = jwt.sign(
       {
+        _id: user.id,
         name: user.name,
         email: user.email,
         exp: Math.floor(Date.now() / 1000) + 1209600, // 14 days expiration
@@ -197,12 +194,10 @@ const login = async (req, res) => {
 
     return res.status(200).json({ token });
   } catch (error) {
-    console.error('Error logging in user:', error);
+    // console.error('Error logging in user:', error);
     return res.status(500).json({ error: 'Something went wrong.' });
   }
 };
-
-// Update user profile
 const updateUserProfile = async (req, res) => {
   const { name, location, phone, interests, password, profilePicture } =
     req.body;
@@ -267,9 +262,9 @@ const getUserProfile = async (req, res) => {
       name: user.name,
       profilePicture: user.profilePicture,
       location: user.location,
-      dateOfBirth: user.dateOfBirth,
+      dateOfBirth: user.dob,
       email: user.email,
-      phoneNumber: user.phoneNumber,
+      phoneNumber: user.phone,
       interests: user.interests,
       googleAccount: user.googleId ? 'Connected' : 'Not connected',
     };
@@ -277,6 +272,8 @@ const getUserProfile = async (req, res) => {
     // Return the user's profile
     return res.status(200).json(userProfileData);
   } catch (error) {
+    console.error('Error updating user profile:', error);
+
     return res.status(500).json({ error: 'Server error' });
   }
 };
@@ -302,7 +299,7 @@ const connectGoogleAccount = async (req, res) => {
       .status(200)
       .json({ message: 'Google account successfully connected.' });
   } catch (error) {
-    console.error('Error connecting Google account:', error);
+    // console.error('Error connecting Google account:', error);
     return res
       .status(500)
       .json({ message: 'An error occurred during Google account connection.' });
@@ -331,7 +328,7 @@ const forgotPassword = async (req, res) => {
     );
 
     // Create a password reset URL that includes the generated token
-    const resetPasswordURL = `http://localhost:3000/reset-password/${token}`;
+    const resetPasswordURL = `https://plankton-app-e3b4u.ondigitalocean.app/reset-password/${token}`;
 
     // Send the password reset email to the user
     await sendEmail(
@@ -372,7 +369,7 @@ const resetPassword = async (req, res) => {
     }
 
     // Hash the new password
-    const hashedPassword = bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     user.password = hashedPassword;
 
@@ -396,10 +393,53 @@ const logout = (req, res) => {
     res.clearCookie('jwt');
     return res.status(200).json({ message: 'Logged out successfully.' });
   } catch (error) {
-    console.error('Error logging out user:', error);
+    // console.error('Error logging out user:', error);
     return res
       .status(500)
       .json({ error: 'An error occurred while logging out.' });
+  }
+};
+
+const getEventsForUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    // Find the user by their ID
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    // Fetch all events associated with the user
+    const createdEvents = await Event.find({ creator: id });
+    const participatingEvents = await Event.find({ participants: id });
+
+    // Get the current date to determine whether events are passed or upcoming
+    const currentDate = new Date();
+
+    // Sort createdEvents by date (upcoming events first)
+    createdEvents.sort((a, b) => a.startDate - b.startDate);
+
+    // Separate participatingEvents into upcoming and passed events
+    const upcomingParticipatingEvents = [];
+    const passedParticipatingEvents = [];
+
+    participatingEvents.forEach((event) => {
+      if (event.endDate >= currentDate) {
+        upcomingParticipatingEvents.push(event);
+      } else {
+        passedParticipatingEvents.push(event);
+      }
+    });
+
+    return res.status(200).json({
+      createdEvents,
+      upcomingParticipatingEvents,
+      passedParticipatingEvents,
+    });
+  } catch (error) {
+    console.error('Error fetching events:', error);
+    return res.status(500).json({ error: 'Internal server error' });
   }
 };
 
@@ -413,4 +453,5 @@ module.exports = {
   connectGoogleAccount,
   forgotPassword,
   resetPassword,
+  getEventsForUser,
 };

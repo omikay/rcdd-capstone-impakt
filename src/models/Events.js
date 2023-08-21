@@ -11,8 +11,8 @@ const eventSchema = new Schema({
   startDate: { type: Date, required: true },
   endDate: { type: Date, required: true },
   ageLimit: {
-    lower: Number,
-    upper: Number,
+    lower: { type: Number },
+    upper: { type: Number },
   },
   tags: [{ type: Schema.Types.ObjectId, ref: 'Tags' }],
   capacity: Number,

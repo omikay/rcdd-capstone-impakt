@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "http://localhost:8080",
+      "url": "https://plankton-app-e3b4u.ondigitalocean.app",
       "description": "Local Development Server"
     }
   ],
@@ -185,14 +185,30 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "jwtAuth": []
+          }
+        ]
       }
     },
-    "/user/profile": {
+    "/user/{userId}": {
       "get": {
         "tags": ["User Routes"],
         "summary": "Get user profile",
         "description": "Fetches the authenticated user's profile details",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "ID of the user whose profile is being showed",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "User profile data",
@@ -240,14 +256,30 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "jwtAuth": []
+          }
+        ]
       }
     },
-    "/user/updateProfile": {
+    "/user/{userId}/updateProfile": {
       "patch": {
         "tags": ["User Routes"],
         "summary": "Update user profile",
         "description": "Allows authenticated users to update their profile information",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "ID of the user whose profile is being updated",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "description": "Updated user profile data",
           "required": true,
@@ -320,7 +352,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "jwtAuth": []
+          }
+        ]
       }
     },
     "/forgot-password": {
@@ -496,7 +533,7 @@
         }
       }
     },
-    "/api/donations": {
+    "/donate": {
       "post": {
         "tags": ["Donation Routes"],
         "summary": "Make donation",
@@ -556,10 +593,15 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "jwtAuth": []
+          }
+        ]
       }
     },
-    "/api/donations/{userId}": {
+    "/user/{userId}/donations": {
       "get": {
         "tags": ["Donation Routes"],
         "summary": "Get user donations",
@@ -616,10 +658,15 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "jwtAuth": []
+          }
+        ]
       }
     },
-    "/api/donations/{eventId}": {
+    "/events/{eventId}/donations": {
       "get": {
         "tags": ["Donation Routes"],
         "summary": "Get event donations",
@@ -676,7 +723,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "jwtAuth": []
+          }
+        ]
       }
     },
     "/blogPosts/new": {
@@ -755,7 +807,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "jwtAuth": []
+          }
+        ]
       }
     },
     "/blogPosts": {
@@ -945,11 +1002,16 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "jwtAuth": []
+          }
+        ]
       }
     },
     "/blogPosts/{blogPostId}/delete": {
-      "get": {
+      "delete": {
         "tags": ["Blog Routes"],
         "summary": "Blog post deletion",
         "description": "Allows admins to delete blog posts",
@@ -1017,23 +1079,28 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "jwtAuth": []
+          }
+        ]
       }
     },
-    "/events/user/{userId}": {
+    "/user/{userId}/events": {
       "get": {
-        "tags": ["Event Routes"],
+        "tags": ["User Routes"],
         "summary": "Get events for user",
         "description": "Retrieves events that a specific user has joined.",
         "parameters": [
           {
-            "in": "path",
             "name": "userId",
+            "in": "path",
+            "description": "ID of the user whose profile is being updated",
             "required": true,
             "schema": {
               "type": "string"
-            },
-            "description": "User ID"
+            }
           }
         ],
         "responses": {
@@ -1067,7 +1134,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "jwtAuth": []
+          }
+        ]
       }
     },
     "/events/search": {
@@ -1167,7 +1239,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "jwtAuth": []
+          }
+        ]
       }
     },
     "/events/createEvent": {
@@ -1196,7 +1273,7 @@
               }
             }
           },
-          "400": {
+          "404": {
             "description": "Bad request or user not found.",
             "content": {
               "application/json": {
@@ -1216,7 +1293,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "jwtAuth": []
+          }
+        ]
       }
     },
     "/events/{eventId}/update": {
@@ -1229,10 +1311,10 @@
             "in": "path",
             "name": "eventId",
             "required": true,
+            "description": "Event ID",
             "schema": {
               "type": "string"
-            },
-            "description": "Event ID"
+            }
           }
         ],
         "requestBody": {
@@ -1276,7 +1358,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "jwtAuth": []
+          }
+        ]
       }
     },
     "/events/{eventId}/delete": {
@@ -1326,7 +1413,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "jwtAuth": []
+          }
+        ]
       }
     },
     "/events/{eventId}": {
@@ -1379,7 +1471,7 @@
         }
       }
     },
-    "/events/{eventId}/leaveEvent": {
+    "/events/{eventId}/leave": {
       "post": {
         "tags": ["Event Routes"],
         "summary": "Leave an event",
@@ -1426,7 +1518,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "jwtAuth": []
+          }
+        ]
       }
     },
     "/events": {
@@ -1460,6 +1557,13 @@
     }
   },
   "components": {
+    "securitySchemes": {
+      "jwtAuth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "jwt"
+      }
+    },
     "schemas": {
       "UserSignup": {
         "type": "object",
@@ -1514,7 +1618,7 @@
           "password": {
             "type": "string"
           },
-          "confirmPassword": {
+          "passwordConfirmation": {
             "type": "string"
           }
         }
@@ -1670,44 +1774,65 @@
       "EventCreate": {
         "type": "object",
         "properties": {
-          "name": {
-            "type": "string",
-            "example": "Birthday Party"
+          "title": {
+            "type": "string"
           },
-          "date": {
-            "type": "string",
-            "format": "date-time",
-            "example": "2023-08-15T18:00:00Z"
+          "description": {
+            "type": "string"
           },
-          "location": {
+          "startDate": {
             "type": "string",
-            "example": "123 Main St, City"
+            "format": "date-time"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date-time"
           },
           "capacity": {
-            "type": "integer",
-            "example": 50
+            "type": "integer"
+          },
+          "location": {
+            "type": "string"
+          },
+          "bannerImage": {
+            "type": "string"
+          },
+          "ageLimit": {
+            "type": "integer"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           }
         }
       },
       "EventUpdate": {
         "type": "object",
         "properties": {
-          "name": {
-            "type": "string",
-            "example": "Updated Birthday Party"
+          "title": {
+            "type": "string"
           },
-          "date": {
-            "type": "string",
-            "format": "date-time",
-            "example": "2023-08-15T19:30:00Z"
+          "description": {
+            "type": "string"
           },
-          "location": {
+          "startDate": {
             "type": "string",
-            "example": "456 Park Ave, Town"
+            "format": "date-time"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date-time"
           },
           "capacity": {
-            "type": "integer",
-            "example": 60
+            "type": "integer"
+          },
+          "location": {
+            "type": "string"
+          },
+          "bannerImage": {
+            "type": "string"
           }
         }
       },
