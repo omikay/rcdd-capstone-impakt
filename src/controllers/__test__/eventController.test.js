@@ -10,7 +10,6 @@ const {
   deleteEvent,
   searchEvents,
   joinEvent,
-  getEventsForUser,
   leaveEvent,
 } = require('../eventController');
 
@@ -43,7 +42,8 @@ describe('createEvent', () => {
         startDate: '2023-07-15T10:00:00Z',
         endDate: '2023-07-15T18:00:00Z',
         capacity: 100,
-        ageLimit: { lower: 18, upper: 65 },
+        ageLimitLower: 18,
+        ageLimitUpper: 65,
         tags: ['tag1', 'tag2'],
         location: 'google map location',
       },
@@ -78,7 +78,10 @@ describe('createEvent', () => {
       startDate: req.body.startDate,
       endDate: req.body.endDate,
       capacity: req.body.capacity,
-      ageLimit: req.body.ageLimit,
+      ageLimit: {
+        lower: req.body.ageLimitLower,
+        upper: req.body.ageLimitUpper,
+      },
       tags: req.body.tags,
       location: req.body.location,
     });
@@ -888,108 +891,6 @@ describe('joinEvent', () => {
   });
 });
 
-describe('getEventForUser', () => {
-  it('should return events created and participated by the user', async () => {
-    // Mock request and response objects
-    const req = {
-      params: {
-        userId: 'user123',
-      },
-    };
-    const res = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn(),
-    };
-
-    // Sample events data
-    const createdEvents = [
-      { title: 'Event 1', startDate: new Date('2023-09-01') },
-      { title: 'Event 2', startDate: new Date('2023-10-01') },
-    ];
-    const participatingEvents = [
-      { title: 'Event 3', endDate: new Date('2023-08-15') },
-      { title: 'Event 4', endDate: new Date('2023-09-15') },
-    ];
-
-    // Mock User.findById to return a sample user
-    User.findById.mockResolvedValue({
-      _id: 'user123',
-      name: 'John Doe',
-      createdEvents: createdEvents.map((event) => ({ _id: event.id })),
-      participatingEvents: participatingEvents.map((event) => ({
-        _id: event.id,
-      })),
-    });
-
-    // Mock Event.find to return the sample events data
-    Event.find
-      .mockResolvedValueOnce(createdEvents)
-      .mockResolvedValueOnce(participatingEvents);
-
-    // Call the getEventsForUser function
-    await getEventsForUser(req, res);
-
-    // Assertions
-    expect(res.status).toHaveBeenCalledWith(200);
-   expect(res.json).toHaveBeenCalledWith({
-  createdEvents,
-  upcomingParticipatingEvents: [
-    { title: 'Event 4', endDate: new Date('2023-09-15') },
-  ],
-  passedParticipatingEvents: [
-    { title: 'Event 3', endDate: new Date('2023-08-15') },
-  ],
-});
-    expect(User.findById).toHaveBeenCalledTimes(1);
-    expect(Event.find).toHaveBeenCalledTimes(2);
-  });
-
-  it('should return an error when user is not found', async () => {
-    const req = {
-      params: {
-        userId: 'user123',
-      },
-    };
-    const res = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn(),
-    };
-
-    User.findById.mockResolvedValue(null);
-    // Call the getUserProfile function
-    await getEventsForUser(req, res);
-
-    // Assertions
-    expect(res.status).toHaveBeenCalledWith(404);
-    expect(res.json).toHaveBeenCalledWith({
-      error: 'User not found.',
-    });
-    expect(User.findById).toHaveBeenCalledTimes(1);
-  });
-
-  it('should return an internal server error when a database error occurs', async () => {
-    const req = {
-      params: {
-        userId: 'user123',
-      },
-    };
-    const res = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn(),
-    };
-
-    User.findById.mockRejectedValue(new Error('Database error'));
-    // Call the getUserProfile function
-    await getEventsForUser(req, res);
-
-    // Assertions
-    expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.json).toHaveBeenCalledWith({
-      error: 'Internal server error',
-    });
-    expect(User.findById).toHaveBeenCalledTimes(1);
-  });
-});
 describe('leaveEvent ', () => {
   beforeEach(() => {
     jest.clearAllMocks();
