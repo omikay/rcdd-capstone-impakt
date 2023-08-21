@@ -2,13 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Unified API",
-    "description": "API endpoints for user authentication, event management, and Google OAuth login",
-    "version": "v1"
-  },
-  "servers": [
-    {
-      "url": "https://plankton-app-e3b4u.ondigitalocean.app",
-      "description": "Local Development Server"
+     "description": "Local Development Server"
     }
   ],
   "paths": {
@@ -1089,9 +1083,20 @@
     },
     "/user/{userId}/events": {
       "get": {
-        "tags": ["Event Routes"],
+        "tags": ["User Routes"],
         "summary": "Get events for user",
         "description": "Retrieves events that a specific user has joined.",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "description": "ID of the user whose profile is being updated",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Events for user retrieved successfully.",
@@ -1262,7 +1267,7 @@
               }
             }
           },
-          "400": {
+          "404": {
             "description": "Bad request or user not found.",
             "content": {
               "application/json": {
@@ -1795,8 +1800,7 @@
               "type": "string"
             }
           }
-        },
-        "required": ["title", "startDate", "endDate", "capacity", "location"]
+        }
       },
       "EventUpdate": {
         "type": "object",
