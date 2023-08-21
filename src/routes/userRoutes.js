@@ -10,6 +10,7 @@ const {
   connectGoogleAccount,
   forgotPassword,
   resetPassword,
+  getEventsForUser,
 } = require('../controllers/userController');
 const isAuthorized = require('../middlewares/auth');
 
@@ -54,6 +55,9 @@ router.post('/reset-password/:token', resetPassword);
 
 // User profile
 router.get('/user/:id', isAuthorized, getUserProfile);
+
+// get events for user
+router.get('/user/:id/events', isAuthorized, getEventsForUser);
 
 // Update user profile
 router.patch('/user/:id/updateProfile', isAuthorized, updateUserProfile);
